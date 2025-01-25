@@ -16,7 +16,7 @@ Transform your structured YAML, JSON, XML, CSV or FrontMatter data into beautifu
 [![twitter badge](https://img.shields.io/badge/twitter%20Chrononuensis-@Seddryck-blue.svg?style=flat&logo=twitter)](https://twitter.com/Seddryck)
 
 **Releases:** [![GitHub releases](https://img.shields.io/github/v/release/seddryck/chrononuensis?label=GitHub%20releases)](https://github.com/seddryck/chrononuensis/releases/latest) 
-[![nuget](https://img.shields.io/nuget/v/Chrononuensis-cli.svg)](https://www.nuget.org/packages/Chrononuensis-cli/) [![Docker Image Version](https://img.shields.io/docker/v/seddryck/chrononuensis?label=docker%20hub&color=0db7ed)](https://hub.docker.com/repository/docker/seddryck/chrononuensis/) [![GitHub Release Date](https://img.shields.io/github/release-date/seddryck/Chrononuensis.svg)](https://github.com/Seddryck/Chrononuensis/releases/latest) [![licence badge](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](https://github.com/Seddryck/Chrononuensis/blob/master/LICENSE) 
+[![nuget](https://img.shields.io/nuget/v/Chrononuensis.svg)](https://www.nuget.org/packages/Chrononuensis/) [![GitHub Release Date](https://img.shields.io/github/release-date/seddryck/Chrononuensis.svg)](https://github.com/Seddryck/Chrononuensis/releases/latest) [![licence badge](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](https://github.com/Seddryck/Chrononuensis/blob/master/LICENSE) 
 
 **Dev. activity:** [![GitHub last commit](https://img.shields.io/github/last-commit/Seddryck/Chrononuensis.svg)](https://github.com/Seddryck/Chrononuensis/commits)
 ![Still maintained](https://img.shields.io/maintenance/yes/2025.svg)
