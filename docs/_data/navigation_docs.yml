@@ -1,10 +1,10 @@
 - title: Getting Started
   docs:
-  - why-$TemplateNameCamelCase$
+  - why-chrononuensis
   
 - title: Installation
   docs:
-  - installation-$TemplateNameCamelCase$
+  - installation-chrononuensis
   - installation-net-global-tool
   - installation-net-local-tool
   - deployment-docker
