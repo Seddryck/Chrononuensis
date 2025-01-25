@@ -9,17 +9,17 @@ tags: [cli-usage]
 
 <sub>CMD:</sub>
 ```bash
-type "data.json" | $TemplateNameCamelCase$ --stdin -t template.hbs -r json -o output.txt
+type "data.json" | chrononuensis --stdin -t template.hbs -r json -o output.txt
 ```
 
 <sub>PowerShell:</sub>
 ```powershell
-Get-Content data.json | $TemplateNameCamelCase$ --stdin -t template.hbs -r json -o output.txt
+Get-Content data.json | chrononuensis --stdin -t template.hbs -r json -o output.txt
 ```
 
 <sub>Bash:</sub>
 ```bash
-cat data.json | $TemplateNameCamelCase$ --stdin -t template.hbs -r json -o output.txt
+cat data.json | chrononuensis --stdin -t template.hbs -r json -o output.txt
 ```
 
 In this example:
@@ -34,5 +34,5 @@ Simply omit the `-o` option and the output will be rendered on the console.
 
 <sub>PowerShell:</sub>
 ```powershell
-$TemplateNameCamelCase$ --stdin -t template.hbs -r json
+chrononuensis --stdin -t template.hbs -r json
 ```

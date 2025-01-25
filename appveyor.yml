@@ -15,9 +15,7 @@ skip_commits:
 
 environment:
   github_access_token:
-    secure: gt...
-  docker_access_token:
-    secure: ...
+    secure: gtEHCUmmDjYfrp/NEe2qUAQyiaFUebrfsm9J2462zKHzyYtPU8unnK+SWVI6Zhn39z6J3tZueVbctz9w/ZByHF2pbLgUdUAgfKVyeR1Ohnm1sOjqOOMivlTCeBJ50ZNd
 
 init:
 - cmd: git config --global core.autocrlf true
@@ -26,11 +24,11 @@ init:
 - cmd: setx DOTNET_CLI_TELEMETRY_OPTOUT 1
 - cmd: setx DOTNET_NOLOGO 1
 - cmd: RefreshEnv.cmd
-- pwsh: Write-Host "Target branch is '$($env:APPVEYOR_REPO_BRANCH)'"
 
 before_build:
+- pwsh: Write-Host "Target branch is '$($env:APPVEYOR_REPO_BRANCH)'"
 - cmd: gitversion /output buildserver /verbosity Minimal
-- pwsh: Write-Host "Building $TemplateNamePascalCase$ version $($env:GitVersion_SemVer)"
+- pwsh: Write-Host "Building Chrononuensis version $($env:GitVersion_SemVer)"
 - pwsh: |
     . "$env:APPVEYOR_BUILD_FOLDER\github.ps1"
     if (($env:APPVEYOR_REPO_BRANCH -eq "main") -and ($null -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)) {
@@ -49,43 +47,22 @@ before_build:
     }
 
 build_script:
-  - dotnet build $TemplateNamePascalCase$.sln -p:version="%GitVersion_SemVer%" -c Release /p:ContinuousIntegrationBuild=true --nologo 
+  - dotnet build Chrononuensis.sln -p:version="%GitVersion_SemVer%" -c Release /p:ContinuousIntegrationBuild=true --nologo 
 
 test_script:
 - pwsh: |
     $ErrorActionPreference = "Stop"
-    dotnet test src/$TemplateNamePascalCase$.Core.Testing -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[$TemplateNamePascalCase$.Core]*" /p:Threshold=80 /p:ThresholdType=line /p:CoverletOutput=../.coverage/coverage.$TemplateNamePascalCase$.Core.xml --test-adapter-path:. --logger:Appveyor --no-build --nologo
-    $globalTestResult = $LastExitCode
-    dotnet test src/$TemplateNamePascalCase$.Cli.Testing -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="$TemplateNamePascalCase$.Cli" /p:Threshold=10 /p:ThresholdType=line /p:CoverletOutput=../.coverage/coverage.$TemplateNamePascalCase$.Cli.xml --test-adapter-path:. --logger:Appveyor --no-build --nologo
+    dotnet test src/Chrononuensis.Core.Testing -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[Chrononuensis]*" /p:Threshold=80 /p:ThresholdType=line /p:CoverletOutput=../../.coverage/coverage.Chrononuensis.xml --test-adapter-path:. --logger:Appveyor --no-build --nologo
     $globalTestResult = $LastExitCode
     if($globalTestResult -ne 0) { $host.SetShouldExit($globalTestResult) }
 
 - pwsh: |
     $ProgressPreference = 'SilentlyContinue'
     Invoke-WebRequest -Uri https://uploader.codecov.io/latest/windows/codecov.exe -Outfile codecov.exe
-    .\codecov.exe --dir "./testing/.coverage/"
+    .\codecov.exe --dir "./.coverage/"
 
 after_test:
-- ps: |
-        if (($env:APPVEYOR_REPO_BRANCH -eq "main") -and ($null -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)) {
-            ./package.ps1
-        }
-- ps: |
-        if (($env:APPVEYOR_REPO_BRANCH -eq "main") -and ($null -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)) {    
-            Write-Host "Logging into Docker Hub ..."
-            docker login -u seddryck -p $env:docker_access_token
-            Write-Host "Successful log into Docker Hub ..."
-
-            Write-Host "Building docker image ..."    
-            docker build -t seddryck/$TemplateNameCamelCase$:$env:GitVersion_SemVer .
-            docker tag seddryck/$TemplateNameCamelCase$:$env:GitVersion_SemVer seddryck/$TemplateNameCamelCase$:latest
-            Write-Host "Docker image built."
-
-            Write-Host "Pushing to Docker Hub ..."
-            docker push seddryck/$TemplateNameCamelCase$:$env:GitVersion_SemVer
-            docker push seddryck/$TemplateNameCamelCase$:latest
-            Write-Host "Pushed to Docker Hub."
-        }
+- dotnet pack src/Chrononuensis.Core -p:version="%GitVersion_SemVer%" -c Release --include-symbols --no-build --nologo 
 
 artifacts:
 - path: '**\*.nupkg'
@@ -95,7 +72,7 @@ artifacts:
 deploy:
 - provider: NuGet
   api_key:
-    secure: 3EEYl8XRqcYYe/pDY/tQu+zT8kTsgHNTJE3tzgvH1L3lG77dBE0YESj2h0WegT7G
+    secure: ReR8SwXwQlTUH7uCW/7Cyf4VHMo90KD4Cu/Qckue6HrAXygIwn1urnryBptusfoB
   skip_symbols: false
   artifact: /.*(\.|\.s)nupkg/
   on:
