@@ -20,6 +20,8 @@ internal class ParserFactory
         AddMapping(Tokens.Month.LabelMonthToken.Instance, MonthParser.Label.Cast<object>());
         AddMapping(Tokens.Month.DigitMonthToken.Instance, MonthParser.Digit.Cast<object>());
         AddMapping(Tokens.Month.PaddedDigitMonthToken.Instance, MonthParser.PaddedDigit.Cast<object>());
+
+        AddMapping(Tokens.Quarter.DigitQuarterToken.Instance, QuarterParser.OneDigit.Cast<object>());
                   
         AddMapping(Tokens.Year.DigitOn2YearToken.Instance, YearParser.TwoDigit.Cast<object>());
         AddMapping(Tokens.Year.DigitOn4YearToken.Instance, YearParser.FourDigit.Cast<object>());

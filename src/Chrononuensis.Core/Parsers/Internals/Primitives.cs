@@ -11,6 +11,10 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Chrononuensis.Parsers.Internals;
 internal class Primitives
 {
+    public static Parser<char, int> OneDigitParser(int min, int max) =>
+        Parser.Digit.Repeat(1).Select(chars => int.Parse(new string(chars.ToArray())))
+            .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
+
     public static Parser<char, int> OneOrTwoDigitParser(int min, int max) =>
         Parser.Digit.Then(Parser.Try(Parser.Digit).Optional(),
         (first, second) => int.Parse(second.HasValue
