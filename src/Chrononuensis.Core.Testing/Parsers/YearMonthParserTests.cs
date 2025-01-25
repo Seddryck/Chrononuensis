@@ -21,8 +21,11 @@ public class YearMonthParserTests
     {
         var parser = new YearMonthParser();
         var result = parser.Parse(input, format, null);
-        Assert.That(result.Year, Is.EqualTo(2025));
-        Assert.That(result.Month, Is.EqualTo(1));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Year, Is.EqualTo(2025));
+            Assert.That(result.Month, Is.EqualTo(1));
+        });
     }
 
     [Test]

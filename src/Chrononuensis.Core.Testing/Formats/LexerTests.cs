@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Chrononuensis.Formats;
 using Chrononuensis.Formats.Tokens;
 using Chrononuensis.Formats.Tokens.Month;
+using Chrononuensis.Formats.Tokens.Quarter;
 using Chrononuensis.Formats.Tokens.Year;
 using NUnit.Framework;
 
@@ -80,4 +81,14 @@ public class LexerTests
         Assert.That(format.Last(), Is.TypeOf<PaddedDigitMonthToken>());
     }
 
+    [TestCase("yyyy'-Q'q")]
+    public void Tokenize_WithFourDistinctTokens_ReturnsTokens(string input)
+    {
+        var format = new Lexer().Tokenize(input);
+        Assert.That(format.Count(), Is.EqualTo(4));
+        Assert.That(format.First(), Is.TypeOf<DigitOn4YearToken>());
+        Assert.That(format.ElementAt(1), Is.TypeOf<LiteralToken>());
+        Assert.That(format.ElementAt(2), Is.TypeOf<LiteralToken>());
+        Assert.That(format.Last(), Is.TypeOf<DigitQuarterToken>());
+    }
 }
