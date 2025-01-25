@@ -97,9 +97,11 @@ on_success:
 
                 Start-Sleep -Seconds 5
 
-                $context | Upload-Release-Assets `
-                    -Tag "v$($env:GitVersion_SemVer)" `
-                    -Path "./.publish"
+                if (Test-Path -Path "./.publish") {
+                    $context | Upload-Release-Assets `
+                        -Tag "v$($env:GitVersion_SemVer)" `
+                        -Path "./.publish"
+                }
             }
         } else {
             Write-Host "No release published on GitHub when patch is not set to zero."
