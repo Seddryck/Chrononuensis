@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +25,6 @@ internal class TokenMapper
         _tokenMap.Add("MM", PaddedDigitMonthToken.Instance);
         _tokenMap.Add("MMM", AbbreviationMonthToken.Instance);
         _tokenMap.Add("MMMM", LabelMonthToken.Instance);
-
     }
 
     public FormatToken GetToken(string token)
