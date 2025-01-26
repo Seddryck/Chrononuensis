@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chrononuensis.Formats.Tokens.Month;
 using Chrononuensis.Formats.Tokens.Quarter;
+using Chrononuensis.Formats.Tokens.Semester;
 using Chrononuensis.Formats.Tokens.Year;
 
 namespace Chrononuensis.Formats.Tokens;
@@ -16,12 +17,15 @@ internal class TokenMapper
         _tokenMap.Add("yy", DigitOn2YearToken.Instance);
         _tokenMap.Add("yyyy", DigitOn4YearToken.Instance);
 
+        _tokenMap.Add("S", DigitSemesterToken.Instance);
+
+        _tokenMap.Add("q", DigitQuarterToken.Instance);
+
         _tokenMap.Add("M", DigitMonthToken.Instance);
         _tokenMap.Add("MM", PaddedDigitMonthToken.Instance);
         _tokenMap.Add("MMM", AbbreviationMonthToken.Instance);
         _tokenMap.Add("MMMM", LabelMonthToken.Instance);
 
-        _tokenMap.Add("q", DigitQuarterToken.Instance);
     }
 
     public FormatToken GetToken(string token)
