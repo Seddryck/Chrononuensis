@@ -1,0 +1,53 @@
+﻿#nullable enable
+
+using Chrononuensis.Parsers;
+
+namespace Chrononuensis;
+
+public partial record struct {{ struct_name }}
+(
+    {{~ for part in parts ~}}
+    {{ part.type }} {{ part.name }}{{~ if !for.last ~}},{{ end }}
+    {{~ end ~}}
+)
+    : IParsable<{{ struct_name }}>, IComparable<{{ struct_name }}>, IComparable, IEquatable<{{ struct_name }}>
+{
+    {{~ for part in parts ~}}
+    {{~ if part.min && part.max ~}}
+    public {{ part.type }} {{ part.name }} { get; }
+        = ({{ part.name }} >= {{ part.min }} && {{ part.name }} <= {{ part.max }})
+            ? {{ part.name }}
+            : throw new ArgumentOutOfRangeException(nameof({{ part.name }}), "{{ part.name }} must be between {{ part.min }} and {{ part.max }}.");
+    {{~ end ~}}
+    {{~ end ~}}
+
+    private static {{ struct_name }}Parser Parser { get; } = new();
+
+    public static {{ struct_name }} Parse(string input, IFormatProvider? provider)
+        => Parse(input, {{ struct_name }}Parser.DefaultPattern, provider);
+
+    public static {{ struct_name }} Parse(string input, string format, IFormatProvider? provider = null)
+    {
+        var result = Parser.Parse(input, format, provider);
+        return new {{ struct_name }}({{~ for part in parts ~}}result.{{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
+    }
+
+    public static bool TryParse(string? s, IFormatProvider? provider, out {{ struct_name }} result)
+        => throw new NotImplementedException();
+
+    public int CompareTo({{ struct_name }} other)
+        => {{ parts[0].name }} == other.{{ parts[0].name }} ? {{ parts[1].name }}.CompareTo(other.{{ parts[1].name }}) : {{ parts[0].name }}.CompareTo(other.{{ parts[0].name }});
+
+    public int CompareTo(object? obj)
+        => obj switch
+        {
+            null => 1,
+            {{ struct_name }} y => CompareTo(y),
+            _ => throw new ArgumentException("Object must be of type {{ struct_name }}", nameof(obj))
+        };
+
+    public static bool operator <({{ struct_name }} left, {{ struct_name }} right) => left.CompareTo(right) < 0;
+    public static bool operator >({{ struct_name }} left, {{ struct_name }} right) => left.CompareTo(right) > 0;
+    public static bool operator <=({{ struct_name }} left, {{ struct_name }} right) => left.CompareTo(right) <= 0;
+    public static bool operator >=({{ struct_name }} left, {{ struct_name }} right) => left.CompareTo(right) >= 0;
+}

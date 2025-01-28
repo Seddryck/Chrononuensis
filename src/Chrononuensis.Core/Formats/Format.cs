@@ -17,7 +17,10 @@ internal class Format : IEnumerable<FormatToken>
     public IEnumerator<FormatToken> GetEnumerator()
         => _tokens.GetEnumerator();
     public int GetIndex<T>() where T : IPeriodToken
-        => _tokens.FindIndex(t => t is T);
+        => GetIndex(typeof(T));
+
+    public int GetIndex(Type t)
+        => _tokens.FindIndex(x => t.IsAssignableFrom(x.GetType()));
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();

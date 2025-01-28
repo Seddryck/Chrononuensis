@@ -1,17 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#nullable enable
+
 using Chrononuensis.Parsers;
 
 namespace Chrononuensis;
-public record struct YearMonth(int Year, int Month)
 
+public partial record struct YearMonth
+(
+    int Year,
+    int Month
+)
     : IParsable<YearMonth>, IComparable<YearMonth>, IComparable, IEquatable<YearMonth>
 {
+    public int Month { get; }
+        = (Month >= 1 && Month <= 12)
+            ? Month
+            : throw new ArgumentOutOfRangeException(nameof(Month), "Month must be between 1 and 12.");
+
     private static YearMonthParser Parser { get; } = new();
 
     public static YearMonth Parse(string input, IFormatProvider? provider)
@@ -23,29 +27,22 @@ public record struct YearMonth(int Year, int Month)
         return new YearMonth(result.Year, result.Month);
     }
 
-    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out YearMonth result)
+    public static bool TryParse(string? s, IFormatProvider? provider, out YearMonth result)
         => throw new NotImplementedException();
 
-    public readonly int CompareTo(YearMonth other)
+    public int CompareTo(YearMonth other)
         => Year == other.Year ? Month.CompareTo(other.Month) : Year.CompareTo(other.Year);
 
     public int CompareTo(object? obj)
         => obj switch
         {
             null => 1,
-            YearMonth ym => CompareTo(ym),
+            YearMonth y => CompareTo(y),
             _ => throw new ArgumentException("Object must be of type YearMonth", nameof(obj))
         };
 
-    public static bool operator < (YearMonth left, YearMonth right)
-        => left.CompareTo(right) < 0;
-
-    public static bool operator >(YearMonth left, YearMonth right)
-        => left.CompareTo(right) > 0;
-
-    public static bool operator <=(YearMonth left, YearMonth right)
-        => left.CompareTo(right) <= 0;
-
-    public static bool operator >=(YearMonth left, YearMonth right)
-        => left.CompareTo(right) >= 0;
+    public static bool operator <(YearMonth left, YearMonth right) => left.CompareTo(right) < 0;
+    public static bool operator >(YearMonth left, YearMonth right) => left.CompareTo(right) > 0;
+    public static bool operator <=(YearMonth left, YearMonth right) => left.CompareTo(right) <= 0;
+    public static bool operator >=(YearMonth left, YearMonth right) => left.CompareTo(right) >= 0;
 }

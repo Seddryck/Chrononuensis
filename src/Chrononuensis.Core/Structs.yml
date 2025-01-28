@@ -1,0 +1,37 @@
+﻿- name: MonthDay
+  parts:
+    - name: Month
+      type: int
+      min: 1
+      max: 12
+    - name: Day
+      type: int
+      min: 1
+      max: 31
+
+- name: YearMonth
+  parts:
+    - name: Year
+      type: int
+    - name: Month
+      type: int
+      min: 1
+      max: 12
+
+- name: YearQuarter
+  parts:
+    - name: Year
+      type: int
+    - name: Quarter
+      type: int
+      min: 1
+      max: 4
+
+- name: YearSemester
+  parts:
+    - name: Year
+      type: int
+    - name: Semester
+      type: int
+      min: 1
+      max: 2
