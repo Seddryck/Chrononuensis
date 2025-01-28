@@ -12,7 +12,7 @@ internal class Lexer
 
     public Format Tokenize(string input)
     {
-        var symbolChars = new[] { 'y', 'M', 'q' };
+        var symbolChars = new[] { 'y', 'S', 'q', 'M' };
 
         if (string.IsNullOrWhiteSpace(input))
             throw new ArgumentException("Input cannot be null or empty.", nameof(input));

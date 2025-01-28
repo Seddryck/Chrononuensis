@@ -4,9 +4,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Structs.yml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="Structs.yml" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Pidgin" Version="3.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Parsers\Formats\" />
+    <ProjectReference Include="..\Chrononuensis.SourceGenerator\Chrononuensis.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 </Project>
