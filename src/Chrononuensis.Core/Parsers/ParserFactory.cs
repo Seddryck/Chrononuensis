@@ -16,14 +16,17 @@ internal class ParserFactory
 
     public ParserFactory()
     {
+        AddMapping(Tokens.Day.DigitDayToken.Instance, DayParser.Digit.Cast<object>());
+        AddMapping(Tokens.Day.PaddedDigitDayToken.Instance, DayParser.PaddedDigit.Cast<object>());
+
         AddMapping(Tokens.Month.AbbreviationMonthToken.Instance, MonthParser.Abbreviation.Cast<object>());
         AddMapping(Tokens.Month.LabelMonthToken.Instance, MonthParser.Label.Cast<object>());
         AddMapping(Tokens.Month.DigitMonthToken.Instance, MonthParser.Digit.Cast<object>());
         AddMapping(Tokens.Month.PaddedDigitMonthToken.Instance, MonthParser.PaddedDigit.Cast<object>());
 
-        AddMapping(Tokens.Semester.DigitSemesterToken.Instance, SemesterParser.OneDigit.Cast<object>());
-
         AddMapping(Tokens.Quarter.DigitQuarterToken.Instance, QuarterParser.OneDigit.Cast<object>());
+
+        AddMapping(Tokens.Semester.DigitSemesterToken.Instance, SemesterParser.OneDigit.Cast<object>());
 
         AddMapping(Tokens.Year.DigitOn2YearToken.Instance, YearParser.TwoDigit.Cast<object>());
         AddMapping(Tokens.Year.DigitOn4YearToken.Instance, YearParser.FourDigit.Cast<object>());

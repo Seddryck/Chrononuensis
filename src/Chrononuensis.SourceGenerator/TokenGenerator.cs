@@ -1,47 +1,46 @@
-using System.Diagnostics;
+﻿using System;
+using System.Linq;
 using System.Text;
 using Chrononuensis.SourceGenerator.Definitions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Scriban;
-using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using YamlDotNet.Serialization;
 
 namespace Chrononuensis.SourceGenerator;
 
 [Generator]
-public class StructGenerator : IIncrementalGenerator
+public class TokenGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        //if (!Debugger.IsAttached)
-        //{
-        //    Debugger.Launch();
-        //}
-
         var yamlFiles = context.AdditionalTextsProvider
             .Where(file => file.Path.EndsWith(".yml"))
             .Collect();
-
 
         context.RegisterSourceOutput(yamlFiles, (ctx, additionalTexts) =>
         {
             foreach (var textFile in additionalTexts)
             {
-                if (textFile.Path.EndsWith("structs.yml", StringComparison.OrdinalIgnoreCase))
+                if (textFile.Path.EndsWith("tokens.yml", StringComparison.OrdinalIgnoreCase))
                 {
                     var yamlContent = textFile.GetText(ctx.CancellationToken)?.ToString();
                     if (!string.IsNullOrWhiteSpace(yamlContent))
                     {
                         try
                         {
-                            var structs = ParseYaml(yamlContent!);
-                            foreach (var structDefinition in structs)
+                            var tokens = ParseYaml(yamlContent!);
+                            foreach (var tokenDef in tokens)
                             {
-                                var generatedCode = GenerateStruct(structDefinition);
-                                ctx.AddSource($"{structDefinition.Name}.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
-                                Debug.WriteLine(generatedCode);
+                                var generatedCode = GenerateIToken(tokenDef.Group);
+                                ctx.AddSource($"I{tokenDef.Group}Token.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+
+                                foreach (var tokenMember in tokenDef.Members)
+                                {
+                                    generatedCode = GenerateToken(tokenDef.Group, tokenMember);
+                                    ctx.AddSource($"{tokenMember.Name}{tokenDef.Group}Token.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -60,32 +59,44 @@ public class StructGenerator : IIncrementalGenerator
         });
     }
 
-    private static List<StructDefinition> ParseYaml(string yamlContent)
+    private static List<TokenDefinition> ParseYaml(string yamlContent)
     {
         var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
-        return deserializer.Deserialize<List<StructDefinition>>(yamlContent);
+        return deserializer.Deserialize<List<TokenDefinition>>(yamlContent);
     }
 
-    internal static string GenerateStruct(StructDefinition structDefinition)
+    internal string GenerateToken(string group, TokenMember token)
     {
         string templateContent;
-        var assembly = typeof(StructGenerator).Assembly;
-        var ns = typeof(StructGenerator).Namespace;
-        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Struct.scriban"))
+        var assembly = typeof(TokenGenerator).Assembly;
+        var ns = typeof(TokenGenerator).Namespace;
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Token.scriban"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 
         var scribanTemplate = Template.Parse(templateContent);
         var output = scribanTemplate.Render(new
         {
-            struct_name = structDefinition.Name,
-            parts = structDefinition.Parts.Select(p => new
-            {
-                name = p.Name,
-                type = p.Type,
-                min = p.Min,
-                max = p.Max
-            }).ToList()
+            group,
+            token,
+        });
+
+        return output;
+    }
+
+    internal string GenerateIToken(string group)
+    {
+        string templateContent;
+        var assembly = typeof(TokenGenerator).Assembly;
+        var ns = typeof(TokenGenerator).Namespace;
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.IToken.scriban"))
+        using (var reader = new StreamReader(stream))
+            templateContent = reader.ReadToEnd();
+
+        var scribanTemplate = Template.Parse(templateContent);
+        var output = scribanTemplate.Render(new
+        {
+            group,
         });
 
         return output;

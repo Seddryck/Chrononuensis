@@ -1,0 +1,8 @@
+﻿using Chrononuensis.Formats;
+using Chrononuensis.Formats.Tokens;
+
+namespace Chrononuensis.Formats.Tokens.{{ group }};
+
+[FormatIdentifier("{{ token.pattern }}")]
+internal class {{ token.name }}{{ group }}Token : FormatToken<{{ token.name }}{{ group }}Token>, I{{ group }}Token
+{ }

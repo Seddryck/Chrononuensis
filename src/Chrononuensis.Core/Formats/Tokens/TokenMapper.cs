@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chrononuensis.Formats.Tokens.Day;
 using Chrononuensis.Formats.Tokens.Month;
 using Chrononuensis.Formats.Tokens.Quarter;
 using Chrononuensis.Formats.Tokens.Semester;
@@ -25,6 +26,9 @@ internal class TokenMapper
         _tokenMap.Add("MM", PaddedDigitMonthToken.Instance);
         _tokenMap.Add("MMM", AbbreviationMonthToken.Instance);
         _tokenMap.Add("MMMM", LabelMonthToken.Instance);
+
+        _tokenMap.Add("d", DigitDayToken.Instance);
+        _tokenMap.Add("dd", PaddedDigitDayToken.Instance);
     }
 
     public FormatToken GetToken(string token)

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using Chrononuensis.Formats.Tokens;
 
 namespace Chrononuensis.Formats;
-internal class Lexer
+internal partial class Lexer
 {
     private readonly TokenMapper _mapper = new();
+    private static readonly char[] SymbolChars = InitializeSymbolChars();
+    private static partial char[] InitializeSymbolChars();
 
     public Format Tokenize(string input)
     {
-        var symbolChars = new[] { 'y', 'S', 'q', 'M' };
-
         if (string.IsNullOrWhiteSpace(input))
             throw new ArgumentException("Input cannot be null or empty.", nameof(input));
 
@@ -44,7 +44,7 @@ internal class Lexer
                 while (i < inputSpan.Length && inputSpan[i] != '\'')
                     tokens.Add(new LiteralToken(inputSpan[i++]));
             }
-            else if (symbolChars.Contains(currentChar))
+            else if (SymbolChars.Contains(currentChar))
             {
                 while (i < inputSpan.Length && inputSpan[i] == currentChar)
                 {

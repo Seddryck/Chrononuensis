@@ -24,7 +24,7 @@ public partial record struct YearMonth
     public static YearMonth Parse(string input, string format, IFormatProvider? provider = null)
     {
         var result = Parser.Parse(input, format, provider);
-        return new YearMonth(result.Year,result.Month);
+        return new YearMonth(result.Year, result.Month);
     }
 
     public static bool TryParse(string? s, IFormatProvider? provider, out YearMonth result)

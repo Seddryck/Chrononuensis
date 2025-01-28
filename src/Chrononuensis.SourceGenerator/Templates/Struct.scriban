@@ -29,7 +29,7 @@ public partial record struct {{ struct_name }}
     public static {{ struct_name }} Parse(string input, string format, IFormatProvider? provider = null)
     {
         var result = Parser.Parse(input, format, provider);
-        return new {{ struct_name }}({{~ for part in parts ~}}result.{{ part.name }}{{~ if !for.last ~}}, {{~ end ~}}{{ end }});
+        return new {{ struct_name }}({{~ for part in parts ~}}result.{{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
     }
 
     public static bool TryParse(string? s, IFormatProvider? provider, out {{ struct_name }} result)

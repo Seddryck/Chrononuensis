@@ -1,0 +1,34 @@
+﻿- group: Year
+  members:
+    - name: DigitOn2
+      pattern: yy
+    - name: DigitOn4
+      pattern: yyyy
+
+- group: Semester
+  members:
+    - name: Digit
+      pattern: S
+
+- group: Quarter
+  members:
+    - name: Digit
+      pattern: q
+
+- group: Month
+  members:
+    - name: Digit
+      pattern: M
+    - name: PaddedDigit
+      pattern: MM
+    - name: Abbreviation
+      pattern: MMM
+    - name: Label
+      pattern: MMMMM
+
+- group: Day
+  members:
+    - name: Digit
+      pattern: d
+    - name: PaddedDigit
+      pattern: dd

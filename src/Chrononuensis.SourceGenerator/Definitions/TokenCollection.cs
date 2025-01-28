@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Chrononuensis.SourceGenerator.Definitions;
-internal class StructCollection : IEnumerable<StructDefinition>
+internal class TokenCollection : IEnumerable<TokenDefinition>
 {
-    public List<StructDefinition> Items { get; set; } = new();
+    public List<TokenDefinition> Items { get; set; } = new();
 
-    public IEnumerator<StructDefinition> GetEnumerator()
+    public IEnumerator<TokenDefinition> GetEnumerator()
         => Items.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()

@@ -9,6 +9,7 @@ using NUnit.Framework;
 namespace Chrononuensis.Testing.Parsers;
 public class YearSemesterParserTests
 {
+    [TestCase("25-S1", "yy-'S'S")]
     [TestCase("25-H1", "yy-HS")]
     [TestCase("25-1", "yy-S")]
     [TestCase("S1.2025", "'S'S.yyyy")]

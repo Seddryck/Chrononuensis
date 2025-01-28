@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Chrononuensis.Formats;
+using Chrononuensis.Formats.Tokens;
 
 namespace Chrononuensis.Formats.Tokens.Month;
+
+[FormatIdentifier("MMM")]
 internal class AbbreviationMonthToken : FormatToken<AbbreviationMonthToken>, IMonthToken
 { }
