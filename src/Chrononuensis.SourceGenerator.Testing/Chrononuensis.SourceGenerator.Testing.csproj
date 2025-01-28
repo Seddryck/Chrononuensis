@@ -1,13 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <Compile Remove="Expectations\AbbreviationMonthToken.cs" />
-    <Compile Remove="Expectations\IMonthToken.cs" />
-    <Compile Remove="Expectations\Lexer.cs" />
-    <Compile Remove="Expectations\YearMonth.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Expectations\AbbreviationMonthToken.cs" />
     <EmbeddedResource Include="Expectations\IMonthToken.cs" />
     <EmbeddedResource Include="Expectations\Lexer.cs" />

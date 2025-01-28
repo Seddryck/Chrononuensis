@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +29,6 @@ internal class TokenMapper
 
         _tokenMap.Add("d", DigitDayToken.Instance);
         _tokenMap.Add("dd", PaddedDigitDayToken.Instance);
-
     }
 
     public FormatToken GetToken(string token)

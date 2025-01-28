@@ -7,6 +7,7 @@ using Chrononuensis.Formats;
 using Chrononuensis.Formats.Tokens;
 using Chrononuensis.Formats.Tokens.Month;
 using Chrononuensis.Formats.Tokens.Quarter;
+using Chrononuensis.Formats.Tokens.Semester;
 using Chrononuensis.Formats.Tokens.Year;
 using NUnit.Framework;
 

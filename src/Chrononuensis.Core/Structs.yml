@@ -1,4 +1,4 @@
-﻿- name: MonthDay
+- name: MonthDay
   parts:
     - name: Month
       type: int

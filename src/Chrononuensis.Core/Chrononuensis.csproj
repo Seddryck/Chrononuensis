@@ -4,10 +4,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Structs.yml" />
-    <None Remove="Tokens.yml" />
-  </ItemGroup>
-  <ItemGroup>
     <AdditionalFiles Include="Structs.yml" />
     <AdditionalFiles Include="Tokens.yml" />
   </ItemGroup>

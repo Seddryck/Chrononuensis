@@ -9,6 +9,6 @@ using Pidgin;
 namespace Chrononuensis.Parsers.Internals;
 internal class SemesterParser
 {
-    public static Parser<char, int> OneDigit { get; } = Primitives.OneDigitParser(1,4);
+    public static Parser<char, int> OneDigit { get; } = Primitives.OneDigitParser(1,2);
 }
 
