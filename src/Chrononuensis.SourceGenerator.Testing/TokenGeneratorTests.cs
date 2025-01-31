@@ -42,4 +42,51 @@ public class TokenGeneratorTests
 
         Assert.That(ReadEmbeddedFile("IMonthToken.cs").Replace("\r\n", "\n"), Is.EqualTo(output.Replace("\r\n", "\n")));
     }
+
+
+    [Test]
+    public void GenerateTokenMapper_MonthAbbreviation_Expected()
+    {
+        var generator = new TokenGenerator();
+        var output = generator.GenerateTokenMapper(
+            [
+                new TokenDefinition()
+                {
+                    Group = "Day",
+                    Members = new List<TokenMember>(new[]
+                    {
+                        new TokenMember()
+                        {
+                            Name = "Digit",
+                            Pattern = "d"
+                        },
+                        new TokenMember()
+                        {
+                            Name = "PaddedDigit",
+                            Pattern = "dd"
+                        }
+                    })
+                },
+                new TokenDefinition()
+                {
+                    Group = "DayOfYear",
+                    Members = new List<TokenMember>(new[]
+                    {
+                        new TokenMember()
+                        {
+                            Name = "Digit",
+                            Pattern = "j"
+                        },
+                        new TokenMember()
+                        {
+                            Name = "PaddedDigit",
+                            Pattern = "jjj"
+                        }
+                    })
+                }
+            ]);
+
+
+        Assert.That(ReadEmbeddedFile("TokenMapper.cs").Replace("\r\n", "\n"), Is.EqualTo(output.Replace("\r\n", "\n")));
+    }
 }

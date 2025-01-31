@@ -24,8 +24,7 @@
     - name: Abbreviation
       pattern: MMM
     - name: Label
-      pattern: MMMMM
-
+      pattern: MMMM
 
 - group: DayOfYear
   members:

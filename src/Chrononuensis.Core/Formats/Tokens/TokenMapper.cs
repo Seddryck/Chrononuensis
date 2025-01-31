@@ -11,29 +11,14 @@ using Chrononuensis.Formats.Tokens.Semester;
 using Chrononuensis.Formats.Tokens.Year;
 
 namespace Chrononuensis.Formats.Tokens;
-internal class TokenMapper
+internal partial class TokenMapper
 {
     private readonly Dictionary<string, FormatToken> _tokenMap = new();
+
+    partial void Initialize();
+
     public TokenMapper()
-    {
-        _tokenMap.Add("yy", DigitOn2YearToken.Instance);
-        _tokenMap.Add("yyyy", DigitOn4YearToken.Instance);
-
-        _tokenMap.Add("S", DigitSemesterToken.Instance);
-
-        _tokenMap.Add("q", DigitQuarterToken.Instance);
-
-        _tokenMap.Add("M", DigitMonthToken.Instance);
-        _tokenMap.Add("MM", PaddedDigitMonthToken.Instance);
-        _tokenMap.Add("MMM", AbbreviationMonthToken.Instance);
-        _tokenMap.Add("MMMM", LabelMonthToken.Instance);
-
-        _tokenMap.Add("j", DigitDayOfYearToken.Instance);
-        _tokenMap.Add("jjj", PaddedDigitDayOfYearToken.Instance);
-
-        _tokenMap.Add("d", DigitDayToken.Instance);
-        _tokenMap.Add("dd", PaddedDigitDayToken.Instance);
-    }
+        => Initialize();
 
     public FormatToken GetToken(string token)
     {
