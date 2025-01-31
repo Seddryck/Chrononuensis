@@ -22,6 +22,21 @@ internal class Primitives
                                 : $"{first}"))
                             .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
 
+    public static Parser<char, int> OneToThreeDigitParser(int min, int max) =>
+        Parser.Digit
+            .Then(
+                Parser.Try(
+                        Parser.Digit.Then(
+                            Parser.Try(Parser.Digit).Optional()
+                            , (second, third) => third.HasValue ? $"{second}{third.Value}" : second.ToString()
+                        ).Optional()
+                )
+                , (first, second) => int.Parse(second.HasValue
+                                ? $"{first}{second.Value}"
+                                : $"{first}"))
+        .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
+
+
     public static Parser<char, int> TwoDigitParser(Func<int, int> func) =>
         Parser.Digit.Repeat(2).Select(chars => func(int.Parse(new string(chars.ToArray()))));
 
@@ -30,6 +45,10 @@ internal class Primitives
 
     public static Parser<char, int> TwoDigitParser(int min, int max) =>
         Parser.Digit.Repeat(2).Select(chars => int.Parse(new string(chars.ToArray())))
+            .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
+
+    public static Parser<char, int> ThreeDigitParser(int min, int max) =>
+        Parser.Digit.Repeat(3).Select(chars => int.Parse(new string(chars.ToArray())))
             .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
 
     public static Parser<char, int> FourDigitParser() =>

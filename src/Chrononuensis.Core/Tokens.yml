@@ -26,6 +26,14 @@
     - name: Label
       pattern: MMMMM
 
+
+- group: DayOfYear
+  members:
+    - name: Digit
+      pattern: j
+    - name: PaddedDigit
+      pattern: jjj
+
 - group: Day
   members:
     - name: Digit
