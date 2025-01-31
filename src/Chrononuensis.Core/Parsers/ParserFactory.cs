@@ -19,6 +19,9 @@ internal class ParserFactory
         AddMapping(Tokens.Day.DigitDayToken.Instance, DayParser.Digit.Cast<object>());
         AddMapping(Tokens.Day.PaddedDigitDayToken.Instance, DayParser.PaddedDigit.Cast<object>());
 
+        AddMapping(Tokens.DayOfYear.DigitDayOfYearToken.Instance, DayOfYearParser.Digit.Cast<object>());
+        AddMapping(Tokens.DayOfYear.PaddedDigitDayOfYearToken.Instance, DayOfYearParser.PaddedDigit.Cast<object>());
+
         AddMapping(Tokens.Month.AbbreviationMonthToken.Instance, MonthParser.Abbreviation.Cast<object>());
         AddMapping(Tokens.Month.LabelMonthToken.Instance, MonthParser.Label.Cast<object>());
         AddMapping(Tokens.Month.DigitMonthToken.Instance, MonthParser.Digit.Cast<object>());

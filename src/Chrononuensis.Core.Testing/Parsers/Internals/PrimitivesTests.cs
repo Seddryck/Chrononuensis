@@ -71,4 +71,16 @@ public class PrimitivesTests
             ).Parse("2021-06").Value;
         Assert.That(actual, Is.EqualTo(new object?[] { 2021, Unit.Value, 6 }));
     }
+
+    [Test]
+    [TestCase("1", 1)]
+    [TestCase("1 A", 1)]
+    [TestCase("12", 12)]
+    [TestCase("123", 123)]
+    [TestCase("1234", 123)]
+    public void Parse_OneToThreeDigits_ReturnsInt(string input, int expected)
+    {
+        var actual = Primitives.OneToThreeDigitParser(0, 999).Parse(input);
+        Assert.That(actual.Value, Is.EqualTo(expected));
+    }
 }

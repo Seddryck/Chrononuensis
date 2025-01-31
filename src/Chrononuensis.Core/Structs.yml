@@ -9,6 +9,15 @@
       min: 1
       max: 31
 
+- name: YearDay
+  parts:
+    - name: Year
+      type: int
+    - name: DayOfYear
+      type: int
+      min: 1
+      max: 366
+
 - name: YearMonth
   parts:
     - name: Year
