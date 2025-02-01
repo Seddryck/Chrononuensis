@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.Text;
 using Scriban;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization;
+using System.Diagnostics;
 
 namespace Chrononuensis.SourceGenerator;
 
@@ -15,6 +16,9 @@ public class TokenGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        //if (!Debugger.IsAttached)
+        //    Debugger.Launch();
+
         var yamlFiles = context.AdditionalTextsProvider
             .Where(file => file.Path.EndsWith(".yml"))
             .Collect();
@@ -34,6 +38,9 @@ public class TokenGenerator : IIncrementalGenerator
 
                             var generatedCode = GenerateTokenMapper(tokens.ToArray());
                             ctx.AddSource("TokenMapper.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+
+                            generatedCode = GenerateParserFactory(tokens.ToArray());
+                            ctx.AddSource("ParserFactory.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
 
                             foreach (var tokenDef in tokens)
                             {
@@ -112,6 +119,24 @@ public class TokenGenerator : IIncrementalGenerator
         var assembly = typeof(TokenGenerator).Assembly;
         var ns = typeof(TokenGenerator).Namespace;
         using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.TokenMapper.scriban"))
+        using (var reader = new StreamReader(stream))
+            templateContent = reader.ReadToEnd();
+
+        var scribanTemplate = Template.Parse(templateContent);
+        var output = scribanTemplate.Render(new
+        {
+            tokens,
+        });
+
+        return output;
+    }
+
+    internal string GenerateParserFactory(TokenDefinition[] tokens)
+    {
+        string templateContent;
+        var assembly = typeof(TokenGenerator).Assembly;
+        var ns = typeof(TokenGenerator).Namespace;
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.ParserFactory.scriban"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 
