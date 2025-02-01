@@ -1,16 +1,15 @@
 # Changelog page source
 
-- title: Multi-channel publication
+- title: Source generators
   label:
-  date: Oct 20, 2024
+  date: Jan 31, 2025
   list:
-  - Docker image available on Docker Hub
-  - CLI and libraries available on Nuget
-  - Binaries available on GitHub releases
+  - Source generators are handling most of the code for new structs and parsers
+  - Documentation generated from yaml file
 
 - title: First commit
   label:
-  date: Oct 13, 2024
+  date: Jan 20, 2025
   list:
   - Create repository on GitHub
   - Initial README with first ideas and references

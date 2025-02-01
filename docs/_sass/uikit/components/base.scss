@@ -16,7 +16,7 @@ $base-body-font-family:                          $global-font-family !default;
 $base-body-font-weight:                          normal !default;
 $base-body-font-size:                            $global-font-size !default;
 $base-body-line-height:                          $global-line-height !default;
-$base-body-color:                                #EDE0D0 !default;
+$base-body-color:                                $global-color !default;
 
 $base-link-color:                                $global-link-color !default;
 $base-link-text-decoration:                      none !default;
@@ -26,11 +26,11 @@ $base-link-hover-text-decoration:                underline !default;
 $base-strong-font-weight:                        bolder !default;
 $base-code-font-size:                            $global-small-font-size !default;
 $base-code-font-family:                          Consolas, monaco, monospace !default;
-$base-code-color:                                $global-danger-background !default;
+$base-code-color:                                #B9B9D5 !default;
 $base-em-color:                                  $global-danger-background !default;
-$base-ins-background:                            #ffd !default;
+$base-ins-background:                            #B9B9D5 !default;
 $base-ins-color:                                 $global-color !default;
-$base-mark-background:                           #ffd !default;
+$base-mark-background:                           #B9B9D5 !default;
 $base-mark-color:                                $global-color !default;
 $base-quote-font-style:                          italic !default;
 $base-small-font-size:                           80% !default;
@@ -39,7 +39,7 @@ $base-margin-vertical:                           5px;
 
 $base-heading-font-family:                       $global-font-family !default;
 $base-heading-font-weight:                       normal !default;
-$base-heading-color:                             $global-emphasis-color !default;
+$base-heading-color:                             #373952 !default;
 $base-heading-text-transform:                    none !default;
 $base-heading-margin-top:                        $global-medium-margin !default;
 $base-h1-font-size:                              $global-xxlarge-font-size !default;
@@ -99,7 +99,7 @@ html {
     /* 2 */
     -webkit-text-size-adjust: 100%;
     /* 3 */
-    background: #EDE0D0;
+    background: $base-body-background;
     color: $base-body-color;
     @if(mixin-exists(hook-base-body)) {@include hook-base-body();}
 }
@@ -186,6 +186,7 @@ strong { font-weight: $base-strong-font-weight; }
     font-size: $base-code-font-size;
     /* 3 */
     color: $base-code-color;
+    background: $base-code-color;
     white-space: nowrap;
     @if(mixin-exists(hook-base-code)) {@include hook-base-code();}
 }
@@ -322,7 +323,7 @@ h6, .uk-h6 {
     margin: 0 0 $base-margin-vertical 0;
     font-family: $base-heading-font-family;
     font-weight: $base-heading-font-weight;
-    color: $base-heading-color;
+    color: #373952;
     text-transform: $base-heading-text-transform;
     @if(mixin-exists(hook-base-heading)) {@include hook-base-heading();}
 }

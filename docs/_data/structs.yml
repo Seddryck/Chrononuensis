@@ -1,0 +1,61 @@
+- name: MonthDay
+  default: MM-dd
+  parts:
+    - name: Month
+      type: int
+      min: 1
+      max: 12
+    - name: Day
+      type: int
+      min: 1
+      max: 31
+
+- name: YearDay
+  default: yyyy-jjj
+  parts:
+    - name: Year
+      type: int
+    - name: DayOfYear
+      type: int
+      min: 1
+      max: 366
+
+- name: YearWeek
+  default: yyyy-'W'ww
+  parts:
+    - name: Year
+      type: int
+    - name: Week
+      type: int
+      min: 1
+      max: 53
+
+- name: YearMonth
+  default: yyyy-MM
+  parts:
+    - name: Year
+      type: int
+    - name: Month
+      type: int
+      min: 1
+      max: 12
+
+- name: YearQuarter
+  default: yyyy-'Q'q
+  parts:
+    - name: Year
+      type: int
+    - name: Quarter
+      type: int
+      min: 1
+      max: 4
+
+- name: YearSemester
+  default: yyyy-'H's
+  parts:
+    - name: Year
+      type: int
+    - name: Semester
+      type: int
+      min: 1
+      max: 2
