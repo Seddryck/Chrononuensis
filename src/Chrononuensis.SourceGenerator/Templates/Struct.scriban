@@ -32,12 +32,33 @@ public partial record struct {{ struct_name }}
         return new {{ struct_name }}({{~ for part in parts ~}}result.{{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
     }
 
+    public static {{ struct_name }} Parse(ReadOnlySpan<char> span, IFormatProvider? provider)
+        => Parse(span, {{ struct_name }}Parser.DefaultPattern, provider);
+
+    public static {{ struct_name }} Parse(ReadOnlySpan<char> span, string format, IFormatProvider? provider = null)
+    {
+        var result = Parser.Parse(span, format, provider);
+        return new {{ struct_name }}({{~ for part in parts ~}}result.{{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
+    }
+
     public static bool TryParse(string? s, IFormatProvider? provider, out {{ struct_name }} result)
         => TryParse(s, {{ struct_name }}Parser.DefaultPattern, provider, out result);
 
     public static bool TryParse(string? s, string format, IFormatProvider? provider, out {{ struct_name }} result)
     {
         var success = Parser.TryParse(s, format, provider, {{ for part in parts ~}}out var {{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
+        result = success
+                    ? new {{ struct_name }}({{~ for part in parts ~}}{{ part.name }}!.Value{{~ if !for.last ~}}, {{ end ~}}{{ end }})
+                    : default;
+        return success;
+    }
+
+    public static bool TryParse(ReadOnlySpan<char> span, IFormatProvider? provider, out {{ struct_name }} result)
+        => TryParse(span, {{ struct_name }}Parser.DefaultPattern, provider, out result);
+
+    public static bool TryParse(ReadOnlySpan<char> span, string format, IFormatProvider? provider, out {{ struct_name }} result)
+    {
+        var success = Parser.TryParse(span, format, provider, {{ for part in parts ~}}out var {{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
         result = success
                     ? new {{ struct_name }}({{~ for part in parts ~}}{{ part.name }}!.Value{{~ if !for.last ~}}, {{ end ~}}{{ end }})
                     : default;

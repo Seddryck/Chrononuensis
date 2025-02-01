@@ -90,4 +90,48 @@ public class MonthDayTests
                 Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
         });
     }
+
+    [Test]
+    [TestCase("12-01")]
+    public void Parse_SomeValueAsSpan_Expected(string input)
+    {
+        var value = MonthDay.Parse(input.AsSpan(), null);
+        Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
+    }
+
+    [Test]
+    [TestCase("Dec-01")]
+    public void Parse_SomeValueFormatAsSpan_Expected(string input)
+    {
+        var value = MonthDay.Parse(input.AsSpan(), "MMM-dd", null);
+        Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
+    }
+
+    [Test]
+    [TestCase("12-01", true)]
+    [TestCase("2025-Q5", false)]
+    public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
+    {
+        var result = MonthDay.TryParse(input.AsSpan(), null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("Dec-01", true)]
+    [TestCase("12-X", false)]
+    public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
+    {
+        var result = MonthDay.TryParse(input.AsSpan(), "MMM-dd", null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
+        });
+    }
 }
