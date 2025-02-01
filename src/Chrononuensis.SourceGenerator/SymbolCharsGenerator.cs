@@ -14,7 +14,7 @@ public class SymbolCharsGenerator : IIncrementalGenerator
     {
         // Define the incremental value provider for symbol characters
         var symbolCharsProvider = context.CompilationProvider
-            .Select((compilation, _) => new[] { 'y', 'S', 'q', 'M', 'd', 'h', 'j' });
+            .Select((compilation, _) => new[] { 'y', 'S', 'q', 'M', 'd', 'h', 'j', 'w' });
 
         // Register the source generation step
         context.RegisterSourceOutput(symbolCharsProvider, (context, symbolChars) =>
