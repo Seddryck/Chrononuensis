@@ -10,7 +10,7 @@ public class YearWeekTests
 {
     [Test]
     public void Parse_InputDefaultFormat_Equal()
-        => Assert.That(YearWeek.Parse("2021-W16", "yyyy-'W'ww"), Is.EqualTo(new YearWeek(2021,16)));
+        => Assert.That(YearWeek.Parse("2021-W16", "yyyy-'W'ww"), Is.EqualTo(new YearWeek(2021, 16)));
 
     private static IEnumerable<YearWeek> GetData()
     {
@@ -83,6 +83,50 @@ public class YearWeekTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = YearWeek.TryParse(input, "'W'w-yy", null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("2025-W01")]
+    public void Parse_SomeValueAsSpan_Expected(string input)
+    {
+        var value = YearWeek.Parse(input.AsSpan(), null);
+        Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
+    }
+
+    [Test]
+    [TestCase("W01-25")]
+    public void Parse_SomeValueFormatAsSpan_Expected(string input)
+    {
+        var value = YearWeek.Parse(input.AsSpan(), "'W'ww-yy", null);
+        Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
+    }
+
+    [Test]
+    [TestCase("2025-W01", true)]
+    [TestCase("2025-Q5", false)]
+    public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
+    {
+        var result = YearWeek.TryParse(input.AsSpan(), null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("W1-25", true)]
+    [TestCase("12-X", false)]
+    public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
+    {
+        var result = YearWeek.TryParse(input.AsSpan(), "'W'w-yy", null, out var value);
         Assert.Multiple(() =>
         {
             Assert.That(result, Is.EqualTo(expected));

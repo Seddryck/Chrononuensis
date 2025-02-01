@@ -90,4 +90,48 @@ public class YearMonthTests
                 Assert.That(yearMonth, Is.EqualTo(new YearMonth(2025, 1)));
         });
     }
+
+    [Test]
+    [TestCase("2025-01")]
+    public void Parse_SomeValueAsSpan_Expected(string input)
+    {
+        var value = YearMonth.Parse(input.AsSpan(), null);
+        Assert.That(value, Is.EqualTo(new YearMonth(2025, 1)));
+    }
+
+    [Test]
+    [TestCase("Jan-25")]
+    public void Parse_SomeValueFormatAsSpan_Expected(string input)
+    {
+        var value = YearMonth.Parse(input.AsSpan(), "MMM-yy", null);
+        Assert.That(value, Is.EqualTo(new YearMonth(2025, 1)));
+    }
+
+    [Test]
+    [TestCase("2025-01", true)]
+    [TestCase("2025-Q5", false)]
+    public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
+    {
+        var result = YearMonth.TryParse(input.AsSpan(), null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearMonth(2025, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("Jan-25", true)]
+    [TestCase("12-X", false)]
+    public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
+    {
+        var result = YearMonth.TryParse(input.AsSpan(), "MMM-yy", null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearMonth(2025, 1)));
+        });
+    }
 }
