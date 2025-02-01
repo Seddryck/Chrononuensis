@@ -4,7 +4,7 @@ using Chrononuensis.Formats.Tokens;
 
 namespace Chrononuensis.Parsers;
 
-internal class {{ struct_name }}Parser : ChrononuensisParser
+public class {{ struct_name }}Parser : ChrononuensisParser
 {
     public static string DefaultPattern { get; } = "{{ default }}";
 

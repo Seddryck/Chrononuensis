@@ -4,7 +4,7 @@ using Chrononuensis.Formats.Tokens;
 
 namespace Chrononuensis.Parsers;
 
-internal class YearMonthParser : ChrononuensisParser
+public class YearMonthParser : ChrononuensisParser
 {
     public static string DefaultPattern { get; } = "yyyy-MM";
 
