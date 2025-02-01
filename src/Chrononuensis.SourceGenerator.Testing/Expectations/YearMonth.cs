@@ -28,7 +28,16 @@ public partial record struct YearMonth
     }
 
     public static bool TryParse(string? s, IFormatProvider? provider, out YearMonth result)
-        => throw new NotImplementedException();
+        => TryParse(s, YearMonthParser.DefaultPattern, provider, out result);
+
+    public static bool TryParse(string? s, string format, IFormatProvider? provider, out YearMonth result)
+    {
+        var success = Parser.TryParse(s, format, provider, out var Year, out var Month);
+        result = success
+                    ? new YearMonth(Year!.Value, Month!.Value)
+                    : default;
+        return success;
+    }
 
     public int CompareTo(YearMonth other)
         => Year == other.Year ? Month.CompareTo(other.Month) : Year.CompareTo(other.Year);

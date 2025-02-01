@@ -51,4 +51,24 @@ public class YearMonthParserTests
         var ex = Assert.Throws<FormatException>(() => parser.Parse("2025-Jan", "yyyy-MM", null));
         Assert.That(ex.Message, Is.EqualTo("Parsing error at character 6: Unexpected 'J'."));
     }
+
+    [Test]
+    public void TryParse_UnexpectedLiteralForDigit_DoesNotThrow()
+    {
+        var parser = new YearMonthParser();
+        var result = parser.TryParse("2025-XYZ", "yyyy-MM", null, out var year, out var month);
+        Assert.That(result, Is.False);
+        Assert.That(year, Is.Null);
+        Assert.That(month, Is.Null);
+    }
+
+    [Test]
+    public void TryParse_ValidFormat_ValuesSpecified()
+    {
+        var parser = new YearMonthParser();
+        var result = parser.TryParse("2025-Jan", "yyyy-MMM", null, out var year, out var month);
+        Assert.That(result, Is.True);
+        Assert.That(year, Is.EqualTo(2025));
+        Assert.That(month, Is.EqualTo(1));
+    }
 }

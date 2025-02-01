@@ -62,4 +62,32 @@ public class MonthDayTests
     [Test]
     public void CompareTo_SomethingElse_Compared()
         => Assert.That(new MonthDay(1, 6).CompareTo(new MonthDay(3, 1)), Is.EqualTo(-1));
+
+    [Test]
+    [TestCase("12-01", true)]
+    [TestCase("12-999", false)]
+    public void TryParse_SomeValue_Expected(string input, bool expected)
+    {
+        var result = MonthDay.TryParse(input, null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("12-1", true)]
+    [TestCase("12-X", false)]
+    public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
+    {
+        var result = MonthDay.TryParse(input, "MM-d", null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
+        });
+    }
 }

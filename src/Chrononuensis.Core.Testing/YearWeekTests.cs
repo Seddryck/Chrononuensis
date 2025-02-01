@@ -62,4 +62,32 @@ public class YearWeekTests
     [Test]
     public void CompareTo_SomethingElse_Compared()
         => Assert.That(new YearWeek(2021, 1).CompareTo(new YearWeek(2022, 3)), Is.EqualTo(-1));
+
+    [Test]
+    [TestCase("2025-W01", true)]
+    [TestCase("2025-Q5", false)]
+    public void TryParse_SomeValue_Expected(string input, bool expected)
+    {
+        var result = YearWeek.TryParse(input, null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("W1-25", true)]
+    [TestCase("12-X", false)]
+    public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
+    {
+        var result = YearWeek.TryParse(input, "'W'w-yy", null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
+        });
+    }
 }

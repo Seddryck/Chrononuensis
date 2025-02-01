@@ -62,4 +62,32 @@ public class YearDayTests
     [Test]
     public void CompareTo_SomethingElse_Compared()
         => Assert.That(new YearDay(2021, 1).CompareTo(new YearDay(2022, 3)), Is.EqualTo(-1));
+
+    [Test]
+    [TestCase("2025-001", true)]
+    [TestCase("2025-999", false)]
+    public void TryParse_SomeValue_Expected(string input, bool expected)
+    {
+        var result = YearDay.TryParse(input, null, out var yearDay);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(yearDay, Is.EqualTo(new YearDay(2025, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("2025-1", true)]
+    [TestCase("2025-X", false)]
+    public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
+    {
+        var result = YearDay.TryParse(input, "yyyy-j", null, out var yearDay);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(yearDay, Is.EqualTo(new YearDay(2025, 1)));
+        });
+    }
 }
