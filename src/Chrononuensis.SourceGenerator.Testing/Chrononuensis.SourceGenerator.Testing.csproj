@@ -4,6 +4,7 @@
     <Compile Remove="Expectations\AbbreviationMonthToken.cs" />
     <Compile Remove="Expectations\IMonthToken.cs" />
     <Compile Remove="Expectations\Lexer.cs" />
+    <Compile Remove="Expectations\ParserFactory.cs" />
     <Compile Remove="Expectations\TokenMapper.cs" />
     <Compile Remove="Expectations\YearMonth.cs" />
     <Compile Remove="Expectations\YearMonthParser.cs" />
@@ -13,6 +14,7 @@
     <EmbeddedResource Include="Expectations\AbbreviationMonthToken.cs" />
     <EmbeddedResource Include="Expectations\IMonthToken.cs" />
     <EmbeddedResource Include="Expectations\Lexer.cs" />
+    <EmbeddedResource Include="Expectations\ParserFactory.cs" />
     <EmbeddedResource Include="Expectations\TokenMapper.cs" />
     <EmbeddedResource Include="Expectations\YearMonth.cs" />
     <EmbeddedResource Include="Expectations\YearMonthParser.cs" />

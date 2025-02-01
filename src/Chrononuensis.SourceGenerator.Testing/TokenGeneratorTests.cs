@@ -31,7 +31,7 @@ public class TokenGeneratorTests
                 Pattern = "MMM"
             });
 
-        Assert.That(ReadEmbeddedFile("AbbreviationMonthToken.cs").Replace("\r\n", "\n"), Is.EqualTo(output.Replace("\r\n", "\n")));
+        Assert.That(output.Replace("\r\n", "\n"), Is.EqualTo(ReadEmbeddedFile("AbbreviationMonthToken.cs").Replace("\r\n", "\n")));
     }
 
     [Test]
@@ -40,12 +40,12 @@ public class TokenGeneratorTests
         var generator = new TokenGenerator();
         var output = generator.GenerateIToken("Month");
 
-        Assert.That(ReadEmbeddedFile("IMonthToken.cs").Replace("\r\n", "\n"), Is.EqualTo(output.Replace("\r\n", "\n")));
+        Assert.That(output.Replace("\r\n", "\n"), Is.EqualTo(ReadEmbeddedFile("IMonthToken.cs").Replace("\r\n", "\n")));
     }
 
 
     [Test]
-    public void GenerateTokenMapper_MonthAbbreviation_Expected()
+    public void GenerateTokenMapper_Days_Expected()
     {
         var generator = new TokenGenerator();
         var output = generator.GenerateTokenMapper(
@@ -87,6 +87,53 @@ public class TokenGeneratorTests
             ]);
 
 
-        Assert.That(ReadEmbeddedFile("TokenMapper.cs").Replace("\r\n", "\n"), Is.EqualTo(output.Replace("\r\n", "\n")));
+        Assert.That(output.Replace("\r\n", "\n"), Is.EqualTo(ReadEmbeddedFile("TokenMapper.cs").Replace("\r\n", "\n")));
+    }
+
+
+    [Test]
+    public void GenerateParserFactory_Days_Expected()
+    {
+        var generator = new TokenGenerator();
+        var output = generator.GenerateParserFactory(
+            [
+                new TokenDefinition()
+                {
+                    Group = "Day",
+                    Members = new List<TokenMember>(new[]
+                    {
+                        new TokenMember()
+                        {
+                            Name = "Digit",
+                            Pattern = "d"
+                        },
+                        new TokenMember()
+                        {
+                            Name = "PaddedDigit",
+                            Pattern = "dd"
+                        }
+                    })
+                },
+                new TokenDefinition()
+                {
+                    Group = "DayOfYear",
+                    Members = new List<TokenMember>(new[]
+                    {
+                        new TokenMember()
+                        {
+                            Name = "Digit",
+                            Pattern = "j"
+                        },
+                        new TokenMember()
+                        {
+                            Name = "PaddedDigit",
+                            Pattern = "jjj"
+                        }
+                    })
+                }
+            ]);
+
+
+        Assert.That(output.Replace("\r\n", "\n"), Is.EqualTo(ReadEmbeddedFile("ParserFactory.cs").Replace("\r\n", "\n")));
     }
 }

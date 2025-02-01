@@ -1,4 +1,6 @@
-﻿using Chrononuensis.Formats.Tokens;
+﻿#nullable enable
+
+using Chrononuensis.Formats.Tokens;
 
 namespace Chrononuensis.Parsers;
 

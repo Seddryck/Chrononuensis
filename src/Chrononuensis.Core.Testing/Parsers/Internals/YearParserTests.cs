@@ -18,30 +18,30 @@ public class YearParserTests
     [TestCase("0800")]
     [TestCase("0032")]
     public void Parse_FourDigit_Valid(string value)
-        => Assert.That(YearParser.FourDigit.Parse(value).Success, Is.True);
+        => Assert.That(YearParser.DigitOn4.Parse(value).Success, Is.True);
 
     [TestCase("ABCD")]
     [TestCase("202*")]
     public void Parse_FourDigit_Invalid(string value)
-        => Assert.That(YearParser.FourDigit.Parse(value).Success, Is.False);
+        => Assert.That(YearParser.DigitOn4.Parse(value).Success, Is.False);
 
     [TestCase("17")]
     [TestCase("42")]
     [TestCase("00")]
     [TestCase("99")]
     public void Parse_TwoDigit_Valid(string value)
-        => Assert.That(YearParser.TwoDigit.Parse(value).Success, Is.True);
+        => Assert.That(YearParser.DigitOn2.Parse(value).Success, Is.True);
 
     [TestCase("1")]
     [TestCase("4.2")]
     [TestCase("*00")]
     public void Parse_TwoDigit_Invalid(string value)
-        => Assert.That(YearParser.TwoDigit.Parse(value).Success, Is.False);
+        => Assert.That(YearParser.DigitOn2.Parse(value).Success, Is.False);
 
     [TestCase("17", 2017)]
     [TestCase("42", 1942)]
     [TestCase("00", 2000)]
     [TestCase("99", 1999)]
     public void Parse_TwoDigit_CorrectValue(string value, int expected)
-        => Assert.That(YearParser.TwoDigit.Parse(value).Value, Is.EqualTo(expected));
+        => Assert.That(YearParser.DigitOn2.Parse(value).Value, Is.EqualTo(expected));
 }

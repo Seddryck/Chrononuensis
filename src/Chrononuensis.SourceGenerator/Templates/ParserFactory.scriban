@@ -1,0 +1,19 @@
+﻿using Tokens = Chrononuensis.Formats.Tokens;
+using Chrononuensis.Parsers.Internals;
+
+namespace Chrononuensis.Parsers;
+
+internal partial class ParserFactory
+{
+    partial void Initialize()
+    {
+        {{~ for token in tokens ~}}
+        {{~ for member in token.members ~}}
+        AddMapping(Tokens.{{ token.group }}.{{ member.name }}{{ token.group }}Token.Instance, {{ token.group }}Parser.{{ member.name }}.Cast<object>());
+        {{~ end ~}}
+        {{~ if !for.last ~}}
+
+        {{~ end ~}}
+        {{~ end ~}}
+    }
+}
