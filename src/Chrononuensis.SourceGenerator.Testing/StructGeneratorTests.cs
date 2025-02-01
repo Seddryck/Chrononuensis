@@ -34,6 +34,25 @@ public class StructGeneratorTest
                 ]
             });
 
-        Assert.That(ReadEmbeddedFile("YearMonth.cs").Replace("\r\n", "\n"), Is.EqualTo(output.Replace("\r\n", "\n")));
+        Assert.That(output.Replace("\r\n", "\n"), Is.EqualTo(ReadEmbeddedFile("YearMonth.cs").Replace("\r\n", "\n")));
+    }
+
+    [Test]
+    public void GenerateParser_YearMonth_Expected()
+    {
+        var generator = new StructGenerator();
+        var output = StructGenerator.GenerateParser(
+            new StructDefinition()
+            {
+                Name = "YearMonth",
+                Default = "yyyy-MM",
+                Parts =
+                [
+                    new() {Name = "Year", Type = "int" }
+                    , new() {Name = "Month", Type = "int", Min = 1 , Max = 12 }
+                ]
+            });
+
+        Assert.That(output.Replace("\r\n", "\n"), Is.EqualTo(ReadEmbeddedFile("YearMonthParser.cs").Replace("\r\n", "\n")));
     }
 }

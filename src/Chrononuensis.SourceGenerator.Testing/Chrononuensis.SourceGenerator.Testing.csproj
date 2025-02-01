@@ -6,6 +6,7 @@
     <Compile Remove="Expectations\Lexer.cs" />
     <Compile Remove="Expectations\TokenMapper.cs" />
     <Compile Remove="Expectations\YearMonth.cs" />
+    <Compile Remove="Expectations\YearMonthParser.cs" />
   </ItemGroup>
   
   <ItemGroup>
@@ -14,6 +15,7 @@
     <EmbeddedResource Include="Expectations\Lexer.cs" />
     <EmbeddedResource Include="Expectations\TokenMapper.cs" />
     <EmbeddedResource Include="Expectations\YearMonth.cs" />
+    <EmbeddedResource Include="Expectations\YearMonthParser.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chrononuensis.Formats.Tokens;
+﻿using Chrononuensis.Formats.Tokens;
 
 namespace Chrononuensis.Parsers;
+
 internal class YearMonthParser : ChrononuensisParser
 {
     public static string DefaultPattern { get; } = "yyyy-MM";

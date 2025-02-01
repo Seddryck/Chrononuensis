@@ -41,7 +41,9 @@ public class StructGenerator : IIncrementalGenerator
                             {
                                 var generatedCode = GenerateStruct(structDefinition);
                                 ctx.AddSource($"{structDefinition.Name}.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
-                                Debug.WriteLine(generatedCode);
+
+                                generatedCode = GenerateParser(structDefinition);
+                                ctx.AddSource($"{structDefinition.Name}Parser.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
                             }
                         }
                         catch (Exception ex)
@@ -79,6 +81,32 @@ public class StructGenerator : IIncrementalGenerator
         var output = scribanTemplate.Render(new
         {
             struct_name = structDefinition.Name,
+            parts = structDefinition.Parts.Select(p => new
+            {
+                name = p.Name,
+                type = p.Type,
+                min = p.Min,
+                max = p.Max
+            }).ToList()
+        });
+
+        return output;
+    }
+
+    internal static string GenerateParser(StructDefinition structDefinition)
+    {
+        string templateContent;
+        var assembly = typeof(StructGenerator).Assembly;
+        var ns = typeof(StructGenerator).Namespace;
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Parser.scriban"))
+        using (var reader = new StreamReader(stream))
+            templateContent = reader.ReadToEnd();
+
+        var scribanTemplate = Template.Parse(templateContent);
+        var output = scribanTemplate.Render(new
+        {
+            struct_name = structDefinition.Name,
+            @default = structDefinition.Default,
             parts = structDefinition.Parts.Select(p => new
             {
                 name = p.Name,
