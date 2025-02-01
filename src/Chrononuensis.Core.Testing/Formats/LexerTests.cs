@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Chrononuensis.Formats;
 using Chrononuensis.Formats.Tokens;
+using Chrononuensis.Formats.Tokens.DayOfYear;
+using Chrononuensis.Formats.Tokens.Week;
 using Chrononuensis.Formats.Tokens.Month;
 using Chrononuensis.Formats.Tokens.Quarter;
 using Chrononuensis.Formats.Tokens.Semester;
@@ -42,6 +44,11 @@ public class LexerTests
     [TestCase("MM", typeof(PaddedDigitMonthToken))]
     [TestCase("MMM", typeof(AbbreviationMonthToken))]
     [TestCase("MMMM", typeof(LabelMonthToken))]
+    [TestCase("q", typeof(DigitQuarterToken))]
+    [TestCase("S", typeof(DigitSemesterToken))]
+    [TestCase("j", typeof(DigitDayOfYearToken))]
+    [TestCase("w", typeof(DigitWeekToken))]
+    [TestCase("ww", typeof(PaddedDigitWeekToken))]
     public void Tokenize_WithTokens_ReturnsLiteralToken(string input, Type expected)
     {
         var format = new Lexer().Tokenize(input);
