@@ -1,27 +1,15 @@
-- title: Getting Started
+- title: Introduction
   docs:
   - why-chrononuensis
-  
-- title: Installation
-  docs:
-  - installation-chrononuensis
-  - installation-net-global-tool
-  - installation-net-local-tool
-  - deployment-docker
-  - installation-windows
-  - installation-linux
-  - installation-library-nuget
 
 - title: Usage
   docs:
-  - supported-format-engine
-  - cli-options
-  - basic-usage
-  - use-stdin-stdout
-  - specify-engine-parser
-  - specify-parser-parameters
-  - multiple-sources
+  - installation
+  - quick-start
+  - structures
+  - format-specifier
 
-- title: Parsers
+- title: Architecture
   docs:
-  - csv-parser
+  - contributing
+  - source-generator

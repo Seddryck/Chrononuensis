@@ -25,6 +25,7 @@ init:
 - cmd: setx DOTNET_NOLOGO 1
 - cmd: RefreshEnv.cmd
 
+
 before_build:
 - pwsh: Write-Host "Target branch is '$($env:APPVEYOR_REPO_BRANCH)'"
 - cmd: gitversion /output buildserver /verbosity Minimal
@@ -109,3 +110,20 @@ on_success:
     } else {
         Write-Host "No release published on GitHub when not on branch main."
     }
+- pwsh: |
+      Write-Host "Update of Parsers and Structs"
+      Get-ChildItem -Path "./src/Chrononuensis.Core/" -Filter "*.yml" | ForEach-Object {
+        $lowercaseName = $_.Name.ToLower()
+        $destinationPath = Join-Path -Path "./docs/_data/" -ChildPath $lowercaseName
+    
+        Copy-Item -Path $_.FullName -Destination $destinationPath -Force
+      }
+      Write-Host "Push to GitHub"
+      & git config --global credential.helper store
+      Set-Content -Path "$HOME\.git-credentials" -Value "https://$($env:github_access_token):x-oauth-basic@github.com`n" -NoNewline
+      & git config --global user.email "no-reply@nbiguity.io"
+      & git config --global user.name "AppVeyor bot"
+      & git add --all
+      & git status
+      & git commit -m "Update the automatically generated documentation related to the list of functions and predicates"
+      & git push origin
