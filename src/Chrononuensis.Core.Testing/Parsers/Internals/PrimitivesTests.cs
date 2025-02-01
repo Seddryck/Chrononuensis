@@ -83,4 +83,18 @@ public class PrimitivesTests
         var actual = Primitives.OneToThreeDigitParser(0, 999).Parse(input);
         Assert.That(actual.Value, Is.EqualTo(expected));
     }
+
+    [Test]
+    [TestCase("10", 10)]
+    [TestCase("04", 4)]
+    public void Parse_TwoDigits_ReturnsInt(string input, int expected)
+    {
+        var actual = Primitives.TwoDigitParser().Parse(input);
+        Assert.That(actual.Value, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase([])]
+    public void Combine_Empty_Throws(params Parser<char, object>[] values)
+        => Assert.Throws<ArgumentException>(() => Primitives.CombineParsers(values));
 }
