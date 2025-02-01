@@ -61,4 +61,32 @@ public class YearSemesterTests
     [Test]
     public void CompareTo_SomethingElse_Compared()
         => Assert.That(new YearSemester(2021, 1).CompareTo(new YearSemester(2022, 2)), Is.EqualTo(-1));
+
+    [Test]
+    [TestCase("2025-H1", true)]
+    [TestCase("2025-Q5", false)]
+    public void TryParse_SomeValue_Expected(string input, bool expected)
+    {
+        var result = YearSemester.TryParse(input, null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearSemester(2025, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("H1-25", true)]
+    [TestCase("12-X", false)]
+    public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
+    {
+        var result = YearSemester.TryParse(input, "'H'S-yy", null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearSemester(2025, 1)));
+        });
+    }
 }

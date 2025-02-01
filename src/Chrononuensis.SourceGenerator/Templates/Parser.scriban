@@ -17,4 +17,20 @@ internal class {{ struct_name }}Parser : ChrononuensisParser
         ]);
         return ({{~ for part in parts ~}}(int)results[{{ for.index }}]{{~ if !for.last ~}}, {{ end ~}}{{ end ~}});
     }
+
+    public bool TryParse(string? input, string format, IFormatProvider? provider, 
+    {{- for part in parts }} out int? {{ part.name }}{{~ if !for.last ~}},{{ end ~}}{{ end -}}
+    )
+    {
+        object[]? results = null;
+        var result = !string.IsNullOrEmpty(input)
+                        && TryParseInternal(input, format, provider, [
+                            {{- for part in parts ~}}typeof(I{{ part.name }}Token){{~ if !for.last ~}}, {{ end ~}}{{ end -}}
+                            ], out results);
+
+        {{~ for part in parts ~}}
+        {{ part.name }} = result ? (int)results![{{ for.index }}] : null;
+        {{~ end ~}}
+        return result;
+    }
 }

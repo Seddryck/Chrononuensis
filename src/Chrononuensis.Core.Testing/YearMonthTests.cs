@@ -10,7 +10,7 @@ public class YearMonthTests
 {
     [Test]
     public void Parse_InputDefaultFormat_Equal()
-        => Assert.That(YearMonth.Parse("2021-01", "yyyy-MM"), Is.EqualTo(new YearMonth(2021,1)));
+        => Assert.That(YearMonth.Parse("2021-01", "yyyy-MM"), Is.EqualTo(new YearMonth(2021, 1)));
 
     private static IEnumerable<YearMonth> GetData()
     {
@@ -62,4 +62,32 @@ public class YearMonthTests
     [Test]
     public void CompareTo_SomethingElse_Compared()
         => Assert.That(new YearMonth(2021, 1).CompareTo(new YearMonth(2022, 3)), Is.EqualTo(-1));
+
+    [Test]
+    [TestCase("2025-01", true)]
+    [TestCase("2025-99", false)]
+    public void TryParse_SomeValue_Expected(string input, bool expected)
+    {
+        var result = YearMonth.TryParse(input, null, out var yearMonth);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(yearMonth, Is.EqualTo(new YearMonth(2025, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("2025-Jan", true)]
+    [TestCase("2025-Xyz", false)]
+    public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
+    {
+        var result = YearMonth.TryParse(input, "yyyy-MMM", null, out var yearMonth);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(yearMonth, Is.EqualTo(new YearMonth(2025, 1)));
+        });
+    }
 }

@@ -61,4 +61,32 @@ public class YearQuarterTests
     [Test]
     public void CompareTo_SomethingElse_Compared()
         => Assert.That(new YearQuarter(2021, 1).CompareTo(new YearQuarter(2022, 3)), Is.EqualTo(-1));
+
+    [Test]
+    [TestCase("2025-Q1", true)]
+    [TestCase("2025-H5", false)]
+    public void TryParse_SomeValue_Expected(string input, bool expected)
+    {
+        var result = YearQuarter.TryParse(input, null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearQuarter(2025, 1)));
+        });
+    }
+
+    [Test]
+    [TestCase("Q1-25", true)]
+    [TestCase("12-X", false)]
+    public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
+    {
+        var result = YearQuarter.TryParse(input, "'Q'q-yy", null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.EqualTo(expected));
+            if (expected)
+                Assert.That(value, Is.EqualTo(new YearQuarter(2025, 1)));
+        });
+    }
 }

@@ -16,9 +16,7 @@ public class StructGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         //if (!Debugger.IsAttached)
-        //{
         //    Debugger.Launch();
-        //}
 
         var yamlFiles = context.AdditionalTextsProvider
             .Where(file => file.Path.EndsWith(".yml"))

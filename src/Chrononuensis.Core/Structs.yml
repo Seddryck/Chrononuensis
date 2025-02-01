@@ -51,7 +51,7 @@
       max: 4
 
 - name: YearSemester
-  default: yyyy-'H's
+  default: yyyy-'H'S
   parts:
     - name: Year
       type: int
