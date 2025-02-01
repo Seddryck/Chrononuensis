@@ -31,9 +31,13 @@ public class TokenGenerator : IIncrementalGenerator
                         try
                         {
                             var tokens = ParseYaml(yamlContent!);
+
+                            var generatedCode = GenerateTokenMapper(tokens.ToArray());
+                            ctx.AddSource("TokenMapper.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+
                             foreach (var tokenDef in tokens)
                             {
-                                var generatedCode = GenerateIToken(tokenDef.Group);
+                                generatedCode = GenerateIToken(tokenDef.Group);
                                 ctx.AddSource($"I{tokenDef.Group}Token.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
 
                                 foreach (var tokenMember in tokenDef.Members)
@@ -97,6 +101,24 @@ public class TokenGenerator : IIncrementalGenerator
         var output = scribanTemplate.Render(new
         {
             group,
+        });
+
+        return output;
+    }
+
+    internal string GenerateTokenMapper(TokenDefinition[] tokens)
+    {
+        string templateContent;
+        var assembly = typeof(TokenGenerator).Assembly;
+        var ns = typeof(TokenGenerator).Namespace;
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.TokenMapper.scriban"))
+        using (var reader = new StreamReader(stream))
+            templateContent = reader.ReadToEnd();
+
+        var scribanTemplate = Template.Parse(templateContent);
+        var output = scribanTemplate.Render(new
+        {
+            tokens,
         });
 
         return output;

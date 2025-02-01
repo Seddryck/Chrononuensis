@@ -1,0 +1,19 @@
+﻿{{ for token in tokens ~}}
+using Chrononuensis.Formats.Tokens.{{ token.group }};
+{{ end }}
+namespace Chrononuensis.Formats.Tokens;
+
+internal partial class TokenMapper
+{
+    partial void Initialize()
+    {
+        {{~ for token in tokens ~}}
+        {{~ for member in token.members ~}}
+        _tokenMap.Add("{{ member.pattern }}", {{ member.name }}{{ token.group }}Token.Instance);
+        {{~ end ~}}
+        {{~ if !for.last ~}}
+        
+        {{~ end ~}}
+        {{~ end ~}}
+    }
+}
