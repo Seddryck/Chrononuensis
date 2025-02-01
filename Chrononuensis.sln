@@ -5,9 +5,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chrononuensis", "src\Chrononuensis.Core\Chrononuensis.csproj", "{4B5AF43E-E41C-4064-822C-988082C56A2E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C923A152-4091-48BE-A984-686FF5E4ACCC}"
-	ProjectSection(SolutionItems) = preProject
-		conventional_commits_labels.yml = conventional_commits_labels.yml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{95E83BA6-B535-4D56-B06A-D00249A4EF00}"
 	ProjectSection(SolutionItems) = preProject
@@ -32,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Edit", "Edit", "{210C887C-6
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		.github\conventional_commits_labels.json = .github\conventional_commits_labels.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chrononuensis.Testing", "src\Chrononuensis.Core.Testing\Chrononuensis.Testing.csproj", "{344AE546-E4E4-45B9-95F0-6FCBE17B855F}"

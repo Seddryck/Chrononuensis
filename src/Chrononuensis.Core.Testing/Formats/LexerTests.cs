@@ -99,4 +99,8 @@ public class LexerTests
         Assert.That(format.ElementAt(2), Is.TypeOf<LiteralToken>());
         Assert.That(format.Last(), Is.TypeOf<DigitQuarterToken>());
     }
+
+    [Test]
+    public void Tokenize_emptyString_Throws()
+        => Assert.Throws<ArgumentException>(() => new Lexer().Tokenize(""));
 }
