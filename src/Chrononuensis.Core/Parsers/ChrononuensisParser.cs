@@ -46,6 +46,8 @@ public abstract class ChrononuensisParser : IParser
         foreach (var type in types)
         {
             var index = tokens.GetIndex(type);
+            if (index == -1)
+                throw new FormatException($"Token '{type.Name[1..^5].ToLower()}' not found in the format");
             results.Add(result.Value[index]);
         }
         return [.. results];

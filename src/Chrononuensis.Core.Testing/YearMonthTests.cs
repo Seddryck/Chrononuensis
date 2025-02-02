@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -133,5 +134,12 @@ public class YearMonthTests
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearMonth(2025, 1)));
         });
+    }
+
+    [Test]
+    public void Parse_InvalidFormat_ValuesNotSpecified()
+    {
+        var ex = Assert.Throws<FormatException>(() => YearMonth.Parse("Q1.25", "Qq.yy", CultureInfo.InvariantCulture.DateTimeFormat));
+        Assert.That(ex.Message, Is.EqualTo("Token 'month' not found in the format"));
     }
 }
