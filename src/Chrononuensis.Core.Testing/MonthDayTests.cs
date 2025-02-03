@@ -8,6 +8,25 @@ using NUnit.Framework;
 namespace Chrononuensis.Testing;
 public class MonthDayTests
 {
+    [TestCase(1, 10)]
+    [TestCase(1, 31)]
+    [TestCase(2, 29)]
+    [TestCase(4, 30)]
+    public void Ctor_ValidValues_Expected(int month, int day)
+        => Assert.DoesNotThrow(() => new MonthDay(month, day));
+
+    [TestCase(1, 55, 31)]
+    [TestCase(1, 32, 31)]
+    [TestCase(2, 30, 29)]
+    [TestCase(4, 31, 30)]
+    public void Ctor_InvalidValues_Throws(int month, int day, int max)
+    {
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new MonthDay(month, day));
+        Assert.That(ex.ParamName, Is.EqualTo("Day"));
+        Assert.That(ex.Message, Does.StartWith($"When month is {month}"));
+        Assert.That(ex.Message, Does.Contain($"1 and {max}"));
+    }
+
     [Test]
     public void Parse_InputDefaultFormat_Equal()
         => Assert.That(MonthDay.Parse("Jan-01", "MMM-dd"), Is.EqualTo(new MonthDay(1, 1)));

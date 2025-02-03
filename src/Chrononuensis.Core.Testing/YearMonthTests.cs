@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Chrononuensis.Extensions;
 
 namespace Chrononuensis.Testing;
 public class YearMonthTests
@@ -141,5 +142,22 @@ public class YearMonthTests
     {
         var ex = Assert.Throws<FormatException>(() => YearMonth.Parse("Q1.25", "Qq.yy", CultureInfo.InvariantCulture.DateTimeFormat));
         Assert.That(ex.Message, Is.EqualTo("Token 'month' not found in the format"));
+    }
+
+    [TestCase("2025-01", 1, "2026-01")]
+    [TestCase("2025-01", 5, "2030-01")]
+    public void AddYear_SomeValue_Expected(string input, int value, string expected)
+    {
+        var result = YearMonth.Parse(input, null).AddYear(value);
+        Assert.That(result, Is.EqualTo(YearMonth.Parse(expected, null)));
+    }
+
+    [TestCase("2025-01", 5, "2025-06")]
+    [TestCase("2025-12", 4, "2026-04")]
+    [TestCase("2025-12", 14, "2027-02")]
+    public void AddMonth_SomeValue_Expected(string input, int value, string expected)
+    {
+        var result = YearMonth.Parse(input, null).AddMonth(value);
+        Assert.That(result, Is.EqualTo(YearMonth.Parse(expected, null)));
     }
 }

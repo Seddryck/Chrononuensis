@@ -8,9 +8,26 @@ using NUnit.Framework;
 namespace Chrononuensis.Testing;
 public class YearDayTests
 {
+    [TestCase(2004, 10)]
+    [TestCase(2004, 365)]
+    [TestCase(2004, 366)]
+    [TestCase(2005, 365)]
+    public void Ctor_ValidValues_Expected(int year, int day)
+        => Assert.DoesNotThrow(() => new YearDay(year, day));
+
+    [TestCase(2004, 367, 366)]
+    [TestCase(2005, 366, 365)]
+    public void Ctor_InvalidValues_Throws(int year, int day, int max)
+    {
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new YearDay(year, day));
+        Assert.That(ex.ParamName, Is.EqualTo("DayOfYear"));
+        Assert.That(ex.Message, Does.StartWith($"When year is {year}"));
+        Assert.That(ex.Message, Does.Contain($"1 and {max}"));
+    }
+
     [Test]
     public void Parse_InputDefaultFormat_Equal()
-        => Assert.That(YearDay.Parse("2021-116", "yyyy-jjj"), Is.EqualTo(new YearDay(2021,116)));
+        => Assert.That(YearDay.Parse("2021-116", "yyyy-jjj"), Is.EqualTo(new YearDay(2021, 116)));
 
     private static IEnumerable<YearDay> GetData()
     {

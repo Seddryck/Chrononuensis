@@ -30,7 +30,7 @@ public class SymbolCharsGenerator : IIncrementalGenerator
         string templateContent;
         var assembly = typeof(StructGenerator).Assembly;
         var ns = typeof(StructGenerator).Namespace;
-        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.SymbolChars.scriban"))
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.SymbolChars.scriban-cs"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 

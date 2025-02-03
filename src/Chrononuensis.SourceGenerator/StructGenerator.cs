@@ -22,7 +22,6 @@ public class StructGenerator : IIncrementalGenerator
             .Where(file => file.Path.EndsWith(".yml"))
             .Collect();
 
-
         context.RegisterSourceOutput(yamlFiles, (ctx, additionalTexts) =>
         {
             foreach (var textFile in additionalTexts)
@@ -35,13 +34,56 @@ public class StructGenerator : IIncrementalGenerator
                         try
                         {
                             var structs = ParseYaml(yamlContent!);
+                            
                             foreach (var structDefinition in structs)
                             {
-                                var generatedCode = GenerateStruct(structDefinition);
-                                ctx.AddSource($"{structDefinition.Name}.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+                                try
+                                {
+                                    var generatedCode = GenerateStruct(structDefinition);
+                                    ctx.AddSource($"{structDefinition.Name}.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+                                }
+                                catch (Exception ex)
+                                {
+                                    ctx.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
+                                        "CHRONO002",
+                                        "Source Generator Error",
+                                        $"Error generating {structDefinition.Name}.g.cs: {ex.Message}",
+                                        "ChronoYamlGenerator",
+                                        DiagnosticSeverity.Error,
+                                        true), Location.None));
+                                }
 
-                                generatedCode = GenerateParser(structDefinition);
-                                ctx.AddSource($"{structDefinition.Name}Parser.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+                                try
+                                {
+                                    var generatedCode = GenerateExtension(structDefinition);
+                                    ctx.AddSource($"{structDefinition.Name}Extension.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+                                }
+                                catch (Exception ex)
+                                {
+                                    ctx.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
+                                        "CHRONO003",
+                                        "Source Generator Error",
+                                        $"Error generating {structDefinition.Name}Extension.g.cs: {ex.Message}",
+                                        "ChronoYamlGenerator",
+                                        DiagnosticSeverity.Error,
+                                        true), Location.None));
+                                }
+
+                                try
+                                {
+                                    var generatedCode = GenerateParser(structDefinition);
+                                    ctx.AddSource($"{structDefinition.Name}Parser.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+                                }
+                                catch (Exception ex)
+                                {
+                                    ctx.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
+                                        "CHRONO004",
+                                        "Source Generator Error",
+                                        $"Error generating {structDefinition.Name}Parser.g.cs: {ex.Message}",
+                                        "ChronoYamlGenerator",
+                                        DiagnosticSeverity.Error,
+                                        true), Location.None));
+                                }
                             }
                         }
                         catch (Exception ex)
@@ -71,7 +113,7 @@ public class StructGenerator : IIncrementalGenerator
         string templateContent;
         var assembly = typeof(StructGenerator).Assembly;
         var ns = typeof(StructGenerator).Namespace;
-        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Struct.scriban"))
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Struct.scriban-cs"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 
@@ -84,7 +126,8 @@ public class StructGenerator : IIncrementalGenerator
                 name = p.Name,
                 type = p.Type,
                 min = p.Min,
-                max = p.Max
+                max = p.Max,
+                max_f = p.MaxF
             }).ToList()
         });
 
@@ -96,7 +139,7 @@ public class StructGenerator : IIncrementalGenerator
         string templateContent;
         var assembly = typeof(StructGenerator).Assembly;
         var ns = typeof(StructGenerator).Namespace;
-        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Parser.scriban"))
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Parser.scriban-cs"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 
@@ -110,7 +153,35 @@ public class StructGenerator : IIncrementalGenerator
                 name = p.Name,
                 type = p.Type,
                 min = p.Min,
-                max = p.Max
+                max = p.Max,
+                maxF = p.MaxF
+            }).ToList()
+        });
+
+        return output;
+    }
+
+    internal static string GenerateExtension(StructDefinition structDefinition)
+    {
+        string templateContent;
+        var assembly = typeof(StructGenerator).Assembly;
+        var ns = typeof(StructGenerator).Namespace;
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Extension.scriban-cs"))
+        using (var reader = new StreamReader(stream))
+            templateContent = reader.ReadToEnd();
+
+        var scribanTemplate = Template.Parse(templateContent);
+        var output = scribanTemplate.Render(new
+        {
+            struct_name = structDefinition.Name,
+            @default = structDefinition.Default,
+            parts = structDefinition.Parts.Select(p => new
+            {
+                name = p.Name,
+                type = p.Type,
+                min = p.Min,
+                max = p.Max,
+                maxF = p.MaxF
             }).ToList()
         });
 

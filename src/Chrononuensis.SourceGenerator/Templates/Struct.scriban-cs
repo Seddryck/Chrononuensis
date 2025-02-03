@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Globalization;
 using Chrononuensis.Parsers;
 
 namespace Chrononuensis;
@@ -13,14 +14,16 @@ public partial record struct {{ struct_name }}
 )
     : IParsable<{{ struct_name }}>, IComparable<{{ struct_name }}>, IComparable, IEquatable<{{ struct_name }}>
 {
-    {{~ for part in parts ~}}
-    {{~ if part.min && part.max ~}}
-    public {{ part.type }} {{ part.name }} { get; }
-        = ({{ part.name }} >= {{ part.min }} && {{ part.name }} <= {{ part.max }})
+    {{- for part in parts }}
+    {{- if part.min && (part.max || part.max_f) }}
+    public {{ part.type }} {{ part.name }} { get; init; }
+        = ({{ part.name }} >= {{ part.min }} && {{ part.name }} <= {{ part.max ?? part.max_f }})
             ? {{ part.name }}
-            : throw new ArgumentOutOfRangeException(nameof({{ part.name }}), "{{ part.name }} must be between {{ part.min }} and {{ part.max }}.");
-    {{~ end ~}}
-    {{~ end ~}}
+            : throw new ArgumentOutOfRangeException(nameof({{ part.name }}), $"
+                {{- if part.max_f }}When {{parts[0].name | string.downcase }} is { {{parts[0].name}} }, {{ end -}}
+                {{- part.name }} must be between {{ part.min }} and { {{ part.max ?? part.max_f }} }.");
+    {{- end }}
+    {{- end }}
 
     private static {{ struct_name }}Parser Parser { get; } = new();
 

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Globalization;
 using Chrononuensis.Parsers;
 
 namespace Chrononuensis;
@@ -11,10 +12,10 @@ public partial record struct YearMonth
 )
     : IParsable<YearMonth>, IComparable<YearMonth>, IComparable, IEquatable<YearMonth>
 {
-    public int Month { get; }
+    public int Month { get; init; }
         = (Month >= 1 && Month <= 12)
             ? Month
-            : throw new ArgumentOutOfRangeException(nameof(Month), "Month must be between 1 and 12.");
+            : throw new ArgumentOutOfRangeException(nameof(Month), $"Month must be between 1 and { 12 }.");
 
     private static YearMonthParser Parser { get; } = new();
 
