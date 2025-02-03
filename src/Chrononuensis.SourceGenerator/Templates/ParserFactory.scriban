@@ -9,7 +9,7 @@ internal partial class ParserFactory
     {
         {{~ for token in tokens ~}}
         {{~ for member in token.members ~}}
-        AddMapping(Tokens.{{ token.group }}.{{ member.name }}{{ token.group }}Token.Instance, {{ token.group }}Parser.{{ member.name }}.Cast<object>());
+        AddMapping(Tokens.{{ token.group }}.{{ member.name }}{{ token.group }}Token.Instance, Parsers.Internals.{{ token.group }}Parser.{{ member.name }}.Cast<object>());
         {{~ end ~}}
         {{~ if !for.last ~}}
 
