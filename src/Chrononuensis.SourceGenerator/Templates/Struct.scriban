@@ -6,9 +6,10 @@ namespace Chrononuensis;
 
 public partial record struct {{ struct_name }}
 (
-    {{~ for part in parts ~}}
-    {{ part.type }} {{ part.name }}{{~ if !for.last ~}},{{ end }}
-    {{~ end ~}}
+    {{- for part in parts }}
+    {{ if parts.size == 1 }}{{ parts[0].type }} Value{{ else }}{{ part.type }} {{ part.name }}{{ end }}
+    {{- if !for.last }},{{ end }}
+    {{- end }}
 )
     : IParsable<{{ struct_name }}>, IComparable<{{ struct_name }}>, IComparable, IEquatable<{{ struct_name }}>
 {
@@ -29,7 +30,13 @@ public partial record struct {{ struct_name }}
     public static {{ struct_name }} Parse(string input, string format, IFormatProvider? provider = null)
     {
         var result = Parser.Parse(input, format, provider);
-        return new {{ struct_name }}({{~ for part in parts ~}}result.{{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
+        return new {{ struct_name -}}
+        (
+        {{- for part in parts }}
+        {{- if parts.size == 1 }}result{{ else }}result.{{ part.name }}{{ end }}
+        {{- if !for.last ~}}, {{ end }}
+        {{- end -}}
+        );
     }
 
     public static {{ struct_name }} Parse(ReadOnlySpan<char> span, IFormatProvider? provider)
@@ -38,7 +45,13 @@ public partial record struct {{ struct_name }}
     public static {{ struct_name }} Parse(ReadOnlySpan<char> span, string format, IFormatProvider? provider = null)
     {
         var result = Parser.Parse(span, format, provider);
-        return new {{ struct_name }}({{~ for part in parts ~}}result.{{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
+        return new {{ struct_name -}}
+        (
+        {{- for part in parts }}
+        {{- if parts.size == 1 }}result{{ else }}result.{{ part.name }}{{ end }}
+        {{- if !for.last ~}}, {{ end }}
+        {{- end -}}
+        );
     }
 
     public static bool TryParse(string? s, IFormatProvider? provider, out {{ struct_name }} result)
@@ -66,7 +79,9 @@ public partial record struct {{ struct_name }}
     }
 
     public int CompareTo({{ struct_name }} other)
-        => {{ parts[0].name }} == other.{{ parts[0].name }} ? {{ parts[1].name }}.CompareTo(other.{{ parts[1].name }}) : {{ parts[0].name }}.CompareTo(other.{{ parts[0].name }});
+        {{ if parts.size == 1 }} => Value.CompareTo(other.Value);
+        {{- else }}=> {{ parts[0].name }} == other.{{ parts[0].name }} ? {{ parts[1].name }}.CompareTo(other.{{ parts[1].name }}) : {{ parts[0].name }}.CompareTo(other.{{ parts[0].name }});
+        {{- end }}
 
     public int CompareTo(object? obj)
         => obj switch

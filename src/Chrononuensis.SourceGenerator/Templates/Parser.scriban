@@ -8,9 +8,10 @@ public class {{ struct_name }}Parser : ChrononuensisParser
 {
     public static string DefaultPattern { get; } = "{{ default }}";
 
-    public (
-    {{- for part in parts ~}}int {{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end -}}
-    ) Parse(string input, string format, IFormatProvider? provider)
+    public
+    {{- if parts.size == 1 }} int
+    {{- else }} ({{ for part in parts }}int {{ part.name }}{{ if !for.last }}, {{ end }}{{ end }})
+    {{- end }} Parse(string input, string format, IFormatProvider? provider)
     {
         var results = ParseInternal(input, format, provider, [
         {{- for part in parts ~}}typeof(I{{ part.name }}Token){{~ if !for.last ~}}, {{ end ~}}{{ end -}}
@@ -18,9 +19,10 @@ public class {{ struct_name }}Parser : ChrononuensisParser
         return ({{~ for part in parts ~}}(int)results[{{ for.index }}]{{~ if !for.last ~}}, {{ end ~}}{{ end ~}});
     }
 
-    public (
-    {{- for part in parts ~}}int {{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end -}}
-    ) Parse(ReadOnlySpan<char> input, string format, IFormatProvider? provider)
+    public
+    {{- if parts.size == 1 }} int
+    {{- else }} ({{ for part in parts }}int {{ part.name }}{{ if !for.last }}, {{ end }}{{ end }})
+    {{- end }} Parse(ReadOnlySpan<char> input, string format, IFormatProvider? provider)
     {
         var results = ParseInternal(input, format, provider, [
         {{- for part in parts ~}}typeof(I{{ part.name }}Token){{~ if !for.last ~}}, {{ end ~}}{{ end -}}
