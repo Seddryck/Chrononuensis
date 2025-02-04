@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +8,6 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Chrononuensis;
 public partial record struct MonthDay
 {
-    
     private static readonly int[] longMonths = [1, 3, 5, 7, 8, 10, 12];
 
     private static int GetDaysInMonth(int month)
