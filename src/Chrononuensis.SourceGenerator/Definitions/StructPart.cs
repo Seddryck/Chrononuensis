@@ -10,4 +10,5 @@ internal class StructPart
     public int? Min { get; set; }
     public int? Max { get; set; }
     public string? MaxF { get; set; }
+    public int? Modulo { get; set; }
 }

@@ -15,6 +15,9 @@ internal class Primitives
         Parser.Digit.Repeat(1).Select(chars => int.Parse(new string(chars.ToArray())))
             .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
 
+    public static Parser<char, int> OneDigitThenZeroParser(Func<int, int> func) =>
+        Parser.Digit.Then(Parser.Char('0'), (digit, zero) => func(int.Parse(digit.ToString() + zero)));
+
     public static Parser<char, int> OneOrTwoDigitParser(int min, int max) =>
         Parser.Digit.Then(Parser.Try(Parser.Digit).Optional(),
         (first, second) => int.Parse(second.HasValue
@@ -50,6 +53,9 @@ internal class Primitives
     public static Parser<char, int> ThreeDigitParser(int min, int max) =>
         Parser.Digit.Repeat(3).Select(chars => int.Parse(new string(chars.ToArray())))
             .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
+
+    public static Parser<char, int> ThreeDigitThenZeroParser() =>
+        Parser.Digit.Repeat(3).Then(Parser.Char('0'), (digits, zero) => int.Parse(new string(digits.ToArray()) + zero));
 
     public static Parser<char, int> FourDigitParser() =>
         Parser.Digit.Repeat(4).Select(chars => int.Parse(new string(chars.ToArray())));
