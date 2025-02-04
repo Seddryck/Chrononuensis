@@ -65,3 +65,10 @@
   parts:
     - name: Year
       type: int
+      
+- name: Decade
+  default: tttt's'
+  parts:
+    - name: Decade
+      type: int
+      modulo: 10

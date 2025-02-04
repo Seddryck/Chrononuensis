@@ -127,7 +127,8 @@ public class StructGenerator : IIncrementalGenerator
                 type = p.Type,
                 min = p.Min,
                 max = p.Max,
-                max_f = p.MaxF
+                max_f = p.MaxF,
+                modulo = p.Modulo
             }).ToList()
         });
 
@@ -154,7 +155,8 @@ public class StructGenerator : IIncrementalGenerator
                 type = p.Type,
                 min = p.Min,
                 max = p.Max,
-                maxF = p.MaxF
+                max_f = p.MaxF,
+                modulo = p.Modulo
             }).ToList()
         });
 
@@ -181,7 +183,8 @@ public class StructGenerator : IIncrementalGenerator
                 type = p.Type,
                 min = p.Min,
                 max = p.Max,
-                maxF = p.MaxF
+                max_f = p.MaxF,
+                modulo = p.Modulo
             }).ToList()
         });
 

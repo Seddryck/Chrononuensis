@@ -22,6 +22,11 @@ public partial record struct {{ struct_name }}
             : throw new ArgumentOutOfRangeException(nameof({{ part.name }}), $"
                 {{- if part.max_f }}When {{parts[0].name | string.downcase }} is { {{parts[0].name}} }, {{ end -}}
                 {{- part.name }} must be between {{ part.min }} and { {{ part.max ?? part.max_f }} }.");
+    {{- else if part.modulo }}
+    public {{ part.type }} Value { get; init; }
+        = (Value % {{ part.modulo }} == 0)
+            ? Value
+            : throw new ArgumentOutOfRangeException(nameof({{ part.name }}), $"Invalid {{ struct_name | string.downcase }}: The value must be a multiple of {{ part.modulo }}.");
     {{- end }}
     {{- end }}
 

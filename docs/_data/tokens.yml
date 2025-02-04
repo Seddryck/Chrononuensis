@@ -1,4 +1,11 @@
-﻿- group: Year
+﻿- group: Decade
+  members:
+    - name: DigitOn2
+      pattern: tt
+    - name: DigitOn4
+      pattern: tttt
+
+- group: Year
   members:
     - name: DigitOn2
       pattern: yy

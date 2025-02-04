@@ -23,7 +23,7 @@ public static partial class {{struct_name}}Extension
         => value with { {{ part.name }} = value.{{ part.name }} + {{ part.name | string.downcase }} };
     {{- else }}
     public static {{ struct_name }} Add{{ part.name }}(this {{ struct_name }} value, int {{ part.name | string.downcase }})
-        => value with { Value = value.Value + {{ part.name | string.downcase }} };
+        => value with { Value = value.Value + {{ part.name | string.downcase }}{{ if part.modulo }} * {{ part.modulo }}{{ end }} };
     {{- end }}
     {{- end }}
     {{- end }}
