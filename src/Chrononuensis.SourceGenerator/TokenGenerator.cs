@@ -81,7 +81,7 @@ public class TokenGenerator : IIncrementalGenerator
         string templateContent;
         var assembly = typeof(TokenGenerator).Assembly;
         var ns = typeof(TokenGenerator).Namespace;
-        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Token.scriban"))
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Token.scriban-cs"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 
@@ -100,7 +100,7 @@ public class TokenGenerator : IIncrementalGenerator
         string templateContent;
         var assembly = typeof(TokenGenerator).Assembly;
         var ns = typeof(TokenGenerator).Namespace;
-        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.IToken.scriban"))
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.IToken.scriban-cs"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 
@@ -118,7 +118,7 @@ public class TokenGenerator : IIncrementalGenerator
         string templateContent;
         var assembly = typeof(TokenGenerator).Assembly;
         var ns = typeof(TokenGenerator).Namespace;
-        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.TokenMapper.scriban"))
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.TokenMapper.scriban-cs"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 
@@ -136,7 +136,7 @@ public class TokenGenerator : IIncrementalGenerator
         string templateContent;
         var assembly = typeof(TokenGenerator).Assembly;
         var ns = typeof(TokenGenerator).Namespace;
-        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.ParserFactory.scriban"))
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.ParserFactory.scriban-cs"))
         using (var reader = new StreamReader(stream))
             templateContent = reader.ReadToEnd();
 

@@ -9,4 +9,5 @@ internal class StructPart
     public string Type { get; set; } = string.Empty;
     public int? Min { get; set; }
     public int? Max { get; set; }
+    public string? MaxF { get; set; }
 }

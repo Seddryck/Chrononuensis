@@ -8,6 +8,22 @@ using NUnit.Framework;
 namespace Chrononuensis.Testing;
 public class YearWeekTests
 {
+    [TestCase(2004, 12)]
+    [TestCase(2004, 53)]
+    [TestCase(2005, 52)]
+    public void Ctor_ValidValues_Expected(int year, int week)
+        => Assert.DoesNotThrow(() => new YearWeek(year, week));
+
+    [TestCase(2004, 54, 53)]
+    [TestCase(2005, 53, 52)]
+    public void Ctor_InvalidValues_Throws(int year, int week, int max)
+    {
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new YearWeek(year, week));
+        Assert.That(ex.ParamName, Is.EqualTo("Week"));
+        Assert.That(ex.Message, Does.StartWith($"When year is {year}"));
+        Assert.That(ex.Message, Does.Contain($"1 and {max}"));
+    }
+
     [Test]
     public void Parse_InputDefaultFormat_Equal()
         => Assert.That(YearWeek.Parse("2021-W16", "yyyy-'W'ww"), Is.EqualTo(new YearWeek(2021, 16)));

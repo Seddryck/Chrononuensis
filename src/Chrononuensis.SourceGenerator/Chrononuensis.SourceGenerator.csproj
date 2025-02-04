@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <IncludeBuildOutput>false</IncludeBuildOutput>
@@ -28,6 +28,17 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Templates\*.scriban" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\Extension.scriban-cs" />
+    <EmbeddedResource Include="Templates\IToken.scriban-cs" />
+    <EmbeddedResource Include="Templates\Parser.scriban-cs" />
+    <EmbeddedResource Include="Templates\ParserFactory.scriban-cs" />
+    <EmbeddedResource Include="Templates\Struct.scriban-cs" />
+    <EmbeddedResource Include="Templates\SymbolChars.scriban-cs" />
+    <EmbeddedResource Include="Templates\Token.scriban-cs" />
+    <EmbeddedResource Include="Templates\TokenMapper.scriban-cs" />
   </ItemGroup>
 
 </Project>
