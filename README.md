@@ -2,13 +2,13 @@
 
 ![Logo](https://raw.githubusercontent.com/Seddryck/Chrononuensis/main/assets/chrononuensis-icon-128.png)
 
-Transform your structured YAML, JSON, XML, CSV or FrontMatter data into beautiful, fully-customized HTML pages or plain text in seconds with Chrononuensis. This command-line tool seamlessly generates renders from data files using your preferred templates through Scriban, Handlebars, DotLiquid, Fluid, StringTemplate or SmartFormat. Whether you're building static sites, documentation, or reporting tools, Chrononuensis makes it easy to turn raw data into polished, web-ready content.
+Chrononuensis is a library for parsing complex time periods like year-month, year-quarter, month-week, and year-week. Effortlessly decode and validate non-standard formats, handle fiscal calendars, ordinal days, and custom cycles. Lightweight, flexible, and precise, it structures time data with ease.
 
 [About][] | [Installing][] | [Quickstart][]
 
 [About]: #about (About)
 [Installing]: #installing (Installing)
-[Quickstart]: #quickstart (Quickstart)
+[Quickstart]: #quick-start (Quickstart)
 
 ## About
 
