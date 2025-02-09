@@ -37,10 +37,11 @@ internal partial class Lexer
         {
             var currentChar = inputSpan[i];
 
-            if (currentChar == '\'')
+            if (currentChar == '\'' || currentChar == '\"')
             {
+                var quoteChar = currentChar;
                 i++;
-                while (i < inputSpan.Length && inputSpan[i] != '\'')
+                while (i < inputSpan.Length && inputSpan[i] != quoteChar)
                     tokens.Add(new LiteralToken(inputSpan[i++]));
             }
             else if (SymbolChars.Contains(currentChar))

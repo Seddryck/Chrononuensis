@@ -91,6 +91,7 @@ public class LexerTests
     }
 
     [TestCase("yyyy'-Q'q")]
+    [TestCase("yyyy\"-Q\"q")]
     public void Tokenize_WithFourDistinctTokens_ReturnsTokens(string input)
     {
         var format = new Lexer().Tokenize(input);
@@ -98,6 +99,18 @@ public class LexerTests
         Assert.That(format.First(), Is.TypeOf<DigitOn4YearToken>());
         Assert.That(format.ElementAt(1), Is.TypeOf<LiteralToken>());
         Assert.That(format.ElementAt(2), Is.TypeOf<LiteralToken>());
+        Assert.That(format.Last(), Is.TypeOf<DigitQuarterToken>());
+    }
+
+    [TestCase("yyyy'\"'q", '\"')]
+    [TestCase("yyyy\"'\"q", '\'')]
+    public void Tokenize_WithQuoteToken_ReturnsTokens(string input, char expected)
+    {
+        var format = new Lexer().Tokenize(input);
+        Assert.That(format.Count(), Is.EqualTo(3));
+        Assert.That(format.First(), Is.TypeOf<DigitOn4YearToken>());
+        Assert.That(format.ElementAt(1), Is.TypeOf<LiteralToken>());
+        Assert.That(((LiteralToken)format.ElementAt(1)).Value, Is.EqualTo(expected));
         Assert.That(format.Last(), Is.TypeOf<DigitQuarterToken>());
     }
 
