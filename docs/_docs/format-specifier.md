@@ -9,7 +9,7 @@ Chrononuensis supports various **tokens** that allow parsing date and time compo
 
 By default, a character displayed in the format is interpreted as a format specifier unless it is not part of the list of format specifiers. This allows for intuitive formats such as `yyyy-MM`, which are easily readable.
 
-If a character is part of the format specifiers but you want to use it as a literal, you should escape it using single quotes. For example, in `'year:'yyyy`, the first `y` in *year* is treated as a literal since it is enclosed in quotes.
+If a character is part of the format specifiers but needs to be treated as a literal, enclose it in either single `'` or double quotes `"`. For example, in `'year:'yyyy`, the  `y` in *year* is interpreted as a literal since it is enclosed in quotes. If your format includes a single quote character, enclose the entire string in double quotes, and vice versa, to avoid ambiguity.
 
 For complex format specifiers, such as [Roman numerals](docs/roman-numeral), enclose the format specifiers in curly braces and separate different parts using colons (`:`).
 
