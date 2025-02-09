@@ -47,7 +47,7 @@ public class TokenGenerator : IIncrementalGenerator
                                 generatedCode = GenerateIToken(tokenDef.Group);
                                 ctx.AddSource($"I{tokenDef.Group}Token.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
 
-                                foreach (var tokenMember in tokenDef.Members)
+                                foreach (var tokenMember in tokenDef.Members.Distinct(new TokenMemberComparer()))
                                 {
                                     generatedCode = GenerateToken(tokenDef.Group, tokenMember);
                                     ctx.AddSource($"{tokenMember.Name}{tokenDef.Group}Token.g.cs", SourceText.From(generatedCode, Encoding.UTF8));

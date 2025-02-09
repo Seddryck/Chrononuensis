@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Chrononuensis.Formats;
 using Chrononuensis.Formats.Tokens;
+using Chrononuensis.Formats.Tokens.Day;
 using Chrononuensis.Formats.Tokens.DayOfYear;
 using Chrononuensis.Formats.Tokens.Week;
 using Chrononuensis.Formats.Tokens.Month;
@@ -103,4 +104,30 @@ public class LexerTests
     [Test]
     public void Tokenize_emptyString_Throws()
         => Assert.Throws<ArgumentException>(() => new Lexer().Tokenize(""));
+
+    [TestCase("{yyyy}-{MM}")]
+    [TestCase("yyyy'-'{MM}")]
+    public void Tokenize_WithCurlyBrace_ReturnsTokens(string input)
+    {
+        var format = new Lexer().Tokenize(input);
+        Assert.That(format.Count(), Is.EqualTo(3));
+        Assert.That(format.First(), Is.TypeOf<DigitOn4YearToken>());
+        Assert.That(format.ElementAt(1), Is.TypeOf<LiteralToken>());
+        Assert.That(format.Last(), Is.TypeOf<PaddedDigitMonthToken>());
+    }
+
+    [TestCase("{d:RN}-{MM}", typeof(RomanNumeralDayToken), typeof(PaddedDigitMonthToken))]
+    [TestCase("{dd:RN}-{MM}", typeof(RomanNumeralDayToken), typeof(PaddedDigitMonthToken))]
+    [TestCase("{yy:RN}-{MM}", typeof(RomanNumeralShortYearToken), typeof(PaddedDigitMonthToken))]
+    [TestCase("{yyyy:RN}-{MM}", typeof(RomanNumeralYearToken), typeof(PaddedDigitMonthToken))]
+    [TestCase("yyyy'-'{M:RN}", typeof(DigitOn4YearToken), typeof(RomanNumeralMonthToken))]
+    [TestCase("yyyy'-'{MM:RN}", typeof(DigitOn4YearToken), typeof(RomanNumeralMonthToken))]
+    public void Tokenize_WithCurlyBraceAndRomanNumeral_ReturnsTokens(string input, Type year, Type month)
+    {
+        var format = new Lexer().Tokenize(input);
+        Assert.That(format.Count(), Is.EqualTo(3));
+        Assert.That(format.First(), Is.TypeOf(year));
+        Assert.That(format.ElementAt(1), Is.TypeOf<LiteralToken>());
+        Assert.That(format.Last(), Is.TypeOf(month));
+    }
 }

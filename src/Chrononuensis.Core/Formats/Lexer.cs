@@ -33,7 +33,6 @@ internal partial class Lexer
             }
         }
 
-
         while (i < inputSpan.Length)
         {
             var currentChar = inputSpan[i];
@@ -52,6 +51,16 @@ internal partial class Lexer
                     i++;
                 }
                 i--;
+                appendToken(token);
+            }
+            else if (currentChar == '{')
+            {
+                i++;
+                while (i < inputSpan.Length && inputSpan[i] != '}')
+                {
+                    token[j++] = inputSpan[i];
+                    i++;
+                }
                 appendToken(token);
             }
             else
