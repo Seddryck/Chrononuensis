@@ -22,6 +22,9 @@ public class MonthParserTests
         .Where(m => !string.IsNullOrEmpty(m))
         .ToArray();
 
+    private static string[] RomanNumeralMonthToken
+        => ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+
     [TestCaseSource(nameof(DigitMonthToken))]
     public void Parse_DigitMonthToken_Valid(string value)
         => Assert.That(MonthParser.Digit.Parse(value).Success, Is.True);
@@ -71,5 +74,17 @@ public class MonthParserTests
     {
         Assert.That(MonthParser.Label.Parse(value).Success, Is.False);
         Assert.That(MonthParser.Label.Parse(value).Error, Is.Not.Null);
+    }
+
+    [TestCaseSource(nameof(RomanNumeralMonthToken))]
+    public void Parse_RomanNumeralMonthToken_Valid(string value)
+        => Assert.That(MonthParser.RomanNumeral.Parse(value).Success, Is.True);
+
+    [TestCase("XIII")]
+    [TestCase("XX")]
+    public void Parse_RomanNumeralMonthToken_Invalid(string value)
+    {
+        Assert.That(MonthParser.RomanNumeral.Parse(value).Success, Is.False);
+        Assert.That(MonthParser.RomanNumeral.Parse(value).Error, Is.Not.Null);
     }
 }
