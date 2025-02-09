@@ -11,6 +11,10 @@
       pattern: yy
     - name: DigitOn4
       pattern: yyyy
+    - name: RomanNumeralShort
+      pattern: yy:RN
+    - name: RomanNumeral
+      pattern: yyyy:RN
 
 - group: Semester
   members:
@@ -32,6 +36,10 @@
       pattern: MMM
     - name: Label
       pattern: MMMM
+    - name: RomanNumeral
+      pattern: M:RN
+    - name: RomanNumeral
+      pattern: MM:RN
 
 - group: Week
   members:
@@ -53,3 +61,7 @@
       pattern: d
     - name: PaddedDigit
       pattern: dd
+    - name: RomanNumeral
+      pattern: d:RN
+    - name: RomanNumeral
+      pattern: dd:RN
