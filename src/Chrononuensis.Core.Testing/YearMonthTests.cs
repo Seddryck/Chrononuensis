@@ -94,14 +94,6 @@ public class YearMonthTests
     }
 
     [Test]
-    [TestCase("2025-01")]
-    public void Parse_SomeValueAsSpan_Expected(string input)
-    {
-        var value = YearMonth.Parse(input.AsSpan(), null);
-        Assert.That(value, Is.EqualTo(new YearMonth(2025, 1)));
-    }
-
-    [Test]
     [TestCase("Jan-25")]
     public void Parse_SomeValueFormatAsSpan_Expected(string input)
     {
@@ -159,5 +151,15 @@ public class YearMonthTests
     {
         var result = YearMonth.Parse(input, null).AddMonth(value);
         Assert.That(result, Is.EqualTo(YearMonth.Parse(expected, null)));
+    }
+
+    [Test]
+    [TestCase("25-02", "yy-MM")]
+    [TestCase("2025-II", "yyyy'-'{MM:RN}")]
+    [TestCase("MMXXV-Feb", "{yyyy:RN}-{MMM}")]
+    public void Parse_SomeValueFormatAsSpan_Expected(string input, string format)
+    {
+        var value = YearMonth.Parse(input.AsSpan(), format, null);
+        Assert.That(value, Is.EqualTo(new YearMonth(2025, 2)));
     }
 }

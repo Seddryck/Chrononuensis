@@ -14,5 +14,9 @@ internal class YearParser
     public static void NormalizeYear(Func<int, int> normalizeYear) => _normalizeYear = normalizeYear;
     public static Parser<char, int> DigitOn2 { get; } = Primitives.TwoDigitParser(_normalizeYear);
     public static Parser<char, int> DigitOn4 { get; } = Primitives.FourDigitParser();
+    public static Parser<char, int> RomanNumeral { get; }
+        = Primitives.RomanNumber;
+    public static Parser<char, int> RomanNumeralShort { get; }
+        = Primitives.RomanNumeral(0,99, _normalizeYear);
 }
 

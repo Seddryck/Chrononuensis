@@ -21,8 +21,7 @@ internal partial class ParserFactory
 
     protected void AddMapping(FormatToken token, Parser<char, object> parser)
     {
-        if (!_dict.TryAdd(token, parser))
-            throw new ArgumentException($"Token {token} already exists in the dictionary");
+        _dict.TryAdd(token, parser);
     }
 
     public Parser<char, object> Create(FormatToken token)

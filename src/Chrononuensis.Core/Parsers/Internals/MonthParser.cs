@@ -16,4 +16,7 @@ internal class MonthParser
         = Primitives.ListParser(CultureInfo.InvariantCulture.DateTimeFormat.AbbreviatedMonthNames);
     public static Parser<char, int> Label { get; }
         = Primitives.ListParser(CultureInfo.InvariantCulture.DateTimeFormat.MonthNames);
+
+    public static Parser<char, int> RomanNumeral { get; }
+        = Primitives.RomanNumeral(1, 12);
 }

@@ -44,4 +44,12 @@ public class YearParserTests
     [TestCase("99", 1999)]
     public void Parse_TwoDigit_CorrectValue(string value, int expected)
         => Assert.That(YearParser.DigitOn2.Parse(value).Value, Is.EqualTo(expected));
+
+    [TestCase("MCMLXXVIII", 1978)]
+    public void Parse_RomanNumeral_Valid(string value, int expected)
+        => Assert.That(YearParser.RomanNumeral.Parse(value).Value, Is.EqualTo(expected));
+
+    [TestCase("LXXVIII", 1978)]
+    public void Parse_RomanNumeralShort_Valid(string value, int expected)
+        => Assert.That(YearParser.RomanNumeralShort.Parse(value).Value, Is.EqualTo(expected));
 }

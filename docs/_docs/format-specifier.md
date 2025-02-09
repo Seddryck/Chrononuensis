@@ -1,9 +1,31 @@
 ---
-title: Format specifiers
+title: Format Specifiers
 tags: [quick-start]
 ---
 
-XChrononuensis supports various **tokens** that allow parsing date and time components from formatted strings. Below is a list of all supported tokens, grouped by category.
+Chrononuensis supports various **tokens** that allow parsing date and time components from formatted strings.
+
+## Specifying a Format
+
+By default, a character displayed in the format is interpreted as a format specifier unless it is not part of the list of format specifiers. This allows for intuitive formats such as `yyyy-MM`, which are easily readable.
+
+If a character is part of the format specifiers but you want to use it as a literal, you should escape it using single quotes. For example, in `'year:'yyyy`, the first `y` in *year* is treated as a literal since it is enclosed in quotes.
+
+For complex format specifiers, such as [Roman numerals](docs/roman-numeral), enclose the format specifiers in curly braces and separate different parts using colons (`:`).
+
+### **Examples:**
+
+The following formats specify a four-digit year and a two-digit, zero-padded month:
+
+| Format | Simple | Quoted | Curly |
+|--------|--------|--------|--------|
+| Standard numeric representation | `yyyy-MM` | `yyyy'-'MM` | `{yyyy}'-'{MM}` |
+| Roman numeral for month |  |  | `{yyyy}-{MM:RN}` |
+| Roman numeral for year |  |  | `{yyyy:RN}-{MM}` |
+
+## List of Tokens
+
+Below is a list of all supported tokens, grouped by category.
 
 {% for group in site.data.tokens %}
 

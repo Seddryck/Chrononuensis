@@ -11,4 +11,6 @@ internal class DayParser
 {
     public static Parser<char, int> Digit { get; } = Primitives.OneOrTwoDigitParser(1, 31);
     public static Parser<char, int> PaddedDigit { get; } = Primitives.TwoDigitParser(1, 31);
+    public static Parser<char, int> RomanNumeral { get; }
+        = Primitives.RomanNumeral(1, 31);
 }

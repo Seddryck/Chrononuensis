@@ -153,4 +153,15 @@ public class MonthDayTests
                 Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
         });
     }
+
+    [Test]
+    [TestCase("02-17", "MM-dd")]
+    [TestCase("17-02", "dd-MM")]
+    [TestCase("II-17", "{MM:RN}'-'d")]
+    [TestCase("Feb XVII", "{MMM} {dd:RN}")]
+    public void Parse_SomeValueFormatAsSpan_Expected(string input, string format)
+    {
+        var value = MonthDay.Parse(input.AsSpan(), format, null);
+        Assert.That(value, Is.EqualTo(new MonthDay(2, 17)));
+    }
 }

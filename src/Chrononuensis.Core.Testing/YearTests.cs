@@ -101,14 +101,6 @@ public class YearTests
     }
 
     [Test]
-    [TestCase("25")]
-    public void Parse_SomeValueFormatAsSpan_Expected(string input)
-    {
-        var value = Year.Parse(input.AsSpan(), "yy", null);
-        Assert.That(value, Is.EqualTo(new Year(2025)));
-    }
-
-    [Test]
     [TestCase("2025", true)]
     [TestCase("202X", false)]
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
@@ -134,5 +126,16 @@ public class YearTests
             if (expected)
                 Assert.That(value, Is.EqualTo(new Year(2025)));
         });
+    }
+
+    [Test]
+    [TestCase("25", "yy")]
+    [TestCase("2025", "yyyy")]
+    [TestCase("XXV", "{yy:RN}")]
+    [TestCase("MMXXV", "{yyyy:RN}")]
+    public void Parse_SomeValueFormatAsSpan_Expected(string input, string format)
+    {
+        var value = Year.Parse(input.AsSpan(), format, null);
+        Assert.That(value, Is.EqualTo(new Year(2025)));
     }
 }
