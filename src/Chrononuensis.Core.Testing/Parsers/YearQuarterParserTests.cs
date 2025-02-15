@@ -22,4 +22,26 @@ public class YearQuarterParserTests
             Assert.That(result.Quarter, Is.EqualTo(1));
         });
     }
+
+    [TestCase("1st quarter of 2025", "{q}['st'|'nd'|'rd'|'th']' quarter of '{yyyy}")]
+    [TestCase("2nd quarter of 2025", "{q}['st'|'nd'|'rd'|'th']' quarter of '{yyyy}")]
+    [TestCase("3rd quarter of 2025", "{q}['st'|'nd'|'rd'|'th']' quarter of '{yyyy}")]
+    [TestCase("4th quarter of 2025", "{q}['st'|'nd'|'rd'|'th']' quarter of '{yyyy}")]
+    public void Parse_InputFormatWithMutuallyExclusive_CorrectValue(string input, string format)
+    {
+        var parser = new YearQuarterParser();
+        var result = parser.Parse(input, format, null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Year, Is.EqualTo(2025));
+            Assert.That(result.Quarter, Is.GreaterThanOrEqualTo(1).And.LessThanOrEqualTo(4));
+        });
+    }
+
+    [TestCase("2kx quarter of 2025", "{q}['st'|'nd'|'rd'|'th']' quarter of '{yyyy}")]
+    public void Parse_InputFormatWithMutuallyExclusive_IncorrectValue(string input, string format)
+    {
+        var parser = new YearQuarterParser();
+        Assert.Throws<FormatException>(() => parser.Parse(input, format, null));
+    }
 }

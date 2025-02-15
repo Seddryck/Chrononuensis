@@ -76,6 +76,9 @@ internal partial class Primitives
     public static Parser<char, Unit> StringParser(string str)
         => Parser.String(str).IgnoreResult();
 
+    public static Parser<char, Unit> StringParsers(string[] values)
+        => Parser.OneOf(values.Select(Parser.String)).ThenReturn(Unit.Value);
+
     public static Parser<char, object[]> CombineParsers(params Parser<char, object>[] parsers)
     {
         if (parsers == null || parsers.Length == 0)
