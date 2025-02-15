@@ -33,6 +33,13 @@ public class PrimitivesTests
     }
 
     [Test]
+    public void Parse_LiteralStringsSameStart_ReturnsUnit()
+    {
+        var actual = Primitives.StringParsers(["er", "e"]).Parse("e");
+        Assert.That(actual.Value, Is.EqualTo(Unit.Value));
+    }
+
+    [Test]
     public void Parse_FourDigits_ReturnsInt()
     {
         var actual = Primitives.FourDigitParser().Parse("2021");
