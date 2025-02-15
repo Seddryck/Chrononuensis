@@ -1,4 +1,15 @@
-﻿- group: Decade
+﻿- group: Century
+  members:
+    - name: Digit
+      pattern: c
+    - name: PaddedDigit
+      pattern: cc
+    - name: RomanNumeral
+      pattern: c:RN
+    - name: RomanNumeral
+      pattern: cc:RN
+
+- group: Decade
   members:
     - name: DigitOn2
       pattern: tt

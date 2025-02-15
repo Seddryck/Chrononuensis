@@ -72,3 +72,9 @@
     - name: Decade
       type: int
       modulo: 10
+      
+- name: Century
+  default: c
+  parts:
+    - name: Century
+      type: int
