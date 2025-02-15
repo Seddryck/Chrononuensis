@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 namespace Chrononuensis.Formats.Tokens;
 internal class LiteralToken : FormatToken
 {
-    public char Value { get; }
+    public string Value { get; }
 
     public LiteralToken(char value)
+        => Value = value.ToString();
+
+    public LiteralToken(string value)
         => Value = value;
 }

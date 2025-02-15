@@ -12,6 +12,27 @@ namespace Chrononuensis.Testing.Parsers.Internals;
 public class PrimitivesTests
 {
     [Test]
+    public void Parse_LiteralChar_ReturnsUnit()
+    {
+        var actual = Primitives.CharParser('*').Parse("*");
+        Assert.That(actual.Value, Is.EqualTo(Unit.Value));
+    }
+
+    [Test]
+    public void Parse_LiteralString_ReturnsUnit()
+    {
+        var actual = Primitives.StringParser("st").Parse("st");
+        Assert.That(actual.Value, Is.EqualTo(Unit.Value));
+    }
+
+    [Test]
+    public void Parse_LiteralStrings_ReturnsUnit()
+    {
+        var actual = Primitives.StringParsers(["st", "nd", "rd", "th"]).Parse("rd");
+        Assert.That(actual.Value, Is.EqualTo(Unit.Value));
+    }
+
+    [Test]
     public void Parse_FourDigits_ReturnsInt()
     {
         var actual = Primitives.FourDigitParser().Parse("2021");

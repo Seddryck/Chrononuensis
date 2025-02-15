@@ -27,7 +27,10 @@ internal partial class ParserFactory
     public Parser<char, object> Create(FormatToken token)
     {
         if (token is LiteralToken literal)
-            return Primitives.CharParser(literal.Value).Cast<object>();
+            return Primitives.StringParser(literal.Value).Cast<object>();
+
+        if (token is MutuallyExclusiveToken exclusive)
+            return Primitives.StringParsers(exclusive.Values.Select(x => ((LiteralToken)x).Value).ToArray()).Cast<object>();
 
         if (!_dict.TryGetValue(token, out var parser))
             throw new ArgumentOutOfRangeException($"Token {token} not found in the dictionary");
