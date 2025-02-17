@@ -162,4 +162,46 @@ public class YearMonthTests
         var value = YearMonth.Parse(input.AsSpan(), format, null);
         Assert.That(value, Is.EqualTo(new YearMonth(2025, 2)));
     }
+
+    [Test]
+    [TestCase("2024-02", 29)]
+    [TestCase("2025-02", 28)]
+    [TestCase("2000-02", 29)]
+    [TestCase("1900-02", 28)]
+    [TestCase("1900-01", 31)]
+    public void Days_SomeValue_Expected(string input, int expected)
+    {
+        var value = YearMonth.Parse(input, null);
+        Assert.That(value.Days, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-07", "2024-07-01")]
+    public void FirstDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearMonth.Parse(input, null);
+        Assert.That(value.FirstDate, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-07", "2024-07-31")]
+    public void LastDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearMonth.Parse(input, null);
+        Assert.That(value.LastDate, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024-07", "2024-07-01")]
+    public void LowerBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearMonth.Parse(input, null);
+        Assert.That(value.LowerBound, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024-07", "2024-08-01")]
+    public void UpperBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearMonth.Parse(input, null);
+        Assert.That(value.UpperBound, Is.EqualTo(expected));
+    }
 }

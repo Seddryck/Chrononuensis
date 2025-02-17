@@ -133,4 +133,47 @@ public class YearSemesterTests
                 Assert.That(value, Is.EqualTo(new YearSemester(2025, 1)));
         });
     }
+
+    [Test]
+    [TestCase("2000-H1", 182)]  // Leap year
+    [TestCase("1900-H1", 181)]  // Non-leap year
+    [TestCase("2024-H1", 182)]  // Leap year
+    [TestCase("2025-H1", 181)]  // Non-leap year
+    [TestCase("2024-H2", 184)]  // Leap year (Jul-Dec: 31+31+30+31+30+31)
+    [TestCase("2025-H2", 184)]  // Non-leap year (Jul-Dec: 31+31+30+31+30+31)
+    public void Days_SomeValue_Expected(string input, int expected)
+    {
+        var value = YearSemester.Parse(input, null);
+        Assert.That(value.Days, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-H1", "2024-01-01")]
+    public void FirstDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearSemester.Parse(input, null);
+        Assert.That(value.FirstDate, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-H1", "2024-06-30")]
+    public void LastDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearSemester.Parse(input, null);
+        Assert.That(value.LastDate, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024-H1", "2024-01-01")]
+    public void LowerBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearSemester.Parse(input, null);
+        Assert.That(value.LowerBound, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024-H1", "2024-07-01")]
+    public void UpperBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearSemester.Parse(input, null);
+        Assert.That(value.UpperBound, Is.EqualTo(expected));
+    }
 }

@@ -138,4 +138,45 @@ public class YearTests
         var value = Year.Parse(input.AsSpan(), format, null);
         Assert.That(value, Is.EqualTo(new Year(2025)));
     }
+
+    [Test]
+    [TestCase("2024", 366)]
+    [TestCase("2025", 365)]
+    [TestCase("2000", 366)]
+    [TestCase("1900", 365)]
+    public void Days_SomeValue_Expected(string input, int expected)
+    {
+        var value = Year.Parse(input, null);
+        Assert.That(value.Days, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024", "2024-01-01")]
+    public void FirstDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = Year.Parse(input, null);
+        Assert.That(value.FirstDate, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024", "2024-12-31")]
+    public void LastDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = Year.Parse(input, null);
+        Assert.That(value.LastDate, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024", "2024-01-01")]
+    public void LowerBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = Year.Parse(input, null);
+        Assert.That(value.LowerBound, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024", "2025-01-01")]
+    public void UpperBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = Year.Parse(input, null);
+        Assert.That(value.UpperBound, Is.EqualTo(expected));
+    }
 }

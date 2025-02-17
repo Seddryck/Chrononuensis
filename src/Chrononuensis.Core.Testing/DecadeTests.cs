@@ -156,4 +156,43 @@ public class DecadeTests
         var result = Decade.Parse(input, null).AddDecade(value);
         Assert.That(result, Is.EqualTo(Decade.Parse(expected, null)));
     }
+
+    [Test]
+    [TestCase("2020s", 3653)]
+    [TestCase("2030s", 3652)]
+    public void Days_SomeValue_Expected(string input, int expected)
+    {
+        var value = Decade.Parse(input, null);
+        Assert.That(value.Days, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2020s", "2020-01-01")]
+    public void FirstDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = Decade.Parse(input, null);
+        Assert.That(value.FirstDate, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2020s", "2029-12-31")]
+    public void LastDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = Decade.Parse(input, null);
+        Assert.That(value.LastDate, Is.EqualTo(expected));
+    }
+
+    [TestCase("2020s", "2020-01-01")]
+    public void LowerBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = Decade.Parse(input, null);
+        Assert.That(value.LowerBound, Is.EqualTo(expected));
+    }
+
+    [TestCase("2020s", "2030-01-01")]
+    public void UpperBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = Decade.Parse(input, null);
+        Assert.That(value.UpperBound, Is.EqualTo(expected));
+    }
 }

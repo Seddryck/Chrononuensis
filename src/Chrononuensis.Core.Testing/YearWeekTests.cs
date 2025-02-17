@@ -150,4 +150,52 @@ public class YearWeekTests
                 Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
         });
     }
+
+    [Test]
+    [TestCase("2024-W52")]
+    [TestCase("2025-W01")]
+    [TestCase("2025-W52")]
+    [TestCase("2026-W53")]
+    [TestCase("2027-W01")]
+    public void Days_SomeValue_Expected(string input)
+    {
+        var value = YearWeek.Parse(input, null);
+        Assert.That(value.Days, Is.EqualTo(7));
+    }
+
+    [Test]
+    [TestCase("2025-W01", "2024-12-30")]
+    [TestCase("2026-W01", "2025-12-29")]
+    [TestCase("2027-W01", "2027-01-04")]
+    public void FirstDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearWeek.Parse(input, null);
+        Assert.That(value.FirstDate, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-W52", "2024-12-29")]
+    [TestCase("2025-W01", "2025-01-05")]
+    [TestCase("2025-W52", "2025-12-28")]
+    [TestCase("2026-W53", "2027-01-03")]
+    [TestCase("2027-W01", "2027-01-10")]
+    public void LastDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearWeek.Parse(input, null);
+        Assert.That(value.LastDate, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024-W52", "2024-12-23")]
+    public void LowerBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearWeek.Parse(input, null);
+        Assert.That(value.LowerBound, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024-W52", "2024-12-30")]
+    public void UpperBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearWeek.Parse(input, null);
+        Assert.That(value.UpperBound, Is.EqualTo(expected));
+    }
 }
