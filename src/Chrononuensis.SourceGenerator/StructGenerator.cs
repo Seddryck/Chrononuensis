@@ -34,7 +34,7 @@ public class StructGenerator : IIncrementalGenerator
                         try
                         {
                             var structs = ParseYaml(yamlContent!);
-                            
+
                             foreach (var structDefinition in structs)
                             {
                                 try
@@ -64,6 +64,25 @@ public class StructGenerator : IIncrementalGenerator
                                         "CHRONO003",
                                         "Source Generator Error",
                                         $"Error generating {structDefinition.Name}Extension.g.cs: {ex.Message}",
+                                        "ChronoYamlGenerator",
+                                        DiagnosticSeverity.Error,
+                                        true), Location.None));
+                                }
+
+                                try
+                                {
+                                    if (structDefinition.Period is not null)
+                                    {
+                                        var generatedCode = GeneratePeriod(structDefinition);
+                                        ctx.AddSource($"{structDefinition.Name}.Period.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    ctx.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
+                                        "CHRONO005",
+                                        "Source Generator Error",
+                                        $"Error generating {structDefinition.Name}.Period.g.cs: {ex.Message}",
                                         "ChronoYamlGenerator",
                                         DiagnosticSeverity.Error,
                                         true), Location.None));
@@ -186,6 +205,35 @@ public class StructGenerator : IIncrementalGenerator
                 max_f = p.MaxF,
                 modulo = p.Modulo
             }).ToList()
+        });
+
+        return output;
+    }
+
+    internal static string GeneratePeriod(StructDefinition structDefinition)
+    {
+        if (structDefinition.Period == null)
+            throw new ArgumentException("Period is required", nameof(structDefinition));
+
+        string templateContent;
+        var assembly = typeof(StructGenerator).Assembly;
+        var ns = typeof(StructGenerator).Namespace;
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Period.scriban-cs"))
+        using (var reader = new StreamReader(stream))
+            templateContent = reader.ReadToEnd();
+
+        var scribanTemplate = Template.Parse(templateContent);
+        var part = structDefinition.Parts?.ElementAtOrDefault(1);
+        var output = scribanTemplate.Render(new
+        {
+            struct_name = structDefinition.Name,
+            part = part?.Name,
+            max = part?.Max,
+            first = structDefinition.Period.First,
+            last = structDefinition.Period.Last,
+            year = structDefinition.Period.Year,
+            year_duration = structDefinition.Period.YearDuration,
+            intrayear = structDefinition.Period.Intrayear,
         });
 
         return output;

@@ -133,4 +133,47 @@ public class YearQuarterTests
                 Assert.That(value, Is.EqualTo(new YearQuarter(2025, 1)));
         });
     }
+
+    [Test]
+    [TestCase("2024-Q1", 91)]
+    [TestCase("2025-Q1", 90)]
+    [TestCase("2000-Q1", 91)]
+    [TestCase("1900-Q1", 90)]
+    public void Days_SomeValue_Expected(string input, int expected)
+    {
+        var value = YearQuarter.Parse(input, null);
+        Assert.That(value.Days, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-Q1", "2024-01-01")]
+    public void FirstDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearQuarter.Parse(input, null);
+        Assert.That(value.FirstDate, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-Q1", "2024-03-31")]
+    public void LastDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearQuarter.Parse(input, null);
+        Assert.That(value.LastDate, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-Q1", "2024-01-01")]
+    public void LowerBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearQuarter.Parse(input, null);
+        Assert.That(value.LowerBound, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-Q1", "2024-04-01")]
+    public void UpperBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearQuarter.Parse(input, null);
+        Assert.That(value.UpperBound, Is.EqualTo(expected));
+    }
 }

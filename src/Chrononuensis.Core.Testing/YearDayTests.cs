@@ -151,4 +151,42 @@ public class YearDayTests
                 Assert.That(value, Is.EqualTo(new YearDay(2025, 1)));
         });
     }
+
+    [Test]
+    [TestCase("2024-152", 1)]
+    public void Days_SomeValue_Expected(string input, int expected)
+    {
+        var value = YearDay.Parse(input, null);
+        Assert.That(value.Days, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-033", "2024-02-02")]
+    public void FirstDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearDay.Parse(input, null);
+        Assert.That(value.FirstDate, Is.EqualTo(expected));
+    }
+
+    [Test]
+    [TestCase("2024-033", "2024-02-02")]
+    public void LastDate_SomeValue_Expected(string input, DateOnly expected)
+    {
+        var value = YearDay.Parse(input, null);
+        Assert.That(value.LastDate, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024-033", "2024-02-02")]
+    public void LowerBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearDay.Parse(input, null);
+        Assert.That(value.LowerBound, Is.EqualTo(expected));
+    }
+
+    [TestCase("2024-033", "2024-02-03")]
+    public void UpperBound_SomeValue_Expected(string input, DateTime expected)
+    {
+        var value = YearDay.Parse(input, null);
+        Assert.That(value.UpperBound, Is.EqualTo(expected));
+    }
 }
