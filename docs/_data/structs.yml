@@ -19,6 +19,10 @@
       type: int
       min: 1
       maxF: 365 + Convert.ToInt32(DateTime.IsLeapYear(Year))
+  period:
+    first: new DateOnly(Year, 1, 1).AddDays(DayOfYear - 1)
+    last: FirstDate
+    duration: 1
 
 - name: YearWeek
   default: yyyy-'W'ww
@@ -29,6 +33,10 @@
       type: int
       min: 1
       maxF: ISOWeek.GetWeekOfYear(new DateTime(Year, 12, 28))
+  period:
+    first: DateOnly.FromDateTime(ISOWeek.GetYearStart(Year).AddDays(7 * (Week - 1)))
+    last: FirstDate.AddDays(6)
+    duration: 7
 
 - name: YearMonth
   default: yyyy-MM
@@ -39,6 +47,8 @@
       type: int
       min: 1
       max: 12
+  period:
+    intrayear: true
 
 - name: YearQuarter
   default: yyyy-'Q'q
@@ -49,6 +59,8 @@
       type: int
       min: 1
       max: 4
+  period:
+    intrayear: true
 
 - name: YearSemester
   default: yyyy-'H'S
@@ -59,22 +71,34 @@
       type: int
       min: 1
       max: 2
+  period:
+    intrayear: true
 
 - name: Year
   default: yyyy
   parts:
     - name: Year
       type: int
-      
+  period:
+    first: new DateOnly(Value, 1, 1)
+    year: Value
+    yearDuration: 1
+
 - name: Decade
   default: tttt's'
   parts:
     - name: Decade
       type: int
       modulo: 10
-      
+  period:
+    year: Value
+    yearDuration: 10
+
 - name: Century
   default: c
   parts:
     - name: Century
       type: int
+  period:
+    year: ((Value - 1) * 100) + 1
+    yearDuration: 100
