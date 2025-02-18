@@ -176,6 +176,14 @@ public class YearMonthTests
     }
 
     [Test]
+    [TestCase("1582-10", 31)]
+    public void Days_GregorianCalendar_Expected(string input, int expected)
+    {
+        var value = YearMonth.Parse(input, null);
+        Assert.That(value.Days, Is.EqualTo(expected));
+    }
+
+    [Test]
     [TestCase("2024-07", "2024-07-01")]
     public void FirstDate_SomeValue_Expected(string input, DateOnly expected)
     {
