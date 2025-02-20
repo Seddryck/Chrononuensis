@@ -228,12 +228,14 @@ public class StructGenerator : IIncrementalGenerator
         {
             struct_name = structDefinition.Name,
             part = part?.Name,
-            max = part?.Max,
+            by_year = structDefinition.Period.ByYear,
             first = structDefinition.Period.First,
             last = structDefinition.Period.Last,
-            year = structDefinition.Period.Year,
-            year_duration = structDefinition.Period.YearDuration,
-            intrayear = structDefinition.Period.Intrayear,
+            year = new
+            {
+                value = structDefinition.Period.Year,
+                duration = structDefinition.Period.YearDuration
+            }
         });
 
         return output;

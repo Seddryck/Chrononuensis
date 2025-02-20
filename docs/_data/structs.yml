@@ -22,7 +22,6 @@
   period:
     first: new DateOnly(Year, 1, 1).AddDays(DayOfYear - 1)
     last: FirstDate
-    duration: 1
 
 - name: YearWeek
   default: yyyy-'W'ww
@@ -36,7 +35,6 @@
   period:
     first: DateOnly.FromDateTime(ISOWeek.GetYearStart(Year).AddDays(7 * (Week - 1)))
     last: FirstDate.AddDays(6)
-    duration: 7
 
 - name: YearMonth
   default: yyyy-MM
@@ -48,7 +46,7 @@
       min: 1
       max: 12
   period:
-    intrayear: true
+    byYear: 12
 
 - name: YearQuarter
   default: yyyy-'Q'q
@@ -60,7 +58,7 @@
       min: 1
       max: 4
   period:
-    intrayear: true
+    byYear: 4
 
 - name: YearSemester
   default: yyyy-'H'S
@@ -72,7 +70,7 @@
       min: 1
       max: 2
   period:
-    intrayear: true
+    byYear: 2
 
 - name: Year
   default: yyyy

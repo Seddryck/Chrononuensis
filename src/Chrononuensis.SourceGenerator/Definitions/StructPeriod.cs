@@ -9,6 +9,5 @@ internal class StructPeriod
     public string? Last { get; set; }
     public string? Year { get; set; }
     public int? YearDuration { get; set; }
-    public bool? Intrayear { get; set; }
-    public int? Duration { get; set; }
+    public int? ByYear { get; set; }
 }
