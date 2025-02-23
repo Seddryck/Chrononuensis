@@ -18,7 +18,7 @@ public readonly struct CustomPeriod : IPeriod
         (FirstDate, LastDate) = (firstDate, lastDate);
     }
 
-    public int Days => FirstDate.DayNumber - LastDate.DayNumber + 1;
+    public int Days => LastDate.DayNumber - FirstDate.DayNumber + 1;
 
     public DateTime LowerBound => FirstDate.ToDateTime(TimeOnly.MinValue);
 
@@ -81,8 +81,22 @@ public readonly struct CustomPeriod : IPeriod
     public override string ToString() => $"Custom period: {FirstDate} - {LastDate}";
 
 
-    public bool Equals(IPeriod? other) => other is not null && this == other;
-    public override bool Equals(object? obj) => obj is IPeriod period && this == period;
+    public bool Equals(IPeriod? other)
+        => other switch
+        {
+            null => false,
+            CustomPeriod period => this == period,
+            _ => FirstDate == other.FirstDate && LastDate == other.LastDate
+        };
+
+    public override bool Equals(object? obj)
+        => obj switch
+        {
+            null => false,
+            CustomPeriod period => this == period,
+            IPeriod period => this == period,
+            _ => false
+        };
 
     public override int GetHashCode() => HashCode.Combine(FirstDate, LastDate);
 
@@ -99,6 +113,8 @@ public readonly struct CustomPeriod : IPeriod
     public static bool operator <=(IPeriod left, CustomPeriod right) => left.Precedes(right) || left.LastDate == right.FirstDate;
     public static bool operator >=(IPeriod left, CustomPeriod right) => left.Succeeds(right) || left.LastDate == right.FirstDate;
 
+    public static bool operator ==(CustomPeriod left, CustomPeriod right) => left.FirstDate == right.FirstDate && left.LastDate == right.LastDate;
+    public static bool operator !=(CustomPeriod left, CustomPeriod right) => !(left == right);
     public static bool operator ==(CustomPeriod left, IPeriod right) => left.FirstDate == right.FirstDate && left.LastDate == right.LastDate;
     public static bool operator !=(CustomPeriod left, IPeriod right) => !(left == right);
     public static bool operator ==(IPeriod left, CustomPeriod right) => left.FirstDate == right.FirstDate && left.LastDate == right.LastDate;
