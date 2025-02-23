@@ -14,7 +14,7 @@ public readonly struct CustomPeriod : IPeriod
     public CustomPeriod(DateOnly firstDate, DateOnly lastDate)
     {
         if (firstDate > lastDate)
-            throw new ArgumentException($"The start date ({firstDate}) cannot be later than the end date ({lastDate}).", nameof(firstDate));
+            throw new ArgumentException($"Invalid period: Start date ({firstDate}) must be on or before end date ({lastDate}).", nameof(firstDate));
         (FirstDate, LastDate) = (firstDate, lastDate);
     }
 
@@ -58,8 +58,8 @@ public readonly struct CustomPeriod : IPeriod
     public IPeriod? Intersect(IPeriod other) =>
         Overlaps(other)
             ? new CustomPeriod(
-                DateOnlyExtensions.Max(FirstDate, other.FirstDate),
-                DateOnlyExtensions.Min(LastDate, other.LastDate))
+                new[] { FirstDate, other.FirstDate }.Max(),
+                new[] { LastDate, other.LastDate }.Min())
             : null;
 
     /// <summary>
@@ -67,16 +67,23 @@ public readonly struct CustomPeriod : IPeriod
     /// </summary>
     public IPeriod Span(IPeriod other) =>
         new CustomPeriod(
-            DateOnlyExtensions.Min(FirstDate, other.FirstDate),
-            DateOnlyExtensions.Max(LastDate, other.LastDate));
+            new[] { FirstDate, other.FirstDate }.Min(),
+            new[] { LastDate, other.LastDate }.Max());
 
     /// <summary>
     /// Determines the gap (number of days) between two non-overlapping periods.
     /// </summary>
-    public int Gap(IPeriod other) =>
-        Overlaps(other) || Meets(other) ? 0 :
-        other.FirstDate > LastDate ? other.FirstDate.DayNumber - LastDate.DayNumber - 1 :
-        FirstDate.DayNumber - other.LastDate.DayNumber - 1;
+    public int Gap(IPeriod other)
+    {
+        if (Overlaps(other) || Meets(other))
+            return 0;
+
+        (var earlierPeriod, var laterPeriod) = other.FirstDate > LastDate
+            ? ((IPeriod)this, other)
+            : (other, this);
+
+        return laterPeriod.FirstDate.DayNumber - earlierPeriod.LastDate.DayNumber - 1;
+    }
 
     public override string ToString() => $"Custom period: {FirstDate} - {LastDate}";
 
@@ -102,16 +109,23 @@ public readonly struct CustomPeriod : IPeriod
 
     public static bool operator <(CustomPeriod left, CustomPeriod right) => left.Precedes(right);
     public static bool operator >(CustomPeriod left, CustomPeriod right) => left.Succeeds(right);
-    public static bool operator <=(CustomPeriod left, CustomPeriod right) => left.Precedes(right) || left.LastDate == right.FirstDate;
-    public static bool operator >=(CustomPeriod left, CustomPeriod right) => left.Succeeds(right) || left.LastDate == right.FirstDate;
     public static bool operator <(CustomPeriod left, IPeriod right) => left.Precedes(right);
     public static bool operator >(CustomPeriod left, IPeriod right) => left.Succeeds(right);
-    public static bool operator <=(CustomPeriod left, IPeriod right) => left.Precedes(right) || left.LastDate == right.FirstDate;
-    public static bool operator >=(CustomPeriod left, IPeriod right) => left.Succeeds(right) || left.LastDate == right.FirstDate;
     public static bool operator <(IPeriod left, CustomPeriod right) => left.Precedes(right);
     public static bool operator >(IPeriod left, CustomPeriod right) => left.Succeeds(right);
-    public static bool operator <=(IPeriod left, CustomPeriod right) => left.Precedes(right) || left.LastDate == right.FirstDate;
-    public static bool operator >=(IPeriod left, CustomPeriod right) => left.Succeeds(right) || left.LastDate == right.FirstDate;
+
+    private static bool IsLessThanOrEqual(IPeriod left, IPeriod right)
+        => left.FirstDate <= right.FirstDate && left.LastDate <= right.FirstDate;
+
+    private static bool IsGreaterThanOrEqual(IPeriod left, IPeriod right)
+        => left.FirstDate >= right.FirstDate && left.LastDate >= right.FirstDate;
+
+    public static bool operator <=(CustomPeriod left, CustomPeriod right) => IsLessThanOrEqual(left, right);
+    public static bool operator >=(CustomPeriod left, CustomPeriod right) => IsGreaterThanOrEqual(left, right);
+    public static bool operator <=(CustomPeriod left, IPeriod right) => IsLessThanOrEqual(left, right);
+    public static bool operator >=(CustomPeriod left, IPeriod right) => IsGreaterThanOrEqual(left, right);
+    public static bool operator <=(IPeriod left, CustomPeriod right) => IsLessThanOrEqual(left, right);
+    public static bool operator >=(IPeriod left, CustomPeriod right) => IsGreaterThanOrEqual(left, right);
 
     public static bool operator ==(CustomPeriod left, CustomPeriod right) => left.FirstDate == right.FirstDate && left.LastDate == right.LastDate;
     public static bool operator !=(CustomPeriod left, CustomPeriod right) => !(left == right);

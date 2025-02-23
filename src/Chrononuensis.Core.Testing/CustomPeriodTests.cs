@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Chrononuensis.Testing;
 public class CustomPeriodTests
@@ -27,8 +28,9 @@ public class CustomPeriodTests
             new CustomPeriod(new DateOnly(2025, 1, 10), new DateOnly(2025, 1, 1)));
         Assert.Multiple(() =>
         {
-            Assert.That(ex.Message, Does.Contain("The start date "));
-            Assert.That(ex.Message, Does.Contain("cannot be later than the end date "));
+            Assert.That(ex.Message, Does.Contain("Invalid period"));
+            Assert.That(ex.Message, Does.Contain("Start date"));
+            Assert.That(ex.Message, Does.Contain("must be on or before end date"));
             Assert.That(ex.Message, Does.Contain("(Parameter 'firstDate')"));
         });
     }
