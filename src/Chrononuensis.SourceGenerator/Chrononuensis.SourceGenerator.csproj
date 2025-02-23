@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Templates\Period.Methods.scriban-cs" />
     <EmbeddedResource Include="Templates\Period.scriban-cs" />
     <EmbeddedResource Include="Templates\Extension.scriban-cs" />
     <EmbeddedResource Include="Templates\IToken.scriban-cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,20 +11,34 @@ public class CustomPeriodTests
 {
     [Test]
     public void Ctor_ValidValues_Expected()
-        => Assert.DoesNotThrow(() => new CustomPeriod(new DateOnly(2025,1,1), new DateOnly(2025, 1, 10)));
+    {
+        var period = new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 10));
+        Assert.Multiple(() =>
+        {
+            Assert.That(period.FirstDate, Is.EqualTo(new DateOnly(2025,1,1)));
+            Assert.That(period.LastDate, Is.EqualTo(new DateOnly(2025, 1, 10)));
+        });
+    }
 
     [Test]
     public void Ctor_InvalidValues_Throws()
     {
-        var ex = Assert.Throws<ArgumentException>(() => new CustomPeriod(new DateOnly(2025, 1, 10), new DateOnly(2025, 1, 1)));
+        var ex = Assert.Throws<ArgumentException>(() =>
+            new CustomPeriod(new DateOnly(2025, 1, 10), new DateOnly(2025, 1, 1)));
+        Assert.That(ex.Message, Does.Contain("The start date (10/01/2025) cannot be later than the end date (01/01/2025). (Parameter 'firstDate')"));
+    }
+
+    [TestCase("2025-01-01", "2025-01-01", 1, Description = "Single day")]
+    [TestCase("2025-01-31", "2025-02-01", 2, Description = "Month boundary")]
+    [TestCase("2024-02-28", "2024-03-01", 3, Description = "Month boundary in leap year")]
+    public void Days_ValidValues_Expected(string start, string end, int expectedDays)
+    {
+        var period = new CustomPeriod(DateOnly.Parse(start), DateOnly.Parse(end));
+        Assert.That(period.Days, Is.EqualTo(expectedDays));
     }
 
     [Test]
-    public void Days_ValidValues_Expected()
-        => Assert.That(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 10)).Days, Is.EqualTo(10));
-
-    [Test]
-    public void FirsDate_ValidValues_Expected()
+    public void FirstDate_ValidValues_Expected()
         => Assert.That(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 10)).FirstDate, Is.EqualTo(new DateOnly(2025, 1, 1)));
 
     [Test]
@@ -89,5 +104,19 @@ public class CustomPeriodTests
     {
         var period = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
         Assert.That(period.Equals(period), Is.True);
+    }
+
+    [Test]
+    public void Equal_Null_False()
+    {
+        var period = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
+        Assert.That(period.Equals(null), Is.False);
+    }
+
+    [Test]
+    public void Equal_DifferentType_False()
+    {
+        var period = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
+        Assert.That(period.Equals("not a period"), Is.False);
     }
 }

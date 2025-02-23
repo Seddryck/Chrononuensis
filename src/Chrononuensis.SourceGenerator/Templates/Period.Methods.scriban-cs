@@ -1,0 +1,62 @@
+﻿#nullable enable
+
+using System.Globalization;
+
+namespace Chrononuensis;
+
+public partial record struct {{struct_name}} : IPeriod
+{
+    /// <summary>
+    /// Determines if this period fully contains another period.
+    /// </summary>
+    public bool Contains(IPeriod other) => 
+        FirstDate <= other.FirstDate && LastDate >= other.LastDate;
+
+    /// <summary>
+    /// Determines if this period overlaps with another period.
+    /// </summary>
+    public bool Overlaps(IPeriod other) => 
+        FirstDate <= other.LastDate && LastDate >= other.FirstDate;
+
+    /// <summary>
+    /// Determines if this period meets another period (i.e., is adjacent without overlap).
+    /// </summary>
+    public bool Meets(IPeriod other) => 
+        LastDate.AddDays(1) == other.FirstDate || other.LastDate.AddDays(1) == FirstDate;
+
+    /// <summary>
+    /// Determines if this period is strictly before another.
+    /// </summary>
+    public bool Precedes(IPeriod other) => LastDate < other.FirstDate;
+
+    /// <summary>
+    /// Determines if this period is strictly after another.
+    /// </summary>
+    public bool Succeeds(IPeriod other) => FirstDate > other.LastDate;
+
+    /// <summary>
+    /// Returns the intersection of two periods if they overlap.
+    /// </summary>
+    public IPeriod? Intersect(IPeriod other) =>
+        Overlaps(other) 
+            ? new CustomPeriod(
+                DateOnlyExtensions.Max(FirstDate, other.FirstDate),
+                DateOnlyExtensions.Min(LastDate, other.LastDate)) 
+            : null;
+
+    /// <summary>
+    /// Returns the span of two periods, merging them into the smallest enclosing period.
+    /// </summary>
+    public IPeriod Span(IPeriod other) =>
+        new CustomPeriod(
+            DateOnlyExtensions.Min(FirstDate, other.FirstDate),
+            DateOnlyExtensions.Max(LastDate, other.LastDate));
+
+    /// <summary>
+    /// Determines the gap (number of days) between two non-overlapping periods.
+    /// </summary>
+    public int Gap(IPeriod other) =>
+        Overlaps(other) || Meets(other) ? 0 :
+        other.FirstDate > LastDate ? other.FirstDate.DayNumber - LastDate.DayNumber - 1 :
+        FirstDate.DayNumber - other.LastDate.DayNumber - 1;
+}
