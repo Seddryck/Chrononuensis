@@ -115,10 +115,10 @@ public readonly struct CustomPeriod : IPeriod
     public static bool operator >(IPeriod left, CustomPeriod right) => left.Succeeds(right);
 
     private static bool IsLessThanOrEqual(IPeriod left, IPeriod right)
-        => left.FirstDate <= right.FirstDate && left.LastDate <= right.FirstDate;
+        => left.FirstDate <= right.FirstDate && left.LastDate <= right.LastDate;
 
     private static bool IsGreaterThanOrEqual(IPeriod left, IPeriod right)
-        => left.FirstDate >= right.FirstDate && left.LastDate >= right.FirstDate;
+        => left.FirstDate >= right.FirstDate && left.LastDate >= right.LastDate;
 
     public static bool operator <=(CustomPeriod left, CustomPeriod right) => IsLessThanOrEqual(left, right);
     public static bool operator >=(CustomPeriod left, CustomPeriod right) => IsGreaterThanOrEqual(left, right);

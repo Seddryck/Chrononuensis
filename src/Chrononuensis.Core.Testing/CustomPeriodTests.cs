@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Chrononuensis.Testing;
 public class CustomPeriodTests
@@ -125,5 +124,69 @@ public class CustomPeriodTests
     {
         var period = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
         Assert.That(period.Equals("not a period"), Is.False);
+    }
+
+    [Test]
+    public void Contains_Distinct_Expected()
+    {
+        var left = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 20));
+        var right = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 10));
+        Assert.That(left.Contains(right), Is.True);
+    }
+
+    [Test]
+    public void Overlaps_Distinct_Expected()
+    {
+        var left = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 20));
+        var right = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 2, 10));
+        Assert.That(left.Overlaps(right), Is.True);
+    }
+
+    [Test]
+    public void Meets_Distinct_Expected()
+    {
+        var left = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 20));
+        var right = new CustomPeriod(new DateOnly(2024, 1, 21), new DateOnly(2024, 2, 10));
+        Assert.That(left.Meets(right), Is.True);
+    }
+
+    [Test]
+    public void Succeeds_Distinct_Expected()
+    {
+        var left = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 20));
+        var right = new CustomPeriod(new DateOnly(2024, 1, 25), new DateOnly(2024, 2, 10));
+        Assert.That(left.Succeeds(right), Is.False);
+    }
+
+    [Test]
+    public void Precedes_Distinct_Expected()
+    {
+        var left = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 20));
+        var right = new CustomPeriod(new DateOnly(2024, 1, 25), new DateOnly(2024, 2, 10));
+        Assert.That(left.Precedes(right), Is.True);
+    }
+
+    [Test]
+    public void Intersect_Distinct_Expected()
+    {
+        var left = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 20));
+        var right = new CustomPeriod(new DateOnly(2024, 1, 15), new DateOnly(2024, 2, 10));
+        Assert.That(left.Intersect(right), Is.EqualTo(new CustomPeriod(new DateOnly(2024, 1, 15), new DateOnly(2024, 1, 20))));
+    }
+
+    [Test]
+    public void Span_Distinct_Expected()
+    {
+        var left = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 20));
+        var right = new CustomPeriod(new DateOnly(2024, 1, 25), new DateOnly(2024, 2, 10));
+        Assert.That(left.Span(right), Is.EqualTo(new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 2, 10))));
+    }
+
+    [Test]
+    public void Gap_Distinct_Expected()
+    {
+        var left = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 20));
+        var right = new CustomPeriod(new DateOnly(2024, 1, 25), new DateOnly(2024, 2, 10));
+        Assert.That(left.Gap(right), Is.EqualTo(4));
     }
 }
