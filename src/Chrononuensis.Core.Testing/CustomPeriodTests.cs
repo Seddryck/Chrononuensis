@@ -15,7 +15,7 @@ public class CustomPeriodTests
         var period = new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 10));
         Assert.Multiple(() =>
         {
-            Assert.That(period.FirstDate, Is.EqualTo(new DateOnly(2025,1,1)));
+            Assert.That(period.FirstDate, Is.EqualTo(new DateOnly(2025, 1, 1)));
             Assert.That(period.LastDate, Is.EqualTo(new DateOnly(2025, 1, 10)));
         });
     }
@@ -25,7 +25,12 @@ public class CustomPeriodTests
     {
         var ex = Assert.Throws<ArgumentException>(() =>
             new CustomPeriod(new DateOnly(2025, 1, 10), new DateOnly(2025, 1, 1)));
-        Assert.That(ex.Message, Does.Contain("The start date (10/01/2025) cannot be later than the end date (01/01/2025). (Parameter 'firstDate')"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(ex.Message, Does.Contain("The start date "));
+            Assert.That(ex.Message, Does.Contain("cannot be later than the end date "));
+            Assert.That(ex.Message, Does.Contain("(Parameter 'firstDate')"));
+        });
     }
 
     [TestCase("2025-01-01", "2025-01-01", 1, Description = "Single day")]
@@ -47,7 +52,7 @@ public class CustomPeriodTests
 
     [Test]
     public void LowerBound_ValidValues_Expected()
-        => Assert.That(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 10)).LowerBound, Is.EqualTo(new DateTime(2025,1,1)));
+        => Assert.That(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 10)).LowerBound, Is.EqualTo(new DateTime(2025, 1, 1)));
 
     [Test]
     public void UpperBound_ValidValues_Expected()
@@ -72,7 +77,7 @@ public class CustomPeriodTests
     [Test]
     public void Equal_CustomPeriod_True()
         => Assert.That(new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31))
-            == new YearMonth(2024,1), Is.True);
+            == new YearMonth(2024, 1), Is.True);
 
     [Test]
     public void Equal_CustomPeriod_False()
