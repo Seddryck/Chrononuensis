@@ -90,6 +90,25 @@ public class StructGenerator : IIncrementalGenerator
 
                                 try
                                 {
+                                    if (structDefinition.Period is not null)
+                                    {
+                                        var generatedCode = GeneratePeriodMethods(structDefinition);
+                                        ctx.AddSource($"{structDefinition.Name}.Period.Methods.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    ctx.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
+                                        "CHRONO006",
+                                        "Source Generator Error",
+                                        $"Error generating {structDefinition.Name}.Period.Methods.g.cs: {ex.Message}",
+                                        "ChronoYamlGenerator",
+                                        DiagnosticSeverity.Error,
+                                        true), Location.None));
+                                }
+
+                                try
+                                {
                                     var generatedCode = GenerateParser(structDefinition);
                                     ctx.AddSource($"{structDefinition.Name}Parser.g.cs", SourceText.From(generatedCode, Encoding.UTF8));
                                 }
@@ -236,6 +255,27 @@ public class StructGenerator : IIncrementalGenerator
                 value = structDefinition.Period.Year,
                 duration = structDefinition.Period.YearDuration
             }
+        });
+
+        return output;
+    }
+
+    internal static string GeneratePeriodMethods(StructDefinition structDefinition)
+    {
+        if (structDefinition.Period == null)
+            throw new ArgumentException("Period is required", nameof(structDefinition));
+
+        string templateContent;
+        var assembly = typeof(StructGenerator).Assembly;
+        var ns = typeof(StructGenerator).Namespace;
+        using (var stream = assembly.GetManifestResourceStream($"{ns}.Templates.Period.Methods.scriban-cs"))
+        using (var reader = new StreamReader(stream))
+            templateContent = reader.ReadToEnd();
+
+        var scribanTemplate = Template.Parse(templateContent);
+        var output = scribanTemplate.Render(new
+        {
+            struct_name = structDefinition.Name,
         });
 
         return output;

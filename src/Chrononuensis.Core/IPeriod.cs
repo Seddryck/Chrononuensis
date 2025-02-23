@@ -10,7 +10,7 @@ namespace Chrononuensis;
 /// Represents a continuous time span with a defined start and end.
 /// It represents a range rather than a single event.
 /// </summary>
-public interface IPeriod
+public interface IPeriod : IEquatable<IPeriod>
 {
     /// <summary>
     /// Gets the total number of days within the period.
@@ -38,4 +38,44 @@ public interface IPeriod
     /// typically representing the start of the day following the LastDate.
     /// </summary>
     DateTime UpperBound { get; }
+
+    /// <summary>
+    /// Determines if this period fully contains another period.
+    /// </summary>
+    bool Contains(IPeriod other);
+
+    /// <summary>
+    /// Determines if this period overlaps with another period.
+    /// </summary>
+    bool Overlaps(IPeriod other);
+
+    /// <summary>
+    /// Determines if this period meets another period (i.e., is adjacent without overlap).
+    /// </summary>
+    bool Meets(IPeriod other);
+
+    /// <summary>
+    /// Determines if this period is strictly before another.
+    /// </summary>
+    bool Precedes(IPeriod other);
+
+    /// <summary>
+    /// Determines if this period is strictly after another.
+    /// </summary>
+    bool Succeeds(IPeriod other);
+
+    /// <summary>
+    /// Returns the intersection of two periods if they overlap.
+    /// </summary>
+    IPeriod? Intersect(IPeriod other);
+
+    /// <summary>
+    /// Returns the span of two periods, merging them into the smallest enclosing period.
+    /// </summary>
+    IPeriod Span(IPeriod other);
+
+    /// <summary>
+    /// Determines the gap (number of days) between two non-overlapping periods.
+    /// </summary>
+    int Gap(IPeriod other);
 }
