@@ -83,7 +83,7 @@
     yearDuration: 1
 
 - name: Olympiad
-  default: "{o:RN} 'Olympiad'"
+  default: "{o:RN} {#Olympiad}"
   parts:
     - name: Olympiad
       type: int

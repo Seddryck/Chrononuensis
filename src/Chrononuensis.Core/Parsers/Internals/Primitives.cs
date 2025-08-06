@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Chrononuensis.Localization;
 using Pidgin;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -101,5 +102,14 @@ internal partial class Primitives
 
         // Convert List<object> to object[] at the end
         return combinedParser.Select(results => results.ToArray());
+    }
+
+    public static Parser<char, Unit> LocalizedParser(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            throw new ArgumentException("Key cannot be null or empty.", nameof(key));
+
+        var value = LocalizedStrings.Get(key, CultureInfo.CurrentUICulture);
+        return Parser.String(value).IgnoreResult();
     }
 }

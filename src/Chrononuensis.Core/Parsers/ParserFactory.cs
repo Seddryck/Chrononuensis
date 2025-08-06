@@ -29,6 +29,9 @@ internal partial class ParserFactory
         if (token is LiteralToken literal)
             return Primitives.StringParser(literal.Value).Cast<object>();
 
+        if (token is LocalizedToken localized)
+            return Primitives.LocalizedParser(localized.Key).Cast<object>();
+
         if (token is MutuallyExclusiveToken exclusive)
             return Primitives.StringParsers(exclusive.Values.Select(x => ((LiteralToken)x).Value).ToArray()).Cast<object>();
 

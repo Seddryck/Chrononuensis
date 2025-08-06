@@ -7,11 +7,23 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace Chrononuensis.Testing;
+
+[SetUICulture("en-us")]
 public class OlympiadTests
 {
     [Test]
     public void Parse_InputDefaultFormat_Equal()
         => Assert.That(Olympiad.Parse("IV Olympiad", "{o:RN} 'Olympiad'"), Is.EqualTo(new Olympiad(4)));
+
+    [SetUICulture("en-us")]
+    [Test]
+    public void Parse_InputLocalizedDefault_Equal()
+        => Assert.That(Olympiad.Parse("IV Olympiad", "{o:RN} {#Olympiad}"), Is.EqualTo(new Olympiad(4)));
+
+    [SetUICulture("es-es")]
+    [Test]
+    public void Parse_InputLocalizedSpanish_Equal()
+        => Assert.That(Olympiad.Parse("IV Olimpiada", "{o:RN} {#Olympiad}"), Is.EqualTo(new Olympiad(4)));
 
     private static IEnumerable<Olympiad> GetData()
     {
@@ -76,6 +88,34 @@ public class OlympiadTests
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Olympiad(25)));
+        });
+    }
+
+    [Test]
+    [TestCase("XXV Olympiad", "en-us")]
+    [TestCase("XXV Olimpiada", "es-es")]
+    public void TryParse_SomeValueWithCulture_Expected(string input, string culture)
+    {
+        Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
+        var result = Olympiad.TryParse(input, "{o:RN} {#Olympiad}", null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.True);
+            Assert.That(value, Is.EqualTo(new Olympiad(25)));
+        });
+    }
+
+    [Test]
+    [TestCase("XXV Olympiad", "en-us")]
+    [TestCase("XXV Olimpiada", "es-es")]
+    public void TryParse_SomeValueWithCultureWithDefaultFormat_Expected(string input, string culture)
+    {
+        Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
+        var result = Olympiad.TryParse(input, null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.True);
+            Assert.That(value, Is.EqualTo(new Olympiad(25)));
         });
     }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Chrononuensis.Formats.Tokens;
+using Chrononuensis.Formats.Tokens.Month;
 
 namespace Chrononuensis.Formats;
 internal partial class Lexer
@@ -47,8 +48,16 @@ internal partial class Lexer
     {
         if (j > 0)
         {
-            var value = new string(token.Slice(0, j).ToArray());
-            tokens.Add(_mapper.GetToken(value));
+            if (token[0] == '#')
+            {
+                var value = new string(token.Slice(1, j - 1).ToArray());
+                tokens.Add(new LocalizedToken(value));
+            }
+            else
+            {
+                var value = new string(token.Slice(0, j).ToArray());
+                tokens.Add(_mapper.GetToken(value));
+            }
             j = 0;
         }
     }

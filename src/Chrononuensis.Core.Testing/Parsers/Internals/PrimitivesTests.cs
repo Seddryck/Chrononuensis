@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Resources;
 using Chrononuensis.Parsers.Internals;
 using NUnit.Framework;
 using Pidgin;
@@ -120,6 +121,27 @@ public class PrimitivesTests
         var actual = Primitives.TwoDigitParser().Parse(input);
         Assert.That(actual.Value, Is.EqualTo(expected));
     }
+
+    [TestCase("es-es", "Olimpiada")]
+    [TestCase("fr-fr", "Olympiade")]
+    public void Parse_Localized_ReturnsInt(string culture, string key)
+    {
+        Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
+        var actual = Primitives.LocalizedParser("Olympiad").Parse(key);
+        Assert.That(actual.Value, Is.EqualTo(Unit.Value));
+    }
+
+    [Test]
+    public void Parse_Localized_ErrorWhenIncorrectValue()
+    {
+        var actual = Primitives.LocalizedParser("Olympiad").Parse("NotExisting");
+        Assert.That(actual.Error, Is.Not.Null.Or.Empty);
+    }
+
+    [Test]
+    public void Parse_Localized_ErrorWhenIncorrectValu2e()
+        => Assert.Throws<MissingManifestResourceException>(
+            () => Primitives.LocalizedParser("NotExisting").Parse("Olympiad"));
 
     [Test]
     [TestCase([])]
