@@ -16,6 +16,13 @@
     - name: DigitOn4
       pattern: tttt
 
+- group: Olympiad
+  members:
+    - name: Digit
+      pattern: o
+    - name: RomanNumeralShort
+      pattern: o:RN
+
 - group: Year
   members:
     - name: DigitOn2
