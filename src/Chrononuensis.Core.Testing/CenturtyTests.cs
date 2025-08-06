@@ -108,6 +108,21 @@ public class CenturyTests
         });
     }
 
+    [TestCase("XXe siècle", "{c:RN}['er'|'e'] {#Century}", "fr-fr", 20)]
+    [TestCase("Ier siècle", "{c:RN}['er'|'e'] {#Century}", "fr-fr", 1)]
+    [TestCase("Ist century", "{c:RN}['st'|'nd'|'rd'|'th'] {#Century}", "en-us", 1)]
+    [TestCase("XXth century", "{c:RN}['st'|'nd'|'rd'|'th'] {#Century}", "en-us", 20)]
+    public void TryParse_SomeValueWithFormatAndCulture_Expected(string input, string format, string culture, int expected)
+    {
+        Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
+        var result = Century.TryParse(input, format, null, out var value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.True);
+            Assert.That(value, Is.EqualTo(new Century(expected)));
+        });
+    }
+
     [Test]
     [TestCase("20")]
     public void Parse_SomeValueAsSpan_Expected(string input)

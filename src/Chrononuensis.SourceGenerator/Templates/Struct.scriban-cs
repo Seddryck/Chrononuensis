@@ -16,12 +16,13 @@ public partial record struct {{ struct_name }}
 {
     {{- for part in parts }}
     {{- if part.min && (part.max || part.max_f) }}
-    public {{ part.type }} {{ part.name }} { get; init; }
-        = ({{ part.name }} >= {{ part.min }} && {{ part.name }} <= {{ part.max ?? part.max_f }})
-            ? {{ part.name }}
-            : throw new ArgumentOutOfRangeException(nameof({{ part.name }}), $"
+    {{- if parts.size ==1 && part.name == struct_name }}{{name = "Value"}}{{ else }}{{ name = part.name }}{{ end }}
+    public {{ part.type }} {{ name }} { get; init; }
+        = ({{ name }} >= {{ part.min }} && {{ name }} <= {{ part.max ?? part.max_f }})
+            ? {{ name }}
+            : throw new ArgumentOutOfRangeException(nameof({{ name }}), $"
                 {{- if part.max_f }}When {{parts[0].name | string.downcase }} is { {{parts[0].name}} }, {{ end -}}
-                {{- part.name }} must be between {{ part.min }} and { {{ part.max ?? part.max_f }} }.");
+                {{- name }} must be between {{ part.min }} and { {{ part.max ?? part.max_f }} }.");
     {{- else if part.modulo }}
     public {{ part.type }} Value { get; init; }
         = (Value % {{ part.modulo }} == 0)

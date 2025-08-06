@@ -8,7 +8,8 @@ public static partial class {{struct_name}}Extension
     {{- if part.min && part.max }}
     public static {{ struct_name }} Add{{ part.name }}(this {{ struct_name }} value, int {{ part.name | string.downcase }})
         => value with {
-                {{ part.name }} = (value.{{ part.name }} + {{ part.name | string.downcase }}) % {{ part.max }},  
+                {{- if parts.size ==1 && part.name == struct_name }}{{name = "Value"}}{{ else }}{{ name = part.name }}{{ end }}
+                {{ name }} = (value.{{ name }} + {{ part.name | string.downcase }}) % {{ part.max }},  
                 {{- factor = 1 }}
                 {{- while (offset >= 0) }}
                 {{- factor = factor * parts[offset+1].max }}
