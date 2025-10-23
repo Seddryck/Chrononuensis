@@ -9,7 +9,7 @@
     <AdditionalFiles Include="Tokens.yml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pidgin" Version="3.4.0" />
+    <PackageReference Include="Pidgin" Version="3.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Chrononuensis.SourceGenerator\Chrononuensis.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
