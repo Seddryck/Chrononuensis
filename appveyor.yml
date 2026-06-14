@@ -23,6 +23,7 @@ init:
 - cmd: setx DOTNET_NO_WORKLOAD_UPDATE_NOTIFICATION 1
 - cmd: setx DOTNET_CLI_TELEMETRY_OPTOUT 1
 - cmd: setx DOTNET_NOLOGO 1
+- pwsh: .\install-gitversion.ps1
 - cmd: RefreshEnv.cmd
 
 
