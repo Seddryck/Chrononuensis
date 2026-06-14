@@ -10,16 +10,17 @@ patch-version-bump-message: "^(chore|fix|perf|refactor|revert)(\\([\\w\\s-]*\\))
 no-bump-message: "\\+semver:\\s?(none|skip)"
 commit-message-incrementing: MergeMessageOnly
 branches:
+  main:
+    regex: ^main$
+    is-main-branch: true
+    increment: Patch
+    mode: ContinuousDeployment
   feature:
     label: beta.{BranchName}
     regex: features?[/-]
     source-branches:
     - main
     - feature
-  main:
-    regex: ^main$
-    is-main-branch: true
-    increment: Patch
 ignore:
   sha: []
 merge-message-formats: {}
