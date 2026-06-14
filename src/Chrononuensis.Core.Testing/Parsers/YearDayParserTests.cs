@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,10 +21,12 @@ public class YearDayParserTests
     {
         var parser = new YearDayParser();
         var result = parser.Parse(input, format, null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.Year, Is.EqualTo(2025));
             Assert.That(result.DayOfYear, Is.EqualTo(expected));
-        });
+        }
     }
 }
+
+

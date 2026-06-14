@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,13 +52,13 @@ public class PrimitivesTests
     {
         var actual = Primitives.FourDigitParser().Parse("202");
         Assert.That(actual.Error, Is.Not.Null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(actual.Error.Unexpected.HasValue, Is.False);
             Assert.That(actual.Error?.EOF, Is.True);
             Assert.That(actual.Error.Expected.ElementAt(0).Label, Is.EqualTo("digit"));
             Assert.That(actual.Error.ErrorPos.Col, Is.EqualTo(4));
-        });
+        }
     }
 
     [Test]
@@ -66,13 +66,13 @@ public class PrimitivesTests
     {
         var actual = Primitives.FourDigitParser().Parse("20A2");
         Assert.That(actual.Error, Is.Not.Null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(actual.Error?.EOF, Is.False);
             Assert.That(actual.Error.Unexpected.Value, Is.EqualTo('A'));
             Assert.That(actual.Error.Expected.ElementAt(0).Label, Is.EqualTo("digit"));
             Assert.That(actual.Error.ErrorPos.Col, Is.EqualTo(3));
-        });
+        }
     }
 
     [Test]
@@ -80,14 +80,14 @@ public class PrimitivesTests
     {
         var actual = Primitives.CharParser('-').Parse("*");
         Assert.That(actual.Error, Is.Not.Null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(actual.Error?.EOF, Is.False);
             Assert.That(actual.Error.Unexpected.Value, Is.EqualTo('*'));
             Assert.That(actual.Error.Expected.ElementAt(0).Label, Is.Null);
             Assert.That(actual.Error.Expected.ElementAt(0).Tokens, Is.EqualTo("-"));
             Assert.That(actual.Error.ErrorPos.Col, Is.EqualTo(1));
-        });
+        }
     }
 
     [Test]
@@ -135,16 +135,18 @@ public class PrimitivesTests
     public void Parse_Localized_ErrorWhenIncorrectValue()
     {
         var actual = Primitives.LocalizedParser("Olympiad").Parse("NotExisting");
-        Assert.That(actual.Error, Is.Not.Null.Or.Empty);
+        Assert.That(actual.Error, Is.Not.Null);
     }
 
     [Test]
     public void Parse_Localized_ErrorWhenIncorrectValu2e()
-        => Assert.Throws<MissingManifestResourceException>(
-            () => Primitives.LocalizedParser("NotExisting").Parse("Olympiad"));
+        => Assert.That((Action)(() => Primitives.LocalizedParser("NotExisting").Parse("Olympiad")),
+            Throws.TypeOf<MissingManifestResourceException>());
 
     [Test]
     [TestCase([])]
     public void Combine_Empty_Throws(params Parser<char, object>[] values)
-        => Assert.Throws<ArgumentException>(() => Primitives.CombineParsers(values));
+        => Assert.That((Action)(() => Primitives.CombineParsers(values)), Throws.TypeOf<ArgumentException>());
 }
+
+

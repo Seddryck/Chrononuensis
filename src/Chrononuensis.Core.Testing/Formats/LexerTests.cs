@@ -115,7 +115,7 @@ public class LexerTests
 
     [Test]
     public void Tokenize_emptyString_Throws()
-        => Assert.Throws<ArgumentException>(() => new Lexer().Tokenize(""));
+        => Assert.That((Action)(() => new Lexer().Tokenize("")), Throws.TypeOf<ArgumentException>());
 
     [TestCase("{yyyy}-{MM}")]
     [TestCase("yyyy'-'{MM}")]

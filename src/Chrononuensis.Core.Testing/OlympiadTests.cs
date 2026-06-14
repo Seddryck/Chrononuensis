@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -83,12 +83,12 @@ public class OlympiadTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = Olympiad.TryParse(input, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Olympiad(25)));
-        });
+        }
     }
 
     [Test]
@@ -98,11 +98,11 @@ public class OlympiadTests
     {
         Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
         var result = Olympiad.TryParse(input, "{o:RN} {#Olympiad}", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.True);
             Assert.That(value, Is.EqualTo(new Olympiad(25)));
-        });
+        }
     }
 
     [Test]
@@ -112,11 +112,11 @@ public class OlympiadTests
     {
         Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
         var result = Olympiad.TryParse(input, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.True);
             Assert.That(value, Is.EqualTo(new Olympiad(25)));
-        });
+        }
     }
 
     [Test]
@@ -125,12 +125,12 @@ public class OlympiadTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = Olympiad.TryParse(input, "{o:RN} 'Olympiad'", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Olympiad(25)));
-        });
+        }
     }
 
     [Test]
@@ -147,12 +147,12 @@ public class OlympiadTests
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
     {
         var result = Olympiad.TryParse(input.AsSpan(), null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Olympiad(25)));
-        });
+        }
     }
 
     [Test]
@@ -161,12 +161,12 @@ public class OlympiadTests
     public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
     {
         var result = Olympiad.TryParse(input.AsSpan(), "o[st|nd|rd|th] 'Olympiad'", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Olympiad(25)));
-        });
+        }
     }
 
     [Test]
@@ -219,3 +219,5 @@ public class OlympiadTests
         Assert.That(value.UpperBound, Is.EqualTo(expected));
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,10 +19,12 @@ public class YearWeekParserTests
     {
         var parser = new YearWeekParser();
         var result = parser.Parse(input, format, null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.Year, Is.EqualTo(2025));
             Assert.That(result.Week, Is.EqualTo(expected));
-        });
+        }
     }
 }
+
+

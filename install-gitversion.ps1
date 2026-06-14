@@ -18,6 +18,7 @@ if (-not $dotnet) {
 }
 
 # Install GitVersion as a .NET global tool
+$env:DOTNET_NOLOGO = "1"
 dotnet tool install --global GitVersion.Tool
 
 if ($LASTEXITCODE -ne 0) {

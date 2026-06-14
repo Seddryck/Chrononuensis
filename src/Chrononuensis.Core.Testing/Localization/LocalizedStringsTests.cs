@@ -19,8 +19,6 @@ public class LocalizedStringsTests
 
     [TestCase("NonExistentKey")]
     public void Get_ThrowsMissingManifestResourceException_WhenKeyDoesNotExist(string key)
-    {
-        var ex = Assert.Throws<MissingManifestResourceException>(() => LocalizedStrings.Get(key, new System.Globalization.CultureInfo("en-us")));
-        Assert.That(ex.Message, Does.Contain($"Resource key '{key}' not found"));
-    }
+        => Assert.That((Action)(() => LocalizedStrings.Get(key, new System.Globalization.CultureInfo("en-us"))),
+            Throws.TypeOf<MissingManifestResourceException>().With.Message.Contains($"Resource key '{key}' not found"));
 }

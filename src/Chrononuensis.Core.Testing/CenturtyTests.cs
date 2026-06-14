@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,7 @@ public class CenturyTests
 {
     [TestCase(20)]
     public void Ctor_ValidValues_Expected(int century)
-        => Assert.DoesNotThrow(() => new Century(century));
+        => Assert.That((Action)(() => new Century(century)), Throws.Nothing);
 
     [Test]
     public void Parse_InputDefaultFormat_Equal()
@@ -75,12 +75,12 @@ public class CenturyTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = Century.TryParse(input, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Century(20)));
-        });
+        }
     }
 
     [Test]
@@ -101,11 +101,11 @@ public class CenturyTests
     public void TryParse_SomeValueWithFormat_Expected(string input, string format, int expected)
     {
         var result = Century.TryParse(input, format, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.True);
             Assert.That(value, Is.EqualTo(new Century(expected)));
-        });
+        }
     }
 
     [TestCase("XXe siècle", "{c:RN}['er'|'e'] {#Century}", "fr-fr", 20)]
@@ -116,11 +116,11 @@ public class CenturyTests
     {
         Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(culture);
         var result = Century.TryParse(input, format, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.True);
             Assert.That(value, Is.EqualTo(new Century(expected)));
-        });
+        }
     }
 
     [Test]
@@ -186,3 +186,5 @@ public class CenturyTests
         Assert.That(value.UpperBound, Is.EqualTo(expected));
     }
 }
+
+

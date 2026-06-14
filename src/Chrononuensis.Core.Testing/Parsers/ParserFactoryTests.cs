@@ -27,7 +27,7 @@ public class ParserFactoryTests
     public void Create_UnknowToken_Throws()
     {
         var factory = new ParserFactory();
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => factory.Create(new UnknownToken()));
-        Assert.That(ex.Message, Does.Contain("Token Chrononuensis.Testing.Parsers.ParserFactoryTests+UnknownToken not found in the dictionary"));
+        Assert.That((Action)(() => factory.Create(new UnknownToken())),
+            Throws.TypeOf<ArgumentOutOfRangeException>().With.Message.Contains("Token Chrononuensis.Testing.Parsers.ParserFactoryTests+UnknownToken not found in the dictionary"));
     }
 }

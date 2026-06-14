@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,34 +19,36 @@ public class MonthDayParserTests
     {
         var parser = new MonthDayParser();
         var result = parser.Parse(input, format, null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.Month, Is.EqualTo(1));
             Assert.That(result.Day, Is.EqualTo(25));
-        });
+        }
     }
 
     [Test]
     public void Parse_UnexpectedLiteral_Throws()
     {
         var parser = new MonthDayParser();
-        var ex = Assert.Throws<FormatException>(() => parser.Parse("25*Jan", "dd-MM", null));
-        Assert.That(ex.Message, Is.EqualTo("Parsing error at character 3: Expected '-' but found '*'."));
+        Assert.That((Action)(() => parser.Parse("25*Jan", "dd-MM", null)),
+            Throws.TypeOf<FormatException>().With.Message.EqualTo("Parsing error at character 3: Expected '-' but found '*'."));
     }
 
     [Test]
     public void Parse_OverMax_Throws()
     {
         var parser = new MonthDayParser();
-        var ex = Assert.Throws<FormatException>(() => parser.Parse("32-07", "dd-MM", null));
-        Assert.That(ex.Message, Is.EqualTo("Parsing error at character 3: Value must be between 1 and 31."));
+        Assert.That((Action)(() => parser.Parse("32-07", "dd-MM", null)),
+            Throws.TypeOf<FormatException>().With.Message.EqualTo("Parsing error at character 3: Value must be between 1 and 31."));
     }
 
     [Test]
     public void Parse_UnexpectedLiteralForDigit_Throws()
     {
         var parser = new MonthDayParser();
-        var ex = Assert.Throws<FormatException>(() => parser.Parse("25-Jan", "dd-MM", null));
-        Assert.That(ex.Message, Is.EqualTo("Parsing error at character 4: Unexpected 'J'."));
+        Assert.That((Action)(() => parser.Parse("25-Jan", "dd-MM", null)),
+            Throws.TypeOf<FormatException>().With.Message.EqualTo("Parsing error at character 4: Unexpected 'J'."));
     }
 }
+
+
