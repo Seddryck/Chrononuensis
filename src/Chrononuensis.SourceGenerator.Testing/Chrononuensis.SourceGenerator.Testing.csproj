@@ -51,4 +51,8 @@
     <ProjectReference Include="..\Chrononuensis.SourceGenerator\Chrononuensis.SourceGenerator.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB3277</MSBuildWarningsAsMessages>
+  </PropertyGroup>
+
 </Project>
