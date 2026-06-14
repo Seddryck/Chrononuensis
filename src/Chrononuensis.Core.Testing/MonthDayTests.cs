@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,19 +13,17 @@ public class MonthDayTests
     [TestCase(2, 29)]
     [TestCase(4, 30)]
     public void Ctor_ValidValues_Expected(int month, int day)
-        => Assert.DoesNotThrow(() => new MonthDay(month, day));
+        => Assert.That((Action)(() => new MonthDay(month, day)), Throws.Nothing);
 
     [TestCase(1, 55, 31)]
     [TestCase(1, 32, 31)]
     [TestCase(2, 30, 29)]
     [TestCase(4, 31, 30)]
     public void Ctor_InvalidValues_Throws(int month, int day, int max)
-    {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new MonthDay(month, day));
-        Assert.That(ex.ParamName, Is.EqualTo("Day"));
-        Assert.That(ex.Message, Does.StartWith($"When month is {month}"));
-        Assert.That(ex.Message, Does.Contain($"1 and {max}"));
-    }
+        => Assert.That((Action)(() => new MonthDay(month, day)), Throws.TypeOf<ArgumentOutOfRangeException>()
+            .With.Property("ParamName").EqualTo("Day")
+            .And.Message.StartsWith($"When month is {month}")
+            .And.Message.Contains($"1 and {max}"));
 
     [Test]
     public void Parse_InputDefaultFormat_Equal()
@@ -88,12 +86,12 @@ public class MonthDayTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = MonthDay.TryParse(input, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
-        });
+        }
     }
 
     [Test]
@@ -102,12 +100,12 @@ public class MonthDayTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = MonthDay.TryParse(input, "MM-d", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
-        });
+        }
     }
 
     [Test]
@@ -132,12 +130,12 @@ public class MonthDayTests
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
     {
         var result = MonthDay.TryParse(input.AsSpan(), null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
-        });
+        }
     }
 
     [Test]
@@ -146,12 +144,12 @@ public class MonthDayTests
     public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
     {
         var result = MonthDay.TryParse(input.AsSpan(), "MMM-dd", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new MonthDay(12, 1)));
-        });
+        }
     }
 
     [Test]
@@ -165,3 +163,5 @@ public class MonthDayTests
         Assert.That(value, Is.EqualTo(new MonthDay(2, 17)));
     }
 }
+
+

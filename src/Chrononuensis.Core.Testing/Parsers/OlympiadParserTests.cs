@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,9 +16,11 @@ public class OlympiadParserTests
     {
         var parser = new OlympiadParser();
         var result = parser.Parse(input, format, null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
-        });
+        }
     }
 }
+
+

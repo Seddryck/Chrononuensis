@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -71,12 +71,12 @@ public class YearMonthTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = YearMonth.TryParse(input, null, out var yearMonth);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(yearMonth, Is.EqualTo(new YearMonth(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -85,12 +85,12 @@ public class YearMonthTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = YearMonth.TryParse(input, "yyyy-MMM", null, out var yearMonth);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(yearMonth, Is.EqualTo(new YearMonth(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -107,12 +107,12 @@ public class YearMonthTests
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
     {
         var result = YearMonth.TryParse(input.AsSpan(), null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearMonth(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -121,20 +121,18 @@ public class YearMonthTests
     public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
     {
         var result = YearMonth.TryParse(input.AsSpan(), "MMM-yy", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearMonth(2025, 1)));
-        });
+        }
     }
 
     [Test]
     public void Parse_InvalidFormat_ValuesNotSpecified()
-    {
-        var ex = Assert.Throws<FormatException>(() => YearMonth.Parse("Q1.25", "Qq.yy", CultureInfo.InvariantCulture.DateTimeFormat));
-        Assert.That(ex.Message, Is.EqualTo("Token 'month' not found in the format"));
-    }
+        => Assert.That((Action)(() => YearMonth.Parse("Q1.25", "Qq.yy", CultureInfo.InvariantCulture.DateTimeFormat)),
+            Throws.TypeOf<FormatException>().With.Message.EqualTo("Token 'month' not found in the format"));
 
     [TestCase("2025-01", 1, "2026-01")]
     [TestCase("2025-01", 5, "2030-01")]
@@ -213,3 +211,5 @@ public class YearMonthTests
         Assert.That(value.UpperBound, Is.EqualTo(expected));
     }
 }
+
+

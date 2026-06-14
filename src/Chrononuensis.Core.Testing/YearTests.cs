@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -70,12 +70,12 @@ public class YearTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = Year.TryParse(input, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Year(2025)));
-        });
+        }
     }
 
     [Test]
@@ -84,12 +84,12 @@ public class YearTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = Year.TryParse(input, "yy", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Year(2025)));
-        });
+        }
     }
 
     [Test]
@@ -106,12 +106,12 @@ public class YearTests
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
     {
         var result = Year.TryParse(input.AsSpan(), null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Year(2025)));
-        });
+        }
     }
 
     [Test]
@@ -120,12 +120,12 @@ public class YearTests
     public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
     {
         var result = Year.TryParse(input.AsSpan(), "yy", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Year(2025)));
-        });
+        }
     }
 
     [Test]
@@ -180,3 +180,5 @@ public class YearTests
         Assert.That(value.UpperBound, Is.EqualTo(expected));
     }
 }
+
+

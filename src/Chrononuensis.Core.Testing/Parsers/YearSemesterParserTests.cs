@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,11 +17,11 @@ public class YearSemesterParserTests
     {
         var parser = new YearSemesterParser();
         var result = parser.Parse(input, format, null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.Year, Is.EqualTo(2025));
             Assert.That(result.Semester, Is.EqualTo(1));
-        });
+        }
     }
 
     [TestCase("1st semester of 2025", "{S}['st'|'nd']' semester of '{yyyy}")]
@@ -30,17 +30,19 @@ public class YearSemesterParserTests
     {
         var parser = new YearSemesterParser();
         var result = parser.Parse(input, format, null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.Year, Is.EqualTo(2025));
             Assert.That(result.Semester, Is.GreaterThanOrEqualTo(1).And.LessThanOrEqualTo(2));
-        });
+        }
     }
 
     [TestCase("2rd quarter of 2025", "{S}['st'|'nd']' quarter of '{yyyy}")]
     public void Parse_InputFormatWithMutuallyExclusive_IncorrectValue(string input, string format)
     {
         var parser = new YearSemesterParser();
-        Assert.Throws<FormatException>(() => parser.Parse(input, format, null));
+        Assert.That((Action)(() => parser.Parse(input, format, null)), Throws.TypeOf<FormatException>());
     }
 }
+
+

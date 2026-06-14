@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,17 +12,15 @@ public class YearWeekTests
     [TestCase(2004, 53)]
     [TestCase(2005, 52)]
     public void Ctor_ValidValues_Expected(int year, int week)
-        => Assert.DoesNotThrow(() => new YearWeek(year, week));
+        => Assert.That((Action)(() => new YearWeek(year, week)), Throws.Nothing);
 
     [TestCase(2004, 54, 53)]
     [TestCase(2005, 53, 52)]
     public void Ctor_InvalidValues_Throws(int year, int week, int max)
-    {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new YearWeek(year, week));
-        Assert.That(ex.ParamName, Is.EqualTo("Week"));
-        Assert.That(ex.Message, Does.StartWith($"When year is {year}"));
-        Assert.That(ex.Message, Does.Contain($"1 and {max}"));
-    }
+        => Assert.That((Action)(() => new YearWeek(year, week)), Throws.TypeOf<ArgumentOutOfRangeException>()
+            .With.Property("ParamName").EqualTo("Week")
+            .And.Message.StartsWith($"When year is {year}")
+            .And.Message.Contains($"1 and {max}"));
 
     [Test]
     public void Parse_InputDefaultFormat_Equal()
@@ -85,12 +83,12 @@ public class YearWeekTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = YearWeek.TryParse(input, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -99,12 +97,12 @@ public class YearWeekTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = YearWeek.TryParse(input, "'W'w-yy", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -129,12 +127,12 @@ public class YearWeekTests
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
     {
         var result = YearWeek.TryParse(input.AsSpan(), null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -143,12 +141,12 @@ public class YearWeekTests
     public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
     {
         var result = YearWeek.TryParse(input.AsSpan(), "'W'w-yy", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearWeek(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -199,3 +197,5 @@ public class YearWeekTests
         Assert.That(value.UpperBound, Is.EqualTo(expected));
     }
 }
+
+

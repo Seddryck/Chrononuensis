@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,26 +13,21 @@ public class CustomPeriodTests
     public void Ctor_ValidValues_Expected()
     {
         var period = new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 10));
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(period.FirstDate, Is.EqualTo(new DateOnly(2025, 1, 1)));
             Assert.That(period.LastDate, Is.EqualTo(new DateOnly(2025, 1, 10)));
-        });
+        }
     }
 
     [Test]
     public void Ctor_InvalidValues_Throws()
-    {
-        var ex = Assert.Throws<ArgumentException>(() =>
-            new CustomPeriod(new DateOnly(2025, 1, 10), new DateOnly(2025, 1, 1)));
-        Assert.Multiple(() =>
-        {
-            Assert.That(ex.Message, Does.Contain("Invalid period"));
-            Assert.That(ex.Message, Does.Contain("Start date"));
-            Assert.That(ex.Message, Does.Contain("must be on or before end date"));
-            Assert.That(ex.Message, Does.Contain("(Parameter 'firstDate')"));
-        });
-    }
+        => Assert.That((Action)(() => { _ = new CustomPeriod(new DateOnly(2025, 1, 10), new DateOnly(2025, 1, 1)); }),
+            Throws.TypeOf<ArgumentException>()
+                .With.Message.Contains("Invalid period")
+                .And.Message.Contains("Start date")
+                .And.Message.Contains("must be on or before end date")
+                .And.Message.Contains("(Parameter 'firstDate')"));
 
     [TestCase("2025-01-01", "2025-01-01", 1, Description = "Single day")]
     [TestCase("2025-01-31", "2025-02-01", 2, Description = "Month boundary")]
@@ -190,3 +185,5 @@ public class CustomPeriodTests
         Assert.That(left.Gap(right), Is.EqualTo(4));
     }
 }
+
+

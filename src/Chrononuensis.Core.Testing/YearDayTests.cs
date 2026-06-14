@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,17 +13,15 @@ public class YearDayTests
     [TestCase(2004, 366)]
     [TestCase(2005, 365)]
     public void Ctor_ValidValues_Expected(int year, int day)
-        => Assert.DoesNotThrow(() => new YearDay(year, day));
+        => Assert.That((Action)(() => new YearDay(year, day)), Throws.Nothing);
 
     [TestCase(2004, 367, 366)]
     [TestCase(2005, 366, 365)]
     public void Ctor_InvalidValues_Throws(int year, int day, int max)
-    {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new YearDay(year, day));
-        Assert.That(ex.ParamName, Is.EqualTo("DayOfYear"));
-        Assert.That(ex.Message, Does.StartWith($"When year is {year}"));
-        Assert.That(ex.Message, Does.Contain($"1 and {max}"));
-    }
+        => Assert.That((Action)(() => new YearDay(year, day)), Throws.TypeOf<ArgumentOutOfRangeException>()
+            .With.Property("ParamName").EqualTo("DayOfYear")
+            .And.Message.StartsWith($"When year is {year}")
+            .And.Message.Contains($"1 and {max}"));
 
     [Test]
     public void Parse_InputDefaultFormat_Equal()
@@ -86,12 +84,12 @@ public class YearDayTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = YearDay.TryParse(input, null, out var yearDay);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(yearDay, Is.EqualTo(new YearDay(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -100,12 +98,12 @@ public class YearDayTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = YearDay.TryParse(input, "yyyy-j", null, out var yearDay);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(yearDay, Is.EqualTo(new YearDay(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -130,12 +128,12 @@ public class YearDayTests
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
     {
         var result = YearDay.TryParse(input.AsSpan(), null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearDay(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -144,12 +142,12 @@ public class YearDayTests
     public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
     {
         var result = YearDay.TryParse(input.AsSpan(), "jjj-yy", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearDay(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -190,3 +188,5 @@ public class YearDayTests
         Assert.That(value.UpperBound, Is.EqualTo(expected));
     }
 }
+
+

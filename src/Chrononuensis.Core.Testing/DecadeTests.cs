@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,15 +12,13 @@ public class DecadeTests
 {
     [TestCase(2020)]
     public void Ctor_ValidValues_Expected(int decade)
-        => Assert.DoesNotThrow(() => new Decade(decade));
+        => Assert.That((Action)(() => new Decade(decade)), Throws.Nothing);
 
     [TestCase(2021)]
     public void Ctor_InvalidValues_Throws(int decade)
-    {
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Decade(decade));
-        Assert.That(ex.ParamName, Is.EqualTo("Decade"));
-        Assert.That(ex.Message, Does.StartWith($"Invalid decade: The value must be a multiple of 10."));
-    }
+        => Assert.That((Action)(() => new Decade(decade)), Throws.TypeOf<ArgumentOutOfRangeException>()
+            .With.Property("ParamName").EqualTo("Decade")
+            .And.Message.StartsWith("Invalid decade: The value must be a multiple of 10."));
 
     [Test]
     public void Parse_InputDefaultFormat_Equal()
@@ -83,12 +81,12 @@ public class DecadeTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = Decade.TryParse(input, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Decade(2020)));
-        });
+        }
     }
 
     [Test]
@@ -97,12 +95,12 @@ public class DecadeTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = Decade.TryParse(input, "tt's'", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Decade(2020)));
-        });
+        }
     }
 
     [Test]
@@ -127,12 +125,12 @@ public class DecadeTests
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
     {
         var result = Decade.TryParse(input.AsSpan(), null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Decade(2020)));
-        });
+        }
     }
 
     [Test]
@@ -141,12 +139,12 @@ public class DecadeTests
     public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
     {
         var result = Decade.TryParse(input.AsSpan(), "tt's'", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new Decade(2020)));
-        });
+        }
     }
 
     [TestCase("2020s", 1, "2030s")]
@@ -196,3 +194,5 @@ public class DecadeTests
         Assert.That(value.UpperBound, Is.EqualTo(expected));
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,35 +21,35 @@ public class YearMonthParserTests
     {
         var parser = new YearMonthParser();
         var result = parser.Parse(input, format, null);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.Year, Is.EqualTo(2025));
             Assert.That(result.Month, Is.EqualTo(1));
-        });
+        }
     }
 
     [Test]
     public void Parse_UnexpectedLiteral_Throws()
     {
         var parser = new YearMonthParser();
-        var ex = Assert.Throws<FormatException>(() => parser.Parse("2025*Jan", "yyyy-MM", null));
-        Assert.That(ex.Message, Is.EqualTo("Parsing error at character 5: Expected '-' but found '*'."));
+        Assert.That((Action)(() => parser.Parse("2025*Jan", "yyyy-MM", null)),
+            Throws.TypeOf<FormatException>().With.Message.EqualTo("Parsing error at character 5: Expected '-' but found '*'."));
     }
 
     [Test]
     public void Parse_OverMax_Throws()
     {
         var parser = new YearMonthParser();
-        var ex = Assert.Throws<FormatException>(() => parser.Parse("2025-56", "yyyy-MM", null));
-        Assert.That(ex.Message, Is.EqualTo("Parsing error at character 8: Value must be between 1 and 12."));
+        Assert.That((Action)(() => parser.Parse("2025-56", "yyyy-MM", null)),
+            Throws.TypeOf<FormatException>().With.Message.EqualTo("Parsing error at character 8: Value must be between 1 and 12."));
     }
 
     [Test]
     public void Parse_UnexpectedLiteralForDigit_Throws()
     {
         var parser = new YearMonthParser();
-        var ex = Assert.Throws<FormatException>(() => parser.Parse("2025-Jan", "yyyy-MM", null));
-        Assert.That(ex.Message, Is.EqualTo("Parsing error at character 6: Unexpected 'J'."));
+        Assert.That((Action)(() => parser.Parse("2025-Jan", "yyyy-MM", null)),
+            Throws.TypeOf<FormatException>().With.Message.EqualTo("Parsing error at character 6: Unexpected 'J'."));
     }
 
     [Test]
@@ -72,3 +72,5 @@ public class YearMonthParserTests
         Assert.That(month, Is.EqualTo(1));
     }
 }
+
+

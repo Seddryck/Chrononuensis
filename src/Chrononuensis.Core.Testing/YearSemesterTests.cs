@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -68,12 +68,12 @@ public class YearSemesterTests
     public void TryParse_SomeValue_Expected(string input, bool expected)
     {
         var result = YearSemester.TryParse(input, null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearSemester(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -82,12 +82,12 @@ public class YearSemesterTests
     public void TryParse_SomeValueWithFormat_Expected(string input, bool expected)
     {
         var result = YearSemester.TryParse(input, "'H'S-yy", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearSemester(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -112,12 +112,12 @@ public class YearSemesterTests
     public void TryParse_SomeValueAsSpan_Expected(string input, bool expected)
     {
         var result = YearSemester.TryParse(input.AsSpan(), null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearSemester(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -126,12 +126,12 @@ public class YearSemesterTests
     public void TryParse_SomeValueWithFormatAsSpan_Expected(string input, bool expected)
     {
         var result = YearSemester.TryParse(input.AsSpan(), "'H'S-yy", null, out var value);
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(value, Is.EqualTo(new YearSemester(2025, 1)));
-        });
+        }
     }
 
     [Test]
@@ -177,3 +177,5 @@ public class YearSemesterTests
         Assert.That(value.UpperBound, Is.EqualTo(expected));
     }
 }
+
+
