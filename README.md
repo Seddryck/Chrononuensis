@@ -19,7 +19,7 @@ Chrononuensis is a library for parsing complex time periods like year-month, yea
 [![nuget](https://img.shields.io/nuget/v/Chrononuensis.svg)](https://www.nuget.org/packages/Chrononuensis/) [![GitHub Release Date](https://img.shields.io/github/release-date/seddryck/Chrononuensis.svg)](https://github.com/Seddryck/Chrononuensis/releases/latest) [![licence badge](https://img.shields.io/badge/License-Apache%202.0-yellow.svg)](https://github.com/Seddryck/Chrononuensis/blob/master/LICENSE) 
 
 **Dev. activity:** [![GitHub last commit](https://img.shields.io/github/last-commit/Seddryck/Chrononuensis.svg)](https://github.com/Seddryck/Chrononuensis/commits)
-![Still maintained](https://img.shields.io/maintenance/yes/2025.svg)
+![Still maintained](https://img.shields.io/maintenance/yes/2026.svg)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/Seddryck/Chrononuensis)
 
 **Continuous integration builds:** [![Build status](https://ci.appveyor.com/api/projects/status/omt58fj96enn9p34?svg=true)](https://ci.appveyor.com/project/Seddryck/Chrononuensis/)
