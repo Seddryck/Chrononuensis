@@ -92,7 +92,7 @@ public class YearTests
     }
 
     [Test]
-    [TestCase("2025-001")]
+    [TestCase("2025")]
     public void Parse_SomeValueAsSpan_Expected(string input)
     {
         var value = Year.Parse(input.AsSpan(), null);

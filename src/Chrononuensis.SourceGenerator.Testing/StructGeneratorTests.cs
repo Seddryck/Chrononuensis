@@ -79,8 +79,33 @@ public class StructGeneratorTest
             Assert.That(periodOutput, Does.Contain("public DateOnly EndDateExclusive"));
             Assert.That(periodOutput, Does.Contain("public DateOnly FirstDate"));
             Assert.That(periodOutput, Does.Contain("public DateOnly LastDate"));
+            Assert.That(output, Does.Contain("public int Year { get; } = Year;"));
+            Assert.That(output, Does.Contain("public int Month { get; }")
+                .And.Not.Contain("public int Month { get; init; }"));
             Assert.That(output, Does.Contain("public override bool Equals(object? obj) => obj is IPeriod other && Equals(other);"));
             Assert.That(output, Does.Contain("public override int GetHashCode() => HashCode.Combine(StartDate, EndDateExclusive);"));
+        }
+    }
+
+    [Test]
+    public void GenerateExtension_UpdatesThroughValidatedConstructor()
+    {
+        var output = StructGenerator.GenerateExtension(
+            new StructDefinition()
+            {
+                Name = "YearMonth",
+                Parts =
+                [
+                    new() { Name = "Year", Type = "int" },
+                    new() { Name = "Month", Type = "int", Min = 1, Max = 12 }
+                ]
+            });
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output, Does.Contain("return new YearMonth(value.Year + cycles, normalized);"));
+            Assert.That(output, Does.Contain("=> new YearMonth(value.Year + year, value.Month);"));
+            Assert.That(output, Does.Not.Contain("with"));
         }
     }
 }

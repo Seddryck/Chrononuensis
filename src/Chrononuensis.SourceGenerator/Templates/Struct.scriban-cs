@@ -17,19 +17,19 @@ public {{if is_period}}readonly {{end}}partial {{if is_period}}struct{{else}}rec
     {{- for part in parts }}
     {{- if parts.size ==1 && part.name == struct_name }}{{name = "Value"}}{{ else }}{{ name = part.name }}{{ end }}
     {{- if part.min && (part.max || part.max_f) }}
-    public {{ part.type }} {{ name }} { get; init; }
+    public {{ part.type }} {{ name }} { get; }
         = ({{ name }} >= {{ part.min }} && {{ name }} <= {{ part.max ?? part.max_f }})
             ? {{ name }}
             : throw new ArgumentOutOfRangeException(nameof({{ name }}), $"
                 {{- if part.max_f }}When {{parts[0].name | string.downcase }} is { {{parts[0].name}} }, {{ end -}}
                 {{- name }} must be between {{ part.min }} and { {{ part.max ?? part.max_f }} }.");
     {{- else if part.modulo }}
-    public {{ part.type }} Value { get; init; }
+    public {{ part.type }} Value { get; }
         = (Value % {{ part.modulo }} == 0)
             ? Value
             : throw new ArgumentOutOfRangeException(nameof({{ part.name }}), $"Invalid {{ struct_name | string.downcase }}: The value must be a multiple of {{ part.modulo }}.");
     {{- else if is_period }}
-    public {{ part.type }} {{ name }} { get; init; } = {{ name }};
+    public {{ part.type }} {{ name }} { get; } = {{ name }};
     {{- end }}
     {{- end }}
 
