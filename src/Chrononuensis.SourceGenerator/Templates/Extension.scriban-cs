@@ -3,7 +3,7 @@
 public static partial class {{struct_name}}Extension
 {
     {{- for part in parts -}}
-    {{- offset = for.index - 1}}
+    {{- part_index = for.index -}}
     {{- if !part.variable }}
     {{- if part.min && part.max }}
     {{- if parts.size ==1 && part.name == struct_name }}{{name = "Value"}}{{ else }}{{ name = part.name }}{{ end }}
@@ -12,22 +12,28 @@ public static partial class {{struct_name}}Extension
         var normalized = CyclicArithmetic.Normalize(
             value.{{ name }}, {{ part.name | string.downcase }}, {{ part.min }}, {{ part.max }}, out var cycles);
 
-        return value with {
-                {{ name }} = normalized,
-                {{- while (offset >= 0) }}
-                {{ parts[offset].name }} = value.{{ parts[offset].name }} + cycles
-                {{- offset = offset - 1 }}
-                {{- if offset>0 }},{{ end }}
-                {{- end }}
-            };
+        return new {{ struct_name }}(
+            {{- for constructor_part in parts }}
+            {{- if for.index == part_index }}normalized
+            {{- else if for.index < part_index }}value.{{ constructor_part.name }} + cycles
+            {{- else }}value.{{ constructor_part.name }}
+            {{- end }}
+            {{- if !for.last }}, {{ end }}
+            {{- end }});
     }
     {{- else if !part.min }}
     {{- if parts.size > 1 }}
     public static {{ struct_name }} Add{{ part.name }}(this {{ struct_name }} value, int {{ part.name | string.downcase }})
-        => value with { {{ part.name }} = value.{{ part.name }} + {{ part.name | string.downcase }} };
+        => new {{ struct_name }}(
+            {{- for constructor_part in parts }}
+            {{- if for.index == part_index }}value.{{ constructor_part.name }} + {{ part.name | string.downcase }}
+            {{- else }}value.{{ constructor_part.name }}
+            {{- end }}
+            {{- if !for.last }}, {{ end }}
+            {{- end }});
     {{- else }}
     public static {{ struct_name }} Add{{ part.name }}(this {{ struct_name }} value, int {{ part.name | string.downcase }})
-        => value with { Value = value.Value + {{ part.name | string.downcase }}{{ if part.modulo }} * {{ part.modulo }}{{ end }} };
+        => new(value.Value + {{ part.name | string.downcase }}{{ if part.modulo }} * {{ part.modulo }}{{ end }});
     {{- end }}
     {{- end }}
     {{- end }}

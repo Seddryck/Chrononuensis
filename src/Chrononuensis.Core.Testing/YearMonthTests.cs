@@ -10,6 +10,35 @@ using Chrononuensis.Extensions;
 namespace Chrononuensis.Testing;
 public class YearMonthTests
 {
+    [TestCase(0)]
+    [TestCase(13)]
+    public void Ctor_InvalidMonth_Throws(int month)
+        => Assert.That((Action)(() => new YearMonth(2025, month)),
+            Throws.TypeOf<ArgumentOutOfRangeException>()
+                .With.Property("ParamName").EqualTo("Month"));
+
+    [Test]
+    public void Components_HaveNoPublicSetter()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(typeof(YearMonth).GetProperty(nameof(YearMonth.Year))!.SetMethod, Is.Null);
+            Assert.That(typeof(YearMonth).GetProperty(nameof(YearMonth.Month))!.SetMethod, Is.Null);
+        }
+    }
+
+    [Test]
+    public void Default_RepresentsAbsentValue()
+    {
+        var value = default(YearMonth);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(value.Year, Is.Zero);
+            Assert.That(value.Month, Is.Zero);
+        }
+    }
+
     [Test]
     public void Parse_InputDefaultFormat_Equal()
         => Assert.That(YearMonth.Parse("2021-01", "yyyy-MM"), Is.EqualTo(new YearMonth(2021, 1)));
@@ -110,6 +139,19 @@ public class YearMonthTests
             Assert.That(result, Is.EqualTo(expected));
             if (expected)
                 Assert.That(yearMonth, Is.EqualTo(new YearMonth(2025, 1)));
+        }
+    }
+
+    [Test]
+    public void TryParse_InvalidValue_ReturnsDefault()
+    {
+        var result = YearMonth.TryParse("2025-99", null, out var value);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result, Is.False);
+            Assert.That(value.Year, Is.Zero);
+            Assert.That(value.Month, Is.Zero);
         }
     }
 
