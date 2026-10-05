@@ -104,12 +104,12 @@ internal partial class Primitives
         return combinedParser.Select(results => results.ToArray());
     }
 
-    public static Parser<char, Unit> LocalizedParser(string key)
+    public static Parser<char, Unit> LocalizedParser(string key, CultureInfo? culture = null)
     {
         if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentException("Key cannot be null or empty.", nameof(key));
 
-        var value = LocalizedStrings.Get(key, CultureInfo.CurrentUICulture);
+        var value = LocalizedStrings.Get(key, culture ?? CultureInfo.CurrentUICulture);
         return Parser.String(value).IgnoreResult();
     }
 }
