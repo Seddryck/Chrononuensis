@@ -9,6 +9,8 @@ namespace Chrononuensis;
 /// <summary>
 /// Represents a continuous time span with a defined start and end.
 /// It represents a range rather than a single event.
+/// Equality is based on <see cref="FirstDate"/> and <see cref="LastDate"/>,
+/// regardless of the concrete implementation.
 /// </summary>
 public interface IPeriod : IEquatable<IPeriod>
 {
