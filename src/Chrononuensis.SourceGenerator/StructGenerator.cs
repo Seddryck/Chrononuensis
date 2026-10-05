@@ -250,7 +250,7 @@ public class StructGenerator : IIncrementalGenerator
             part = part?.Name,
             by_year = structDefinition.Period.ByYear,
             first = structDefinition.Period.First,
-            last = structDefinition.Period.Last,
+            end_exclusive = structDefinition.Period.EndExclusive,
             year = new
             {
                 value = structDefinition.Period.Year,

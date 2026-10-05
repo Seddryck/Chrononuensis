@@ -59,8 +59,7 @@ public class StructGeneratorTest
     [Test]
     public void GenerateStruct_Period_UsesExplicitBoundsEquality()
     {
-        var output = StructGenerator.GenerateStruct(
-            new StructDefinition()
+        var definition = new StructDefinition()
             {
                 Name = "YearMonth",
                 Parts =
@@ -69,13 +68,19 @@ public class StructGeneratorTest
                     new() { Name = "Month", Type = "int", Min = 1, Max = 12 }
                 ],
                 Period = new StructPeriod { ByYear = 12 }
-            });
+            };
+        var output = StructGenerator.GenerateStruct(definition);
+        var periodOutput = StructGenerator.GeneratePeriod(definition);
 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(output, Does.Contain("public readonly partial struct YearMonth"));
+            Assert.That(periodOutput, Does.Contain("public DateOnly StartDate"));
+            Assert.That(periodOutput, Does.Contain("public DateOnly EndDateExclusive"));
+            Assert.That(periodOutput, Does.Contain("public DateOnly FirstDate"));
+            Assert.That(periodOutput, Does.Contain("public DateOnly LastDate"));
             Assert.That(output, Does.Contain("public override bool Equals(object? obj) => obj is IPeriod other && Equals(other);"));
-            Assert.That(output, Does.Contain("public override int GetHashCode() => HashCode.Combine(FirstDate, LastDate);"));
+            Assert.That(output, Does.Contain("public override int GetHashCode() => HashCode.Combine(StartDate, EndDateExclusive);"));
         }
     }
 }

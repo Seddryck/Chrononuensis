@@ -107,7 +107,7 @@ public {{if is_period}}readonly {{end}}partial {{if is_period}}struct{{else}}rec
 
     public override bool Equals(object? obj) => obj is IPeriod other && Equals(other);
 
-    public override int GetHashCode() => HashCode.Combine(FirstDate, LastDate);
+    public override int GetHashCode() => HashCode.Combine(StartDate, EndDateExclusive);
 
     public void Deconstruct({{ for part in parts }}out {{ part.type }} {{ part.name | string.downcase }}{{ if !for.last }}, {{ end }}{{ end }})
     {
