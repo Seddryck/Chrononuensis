@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Chrononuensis.Formats.Tokens;
 using Chrononuensis.Formats.Tokens.Month;
 using Chrononuensis.Parsers;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace Chrononuensis.Testing.Parsers;
