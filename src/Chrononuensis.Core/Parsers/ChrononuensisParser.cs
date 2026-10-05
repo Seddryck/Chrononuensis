@@ -17,7 +17,7 @@ public abstract class ChrononuensisParser : IParser
     {
         var factory = new ParserFactory(provider);
         var parsers = tokens.Select(factory.Create).ToArray();
-        var parser = Primitives.CombineParsers(parsers);
+        var parser = Primitives.CombineParsers(parsers).Before(Parser<char>.End);
         return parser.Parse(input);
     }
 
@@ -25,7 +25,7 @@ public abstract class ChrononuensisParser : IParser
     {
         var factory = new ParserFactory(provider);
         var parsers = tokens.Select(factory.Create).ToArray();
-        var parser = Primitives.CombineParsers(parsers);
+        var parser = Primitives.CombineParsers(parsers).Before(Parser<char>.End);
         return parser.Parse(input);
     }
 

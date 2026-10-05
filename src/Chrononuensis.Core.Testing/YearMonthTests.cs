@@ -14,6 +14,40 @@ public class YearMonthTests
     public void Parse_InputDefaultFormat_Equal()
         => Assert.That(YearMonth.Parse("2021-01", "yyyy-MM"), Is.EqualTo(new YearMonth(2021, 1)));
 
+    [TestCase("2025-01junk")]
+    [TestCase("2025-01 ")]
+    [TestCase("2025-01-")]
+    public void Parse_TrailingInput_ThrowsAtFirstUnconsumedCharacter(string input)
+    {
+        Assert.That((Action)(() => YearMonth.Parse(input, "yyyy-MM")),
+            Throws.TypeOf<FormatException>()
+                .With.Message.EqualTo("Parsing error at character 8: Expected end-of-file but found '" + input[7] + "'."));
+        Assert.That((Action)(() => YearMonth.Parse(input.AsSpan(), "yyyy-MM")),
+            Throws.TypeOf<FormatException>()
+                .With.Message.EqualTo("Parsing error at character 8: Expected end-of-file but found '" + input[7] + "'."));
+    }
+
+    [TestCase("2025-01junk", false)]
+    [TestCase("2025-01 ", false)]
+    [TestCase("2025-01-", false)]
+    [TestCase("2025-01", true)]
+    public void TryParse_TrailingOrExactInput_Expected(string input, bool expected)
+    {
+        var stringResult = YearMonth.TryParse(input, "yyyy-MM", null, out var stringValue);
+        var spanResult = YearMonth.TryParse(input.AsSpan(), "yyyy-MM", null, out var spanValue);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(stringResult, Is.EqualTo(expected));
+            Assert.That(spanResult, Is.EqualTo(expected));
+            if (expected)
+            {
+                Assert.That(stringValue, Is.EqualTo(new YearMonth(2025, 1)));
+                Assert.That(spanValue, Is.EqualTo(new YearMonth(2025, 1)));
+            }
+        }
+    }
+
     private static IEnumerable<YearMonth> GetData()
     {
         yield return new(2022, 1);
