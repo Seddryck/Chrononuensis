@@ -12,7 +12,9 @@ $temporaryPath = Join-Path $sourceDirectory ('.logo-' + [System.Guid]::NewGuid()
 $iconSizes = 512, 256, 128, 64, 48, 32, 16
 
 $backgroundColor = '#172033'
-$shadowColor = '#1F2937'
+# Preblended equivalent of #0F1626 at 70% over the background. The source
+# background has a shadow-shaped knockout, so the generated facet must be opaque.
+$shadowColor = '#11192A'
 $hourglassColor = '#D6A84A'
 
 function Invoke-ImageMagick {
