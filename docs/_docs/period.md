@@ -18,13 +18,18 @@ The following types implement the `IPeriod` interface:
 
 - Century
 - Decade
+- Olympiad
 - Year
 - YearSemester
 - YearQuarter
+- YearMonth
 - YearWeek
 - YearDay
+- CustomPeriod
 
 Each of these types provides a structured way to represent specific time intervals.
+
+`MonthDay` and its parser are supported, but `MonthDay` does not implement `IPeriod` because a month and day without a year do not identify a continuous time span. See [Structures](structures.md) for the complete structure and parser inventory.
 
 ## Properties
 
