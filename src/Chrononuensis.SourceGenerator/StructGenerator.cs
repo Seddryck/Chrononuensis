@@ -159,6 +159,7 @@ public class StructGenerator : IIncrementalGenerator
         var output = scribanTemplate.Render(new
         {
             struct_name = structDefinition.Name,
+            is_period = structDefinition.Period is not null,
             parts = structDefinition.Parts.Select(p => new
             {
                 name = p.Name,

@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Chrononuensis;
 
-public partial record struct {{struct_name}} : IPeriod
+public readonly partial struct {{struct_name}} : IPeriod
 {
     public int Days
         => LastDate.DayNumber - FirstDate.DayNumber + 1;

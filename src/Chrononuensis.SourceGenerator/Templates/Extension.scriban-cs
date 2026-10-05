@@ -6,18 +6,21 @@ public static partial class {{struct_name}}Extension
     {{- offset = for.index - 1}}
     {{- if !part.variable }}
     {{- if part.min && part.max }}
+    {{- if parts.size ==1 && part.name == struct_name }}{{name = "Value"}}{{ else }}{{ name = part.name }}{{ end }}
     public static {{ struct_name }} Add{{ part.name }}(this {{ struct_name }} value, int {{ part.name | string.downcase }})
-        => value with {
-                {{- if parts.size ==1 && part.name == struct_name }}{{name = "Value"}}{{ else }}{{ name = part.name }}{{ end }}
-                {{ name }} = (value.{{ name }} + {{ part.name | string.downcase }}) % {{ part.max }},  
-                {{- factor = 1 }}
+    {
+        var normalized = CyclicArithmetic.Normalize(
+            value.{{ name }}, {{ part.name | string.downcase }}, {{ part.min }}, {{ part.max }}, out var cycles);
+
+        return value with {
+                {{ name }} = normalized,
                 {{- while (offset >= 0) }}
-                {{- factor = factor * parts[offset+1].max }}
-                {{ parts[offset].name }} = value.{{ parts[offset].name }} + (value.{{ part.name }} + {{ part.name | string.downcase }}) / {{ factor }}
+                {{ parts[offset].name }} = value.{{ parts[offset].name }} + cycles
                 {{- offset = offset - 1 }}
                 {{- if offset>0 }},{{ end }}
                 {{- end }}
             };
+    }
     {{- else if !part.min }}
     {{- if parts.size > 1 }}
     public static {{ struct_name }} Add{{ part.name }}(this {{ struct_name }} value, int {{ part.name | string.downcase }})

@@ -13,10 +13,16 @@ internal class MonthParser
     public static Parser<char, int> PaddedDigit { get; } = Primitives.TwoDigitParser(1, 12);
 
     public static Parser<char, int> Abbreviation { get; }
-        = Primitives.ListParser(CultureInfo.InvariantCulture.DateTimeFormat.AbbreviatedMonthNames);
+        = CreateAbbreviation(CultureInfo.InvariantCulture.DateTimeFormat);
     public static Parser<char, int> Label { get; }
-        = Primitives.ListParser(CultureInfo.InvariantCulture.DateTimeFormat.MonthNames);
+        = CreateLabel(CultureInfo.InvariantCulture.DateTimeFormat);
 
     public static Parser<char, int> RomanNumeral { get; }
         = Primitives.RomanNumeral(1, 12);
+
+    public static Parser<char, int> CreateAbbreviation(DateTimeFormatInfo dateTimeFormat)
+        => Primitives.ListParser(dateTimeFormat.AbbreviatedMonthNames);
+
+    public static Parser<char, int> CreateLabel(DateTimeFormatInfo dateTimeFormat)
+        => Primitives.ListParser(dateTimeFormat.MonthNames);
 }

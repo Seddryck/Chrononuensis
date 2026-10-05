@@ -9,7 +9,7 @@ namespace Chrononuensis;
 /// <summary>
 /// Represents a calendar year.
 /// </summary>
-public partial record struct Year
+public readonly partial struct Year
 {
     /// <summary>
     /// Determines whether the current year is a leap year.

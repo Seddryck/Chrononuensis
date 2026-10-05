@@ -143,6 +143,12 @@ public class YearMonthTests
     }
 
     [TestCase("2025-01", 5, "2025-06")]
+    [TestCase("2025-01", 0, "2025-01")]
+    [TestCase("2025-01", 11, "2025-12")]
+    [TestCase("2025-01", 12, "2026-01")]
+    [TestCase("2025-01", 24, "2027-01")]
+    [TestCase("2025-01", -1, "2024-12")]
+    [TestCase("2025-01", -13, "2023-12")]
     [TestCase("2025-12", 4, "2026-04")]
     [TestCase("2025-12", 14, "2027-02")]
     public void AddMonth_SomeValue_Expected(string input, int value, string expected)

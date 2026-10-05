@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Chrononuensis;
 
-public partial record struct {{struct_name}} : IPeriod
+public readonly partial struct {{struct_name}} : IPeriod
 {
     /// <summary>
     /// Determines if this period fully contains another period.

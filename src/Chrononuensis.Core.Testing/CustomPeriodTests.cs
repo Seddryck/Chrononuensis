@@ -101,6 +101,91 @@ public class CustomPeriodTests
             new YearMonth(2024, 1)), Is.True);
 
     [Test]
+    public void Equal_SameMonthBounds_IsSymmetricAndHashCompatible()
+    {
+        object custom = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
+        object month = new YearMonth(2024, 1);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(custom.Equals(month), Is.True);
+            Assert.That(month.Equals(custom), Is.True);
+            Assert.That(custom.GetHashCode(), Is.EqualTo(month.GetHashCode()));
+        }
+    }
+
+    [Test]
+    public void Equal_SameYearBounds_IsSymmetricAndHashCompatible()
+    {
+        IPeriod custom = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 12, 31));
+        IPeriod year = new Year(2024);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(custom.Equals(year), Is.True);
+            Assert.That(year.Equals(custom), Is.True);
+            Assert.That(custom.GetHashCode(), Is.EqualTo(year.GetHashCode()));
+        }
+    }
+
+    [Test]
+    public void Equal_SameDayBounds_IsSymmetricAndHashCompatible()
+    {
+        IPeriod custom = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 1));
+        IPeriod day = new YearDay(2024, 1);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(custom.Equals(day), Is.True);
+            Assert.That(day.Equals(custom), Is.True);
+            Assert.That(custom.GetHashCode(), Is.EqualTo(day.GetHashCode()));
+        }
+    }
+
+    [Test]
+    public void Equal_SameBounds_IsTransitive()
+    {
+        IPeriod first = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
+        IPeriod second = new YearMonth(2024, 1);
+        IPeriod third = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(first.Equals(second), Is.True);
+            Assert.That(second.Equals(third), Is.True);
+            Assert.That(first.Equals(third), Is.True);
+        }
+    }
+
+    [Test]
+    public void Equal_SameBounds_OperatorsAreSymmetric()
+    {
+        var custom = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
+        var month = new YearMonth(2024, 1);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(custom == month, Is.True);
+            Assert.That(month == custom, Is.True);
+            Assert.That(custom != month, Is.False);
+            Assert.That(month != custom, Is.False);
+        }
+    }
+
+    [Test]
+    public void Equal_DifferentBounds_IsSymmetric()
+    {
+        IPeriod custom = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));
+        IPeriod month = new YearMonth(2024, 2);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(custom.Equals(month), Is.False);
+            Assert.That(month.Equals(custom), Is.False);
+        }
+    }
+
+    [Test]
     public void Equal_SameRef_True()
     {
         var period = new CustomPeriod(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 31));

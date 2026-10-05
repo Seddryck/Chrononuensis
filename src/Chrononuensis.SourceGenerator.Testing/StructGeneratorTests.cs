@@ -55,4 +55,27 @@ public class StructGeneratorTest
 
         Assert.That(output.Replace("\r\n", "\n"), Is.EqualTo(ReadEmbeddedFile("YearMonthParser.cs").Replace("\r\n", "\n")));
     }
+
+    [Test]
+    public void GenerateStruct_Period_UsesExplicitBoundsEquality()
+    {
+        var output = StructGenerator.GenerateStruct(
+            new StructDefinition()
+            {
+                Name = "YearMonth",
+                Parts =
+                [
+                    new() { Name = "Year", Type = "int" },
+                    new() { Name = "Month", Type = "int", Min = 1, Max = 12 }
+                ],
+                Period = new StructPeriod { ByYear = 12 }
+            });
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(output, Does.Contain("public readonly partial struct YearMonth"));
+            Assert.That(output, Does.Contain("public override bool Equals(object? obj) => obj is IPeriod other && Equals(other);"));
+            Assert.That(output, Does.Contain("public override int GetHashCode() => HashCode.Combine(FirstDate, LastDate);"));
+        }
+    }
 }
