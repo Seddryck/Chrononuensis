@@ -11,20 +11,21 @@ using Pidgin;
 namespace Chrononuensis.Parsers;
 public abstract class ChrononuensisParser : IParser
 {
-    private Lexer lexer = new();
-    private ParserFactory factory = new();
+    private readonly Lexer lexer = new();
 
     private Result<char, object[]> CreateParseResult(string input, Format tokens, IFormatProvider? provider, Type[] types)
     {
+        var factory = new ParserFactory(provider);
         var parsers = tokens.Select(factory.Create).ToArray();
-        var parser = Primitives.CombineParsers(parsers);
+        var parser = Primitives.CombineParsers(parsers).Before(Parser<char>.End);
         return parser.Parse(input);
     }
 
     private Result<char, object[]> CreateParseResult(ReadOnlySpan<char> input, Format tokens, IFormatProvider? provider, Type[] types)
     {
+        var factory = new ParserFactory(provider);
         var parsers = tokens.Select(factory.Create).ToArray();
-        var parser = Primitives.CombineParsers(parsers);
+        var parser = Primitives.CombineParsers(parsers).Before(Parser<char>.End);
         return parser.Parse(input);
     }
 

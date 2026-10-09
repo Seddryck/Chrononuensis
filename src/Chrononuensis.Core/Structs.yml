@@ -21,7 +21,7 @@
       maxF: 365 + Convert.ToInt32(DateTime.IsLeapYear(Year))
   period:
     first: new DateOnly(Year, 1, 1).AddDays(DayOfYear - 1)
-    last: FirstDate
+    endExclusive: StartDate.AddDays(1)
 
 - name: YearWeek
   default: yyyy-'W'ww
@@ -34,7 +34,7 @@
       maxF: ISOWeek.GetWeekOfYear(new DateTime(Year, 12, 28))
   period:
     first: DateOnly.FromDateTime(ISOWeek.GetYearStart(Year).AddDays(7 * (Week - 1)))
-    last: FirstDate.AddDays(6)
+    endExclusive: StartDate.AddDays(7)
 
 - name: YearMonth
   default: yyyy-MM

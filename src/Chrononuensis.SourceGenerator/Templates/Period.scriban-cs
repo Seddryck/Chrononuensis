@@ -4,12 +4,12 @@ using System.Globalization;
 
 namespace Chrononuensis;
 
-public partial record struct {{struct_name}} : IPeriod
+public readonly partial struct {{struct_name}} : IPeriod
 {
     public int Days
-        => LastDate.DayNumber - FirstDate.DayNumber + 1;
+        => EndDateExclusive.DayNumber - StartDate.DayNumber;
 
-    public DateOnly FirstDate
+    public DateOnly StartDate
         => {{ if first -}}
                {{- first -}}
            {{- else if by_year}}
@@ -18,21 +18,27 @@ public partial record struct {{struct_name}} : IPeriod
                new DateOnly({{year.value}}, 1, 1)
            {{- end -}};
 
-    public DateOnly LastDate
-        => {{ if last -}}
-               {{- last -}}
+    public DateOnly EndDateExclusive
+        => {{ if end_exclusive -}}
+               {{- end_exclusive -}}
            {{- else if by_year -}}
-               FirstDate.AddMonths(12 / {{by_year}}).AddDays(-1)
+               StartDate.AddMonths(12 / {{by_year}})
            {{- else if year -}}
-               FirstDate.AddYears({{year.duration ?? 1}}).AddDays(-1)
+               StartDate.AddYears({{year.duration ?? 1}})
            {{- end -}};
 
+    public DateOnly FirstDate
+        => StartDate;
+
+    public DateOnly LastDate
+        => EndDateExclusive.AddDays(-1);
+
     public DateTime LowerBound
-        => FirstDate.ToDateTime(TimeOnly.MinValue);
+        => StartDate.ToDateTime(TimeOnly.MinValue);
 
     public DateTime UpperBound
-        => LastDate.AddDays(1).ToDateTime(TimeOnly.MinValue);
+        => EndDateExclusive.ToDateTime(TimeOnly.MinValue);
 
     public bool Equals(IPeriod? other)
-        => other is not null && FirstDate == other.FirstDate && LastDate == other.LastDate;
+        => other is not null && StartDate == other.StartDate && EndDateExclusive == other.EndDateExclusive;
 }

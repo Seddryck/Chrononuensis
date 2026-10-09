@@ -107,14 +107,14 @@
     // Primary outline
     .uk-button-primary-outline {
         background-color: $global-primary-background;
-        color: $global-muted-color;
+        color: $button-primary-color;
         border: $button-border-width solid $button-primary-background;
     }
 
     .uk-button-primary-outline:hover,
     .uk-button-primary-outline:focus {
-        background-color: $global-primary-background;
-        color: $global-secondary-background;
+        background-color: darken($global-primary-background, 6%);
+        color: $button-primary-hover-color;
         border: $button-border-width solid $button-primary-background;
     }
 

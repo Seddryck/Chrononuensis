@@ -159,6 +159,7 @@ public class StructGenerator : IIncrementalGenerator
         var output = scribanTemplate.Render(new
         {
             struct_name = structDefinition.Name,
+            is_period = structDefinition.Period is not null,
             parts = structDefinition.Parts.Select(p => new
             {
                 name = p.Name,
@@ -249,7 +250,7 @@ public class StructGenerator : IIncrementalGenerator
             part = part?.Name,
             by_year = structDefinition.Period.ByYear,
             first = structDefinition.Period.First,
-            last = structDefinition.Period.Last,
+            end_exclusive = structDefinition.Period.EndExclusive,
             year = new
             {
                 value = structDefinition.Period.Year,
