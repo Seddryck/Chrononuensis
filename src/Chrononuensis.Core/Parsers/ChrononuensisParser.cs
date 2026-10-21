@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
@@ -11,25 +11,7 @@ using Pidgin;
 namespace Chrononuensis.Parsers;
 public abstract class ChrononuensisParser : IParser
 {
-    private Lexer lexer = new();
-    private ParserFactory factory = new();
-
-    private Result<char, object[]> CreateParseResult(string input, Format tokens, IFormatProvider? provider, Type[] types)
-    {
-        var parsers = tokens.Select(factory.Create).ToArray();
-        var parser = Primitives.CombineParsers(parsers);
-        return parser.Parse(input);
-    }
-
-    private Result<char, object[]> CreateParseResult(ReadOnlySpan<char> input, Format tokens, IFormatProvider? provider, Type[] types)
-    {
-        var parsers = tokens.Select(factory.Create).ToArray();
-        var parser = Primitives.CombineParsers(parsers);
-        return parser.Parse(input);
-    }
-
-    private Format CreateTokens(string format)
-        => lexer.Tokenize(format);
+    private static readonly ParserPipelineCache Pipelines = new();
 
     private void ThrowsIfNotSuccess(Result<char, object[]> result)
     {
@@ -55,33 +37,33 @@ public abstract class ChrononuensisParser : IParser
 
     public object[] ParseInternal(string input, string format, IFormatProvider? provider, Type[] types)
     {
-        var tokens = CreateTokens(format);
-        var result = CreateParseResult(input, tokens, provider, types);
+        var pipeline = Pipelines.Get(format);
+        var result = pipeline.Parser.Parse(input);
         ThrowsIfNotSuccess(result);
-        return CreateResults(result, tokens, types);
+        return CreateResults(result, pipeline.Tokens, types);
     }
 
     public object[] ParseInternal(ReadOnlySpan<char> input, string format, IFormatProvider? provider, Type[] types)
     {
-        var tokens = CreateTokens(format);
-        var result = CreateParseResult(input, tokens, provider, types);
+        var pipeline = Pipelines.Get(format);
+        var result = pipeline.Parser.Parse(input);
         ThrowsIfNotSuccess(result);
-        return CreateResults(result, tokens, types);
+        return CreateResults(result, pipeline.Tokens, types);
     }
 
     public bool TryParseInternal(string input, string format, IFormatProvider? provider, Type[] types, out object[]? results)
     {
-        var tokens = CreateTokens(format);
-        var result = CreateParseResult(input, tokens, provider, types);
-        results = result.Success ? CreateResults(result, tokens, types) : null;
+        var pipeline = Pipelines.Get(format);
+        var result = pipeline.Parser.Parse(input);
+        results = result.Success ? CreateResults(result, pipeline.Tokens, types) : null;
         return result.Success;
     }
 
     public bool TryParseInternal(ReadOnlySpan<char> input, string format, IFormatProvider? provider, Type[] types, out object[]? results)
     {
-        var tokens = CreateTokens(format);
-        var result = CreateParseResult(input, tokens, provider, types);
-        results = result.Success ? CreateResults(result, tokens, types) : null;
+        var pipeline = Pipelines.Get(format);
+        var result = pipeline.Parser.Parse(input);
+        results = result.Success ? CreateResults(result, pipeline.Tokens, types) : null;
         return result.Success;
     }
 }
