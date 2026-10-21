@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,54 +12,88 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Chrononuensis.Parsers.Internals;
 internal partial class Primitives
 {
+    // Keep the original characters in a value type until all required digits have
+    // parsed. This preserves Pidgin's Unicode digit acceptance and failure position:
+    // conversion of a complete non-ASCII number still throws as int.Parse did.
+    private static readonly Parser<char, ulong> OneDigit = Parser.Digit.Select(c => (ulong)c);
+    private static readonly Parser<char, ulong> TwoDigits = OneDigit.Then(Parser.Digit, AppendDigit);
+    private static readonly Parser<char, ulong> ThreeDigits = TwoDigits.Then(Parser.Digit, AppendDigit);
+    private static readonly Parser<char, ulong> FourDigits = ThreeDigits.Then(Parser.Digit, AppendDigit);
+
+    private static ulong AppendDigit(ulong digits, char digit) => (digits << 16) | digit;
+
+    private static int AccumulateDigits(ulong digits)
+    {
+        var original = digits;
+        var shift = 48;
+        while ((digits >> shift) == 0)
+            shift -= 16;
+
+        var value = 0;
+        for (; shift >= 0; shift -= 16)
+        {
+            var digit = (char)(digits >> shift);
+            if ((uint)(digit - '0') > 9)
+                return ConvertNonAsciiDigits(original);
+            value = value * 10 + (digit - '0');
+        }
+        return value;
+    }
+
+    private static int ConvertNonAsciiDigits(ulong digits)
+    {
+        // Exceptional path only: preserve int.Parse's FormatException and message,
+        // after the complete primitive has parsed, including mixed Unicode/ASCII.
+        Span<char> characters = stackalloc char[4];
+        var start = characters.Length;
+        while (digits != 0)
+        {
+            characters[--start] = (char)digits;
+            digits >>= 16;
+        }
+        return int.Parse(characters[start..]);
+    }
+
     public static Parser<char, int> OneDigitParser(int min, int max) =>
-        Parser.Digit.Repeat(1).Select(chars => int.Parse(new string(chars.ToArray())))
+        OneDigit.Select(AccumulateDigits)
             .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
 
     public static Parser<char, int> OneDigitThenZeroParser(Func<int, int> func) =>
-        Parser.Digit.Then(Parser.Char('0'), (digit, zero) => func(int.Parse(digit.ToString() + zero)));
+        OneDigit.Then(Parser.Char('0'), AppendDigit).Select(digits => func(AccumulateDigits(digits)));
 
     public static Parser<char, int> OneOrTwoDigitParser(int min, int max) =>
-        Parser.Digit.Then(Parser.Try(Parser.Digit).Optional(),
-        (first, second) => int.Parse(second.HasValue
-                                ? $"{first}{second.Value}"
-                                : $"{first}"))
-                            .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
+        OneDigit.Then(Parser.Try(Parser.Digit).Optional(),
+            (first, second) => second.HasValue ? AppendDigit(first, second.Value) : first)
+            .Select(AccumulateDigits)
+            .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
 
     public static Parser<char, int> OneToThreeDigitParser(int min, int max) =>
-        Parser.Digit
-            .Then(
-                Parser.Try(
-                        Parser.Digit.Then(
-                            Parser.Try(Parser.Digit).Optional()
-                            , (second, third) => third.HasValue ? $"{second}{third.Value}" : second.ToString()
-                        ).Optional()
-                )
-                , (first, second) => int.Parse(second.HasValue
-                                ? $"{first}{second.Value}"
-                                : $"{first}"))
-        .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
-
+        OneDigit.Then(
+            Parser.Try(OneDigit.Then(Parser.Try(Parser.Digit).Optional(),
+                (second, third) => third.HasValue ? AppendDigit(second, third.Value) : second).Optional()),
+            (first, second) => !second.HasValue ? first
+                : second.Value <= char.MaxValue ? (first << 16) | second.Value
+                : (first << 32) | second.Value)
+            .Select(AccumulateDigits)
+            .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
 
     public static Parser<char, int> TwoDigitParser(Func<int, int> normalize) =>
-        Parser.Digit.Repeat(2).Select(chars => normalize(int.Parse(new string(chars.ToArray()))));
+        TwoDigits.Select(digits => normalize(AccumulateDigits(digits)));
 
-    public static Parser<char, int> TwoDigitParser() =>
-        Parser.Digit.Repeat(2).Select(chars => int.Parse(new string(chars.ToArray())));
+    public static Parser<char, int> TwoDigitParser() => TwoDigits.Select(AccumulateDigits);
 
     public static Parser<char, int> TwoDigitParser(int min, int max) =>
-        Parser.Digit.Repeat(2).Select(chars => int.Parse(new string(chars.ToArray())))
+        TwoDigitParser()
             .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
 
     public static Parser<char, int> ThreeDigitParser(int min, int max) =>
-        Parser.Digit.Repeat(3).Select(chars => int.Parse(new string(chars.ToArray())))
+        ThreeDigits.Select(AccumulateDigits)
             .Assert(value => value >= min && value <= max, $"Value must be between {min} and {max}");
 
     public static Parser<char, int> ThreeDigitThenZeroParser() =>
-        Parser.Digit.Repeat(3).Then(Parser.Char('0'), (digits, zero) => int.Parse(new string(digits.ToArray()) + zero));
+        ThreeDigits.Then(Parser.Char('0'), AppendDigit).Select(AccumulateDigits);
 
-    public static Parser<char, int> FourDigitParser() =>
-        Parser.Digit.Repeat(4).Select(chars => int.Parse(new string(chars.ToArray())));
+    public static Parser<char, int> FourDigitParser() => FourDigits.Select(AccumulateDigits);
 
     public static Parser<char, int> ListParser(string[] values)
     {
