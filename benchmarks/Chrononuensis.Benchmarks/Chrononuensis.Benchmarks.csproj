@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../src/Chrononuensis.Core.Testing/Parsers/Internals/OriginalNumericPrimitives.cs" Link="OriginalNumericPrimitives.cs" />
+    <ProjectReference Include="../../src/Chrononuensis.Core/Chrononuensis.csproj" />
+  </ItemGroup>
+</Project>
