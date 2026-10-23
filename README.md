@@ -99,25 +99,36 @@ var parser = new YearMonthParser();
 
 ### List of supported structures and parsers
 
-Chrononuensis provides a set of predefined structures for parsing and representing date-based information.
+Chrononuensis provides generated structures and matching parsers for the following date-based information:
 
-- MonthDay
-- YearDay
-- YearWeek
-- YearMonth
-- YearQuarter
-- YearSemester
+| Structure and parser | Implements `IPeriod` |
+|---|---|
+| `Century` / `CenturyParser` | Yes |
+| `Decade` / `DecadeParser` | Yes |
+| `Olympiad` / `OlympiadParser` | Yes |
+| `Year` / `YearParser` | Yes |
+| `YearSemester` / `YearSemesterParser` | Yes |
+| `YearQuarter` / `YearQuarterParser` | Yes |
+| `YearMonth` / `YearMonthParser` | Yes |
+| `YearWeek` / `YearWeekParser` | Yes |
+| `YearDay` / `YearDayParser` | Yes |
+| `MonthDay` / `MonthDayParser` | No; without a year it does not identify a continuous time span |
 
-[More info](https://seddryck.github.io/Chrononuensis/docs/structures/)
+`CustomPeriod` is a hand-written `IPeriod` implementation for an arbitrary inclusive date range. It does not have a matching parser.
+
+[Structure and parser details](https://seddryck.github.io/Chrononuensis/docs/structures/) · [Period details](https://seddryck.github.io/Chrononuensis/docs/period/)
 
 ### List of supported format specifiers
 
-- Year: yy and yyyy
-- Semester: S
-- Quarter: q
-- Month: M, MM, MMM, MMMM
-- Week: w, ww
-- Day of Year: j and jjj
-- Day: d, dd
+- Century: `c`, `cc`, `{c:RN}`, `{cc:RN}`
+- Decade: `tt`, `tttt`
+- Olympiad: `o`, `{o:RN}`
+- Year: `yy`, `yyyy`, `{yy:RN}`, `{yyyy:RN}`
+- Semester: `S`
+- Quarter: `q`
+- Month: `M`, `MM`, `MMM`, `MMMM`, `{M:RN}`, `{MM:RN}`
+- Week: `w`, `ww`
+- Day of year: `j`, `jjj`
+- Day: `d`, `dd`, `{d:RN}`, `{dd:RN}`
 
 [More info](https://seddryck.github.io/Chrononuensis/docs/format-specifier/)

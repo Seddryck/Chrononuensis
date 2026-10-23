@@ -8,6 +8,16 @@ using NUnit.Framework;
 namespace Chrononuensis.Testing;
 public class MonthDayTests
 {
+    [Test]
+    public void Components_HaveNoPublicSetter()
+    {
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(typeof(MonthDay).GetProperty(nameof(MonthDay.Month))!.SetMethod, Is.Null);
+            Assert.That(typeof(MonthDay).GetProperty(nameof(MonthDay.Day))!.SetMethod, Is.Null);
+        }
+    }
+
     [TestCase(1, 10)]
     [TestCase(1, 31)]
     [TestCase(2, 29)]

@@ -10,6 +10,34 @@ namespace Chrononuensis.Testing;
 [TestFixture]
 public class PeriodMethodsTests
 {
+    [Test]
+    public void NamedPeriod_ResolvesToCanonicalDateOnlyBounds()
+    {
+        IPeriod period = new YearMonth(2024, 2);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(period.StartDate, Is.EqualTo(new DateOnly(2024, 2, 1)));
+            Assert.That(period.EndDateExclusive, Is.EqualTo(new DateOnly(2024, 3, 1)));
+            Assert.That(period.Days, Is.EqualTo(29));
+            Assert.That(period.FirstDate, Is.EqualTo(period.StartDate));
+            Assert.That(period.LastDate, Is.EqualTo(new DateOnly(2024, 2, 29)));
+        }
+    }
+
+    [Test]
+    public void NamedSingleDayPeriod_ResolvesToCanonicalDateOnlyBounds()
+    {
+        IPeriod period = new YearDay(2024, 60);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(period.StartDate, Is.EqualTo(new DateOnly(2024, 2, 29)));
+            Assert.That(period.EndDateExclusive, Is.EqualTo(new DateOnly(2024, 3, 1)));
+            Assert.That(period.Days, Is.EqualTo(1));
+        }
+    }
+
     /// <summary>
     /// Manually defined test cases for Contains.
     /// </summary>
@@ -183,8 +211,8 @@ public class PeriodMethodsTests
         var day = new YearDay(2015, 15);
 
         yield return new TestCaseData(century, decade).Returns(null);
-        yield return new TestCaseData(decade, year).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31)));
-        yield return new TestCaseData(year, semester).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 6, 30)));
+        yield return new TestCaseData(decade, year).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2026, 1, 1)));
+        yield return new TestCaseData(year, semester).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 7, 1)));
         yield return new TestCaseData(semester, quarter).Returns(null);
         yield return new TestCaseData(quarter, month).Returns(null);
         yield return new TestCaseData(month, week).Returns(null);
@@ -213,17 +241,17 @@ public class PeriodMethodsTests
         var week = new YearWeek(2025, 5);
         var day = new YearDay(2025, 15);
 
-        yield return new TestCaseData(century, decade).Returns(new CustomPeriod(new DateOnly(1901, 1, 1), new DateOnly(2029, 12, 31)));
-        yield return new TestCaseData(decade, year).Returns(new CustomPeriod(new DateOnly(2020, 1, 1), new DateOnly(2029, 12, 31)));
-        yield return new TestCaseData(year, semester).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31)));
-        yield return new TestCaseData(semester, quarter).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 6, 30)));
-        yield return new TestCaseData(quarter, month).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 3, 31)));
-        yield return new TestCaseData(month, week).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 02, 2)));
-        yield return new TestCaseData(year, day).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 12, 31)));
-        yield return new TestCaseData(quarter, day).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 3, 31)));
-        yield return new TestCaseData(month, day).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 31)));
-        yield return new TestCaseData(week, day).Returns(new CustomPeriod(new DateOnly(2025, 1, 15), new DateOnly(2025, 2, 2)));
-        yield return new TestCaseData(day, month).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 1, 31)));
+        yield return new TestCaseData(century, decade).Returns(new CustomPeriod(new DateOnly(1901, 1, 1), new DateOnly(2030, 1, 1)));
+        yield return new TestCaseData(decade, year).Returns(new CustomPeriod(new DateOnly(2020, 1, 1), new DateOnly(2030, 1, 1)));
+        yield return new TestCaseData(year, semester).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2026, 1, 1)));
+        yield return new TestCaseData(semester, quarter).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 7, 1)));
+        yield return new TestCaseData(quarter, month).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 4, 1)));
+        yield return new TestCaseData(month, week).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 02, 3)));
+        yield return new TestCaseData(year, day).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2026, 1, 1)));
+        yield return new TestCaseData(quarter, day).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 4, 1)));
+        yield return new TestCaseData(month, day).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 2, 1)));
+        yield return new TestCaseData(week, day).Returns(new CustomPeriod(new DateOnly(2025, 1, 15), new DateOnly(2025, 2, 3)));
+        yield return new TestCaseData(day, month).Returns(new CustomPeriod(new DateOnly(2025, 1, 1), new DateOnly(2025, 2, 1)));
     }
 
     [TestCaseSource(nameof(SpanTestCases))]

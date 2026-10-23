@@ -12,7 +12,7 @@ public partial record struct YearMonth
 )
     : IParsable<YearMonth>, IComparable<YearMonth>, IComparable, IEquatable<YearMonth>
 {
-    public int Month { get; init; }
+    public int Month { get; }
         = (Month >= 1 && Month <= 12)
             ? Month
             : throw new ArgumentOutOfRangeException(nameof(Month), $"Month must be between 1 and { 12 }.");

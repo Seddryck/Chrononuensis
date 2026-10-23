@@ -7,6 +7,32 @@ namespace Chrononuensis.Testing.Parsers;
 public class ParserPipelineCacheTests
 {
     [Test]
+    public void ExplicitProvidersKeepCulturesAndNormalizationPoliciesIsolated()
+    {
+        var parser = new YearMonthParser();
+        var french = new PeriodParsingOptions(CultureInfo.GetCultureInfo("fr-FR"), yearNormalizer: value => 2100 + value);
+        var english = new PeriodParsingOptions(CultureInfo.GetCultureInfo("en-US"), yearNormalizer: value => 2000 + value);
+        Assert.That(parser.Parse("25-janvier", "yy-MMMM", french), Is.EqualTo((2125, 1)));
+        Assert.That(parser.Parse("25-January".AsSpan(), "yy-MMMM", english), Is.EqualTo((2025, 1)));
+        Assert.That(parser.TryParse("25-janvier", "yy-MMMM", french, out var year, out var month), Is.True);
+        Assert.That((year, month), Is.EqualTo((2125, 1)));
+        Assert.That(parser.TryParse("25-January".AsSpan(), "yy-MMMM", english, out year, out month), Is.True);
+        Assert.That((year, month), Is.EqualTo((2025, 1)));
+    }
+
+    [Test]
+    public void CachedAndExplicitProviderPipelinesRejectTrailingInput()
+    {
+        var parser = new YearMonthParser();
+        foreach (var provider in new IFormatProvider?[] { null, CultureInfo.InvariantCulture })
+        {
+            Assert.Throws<FormatException>(() => parser.Parse("2025-06-extra", "yyyy-MM", provider));
+            Assert.Throws<FormatException>(() => parser.Parse("2025-06-extra".AsSpan(), "yyyy-MM", provider));
+            Assert.That(parser.TryParse("2025-06-extra", "yyyy-MM", provider, out _, out _), Is.False);
+            Assert.That(parser.TryParse("2025-06-extra".AsSpan(), "yyyy-MM", provider, out _, out _), Is.False);
+        }
+    }
+    [Test]
     public void RepeatedFormatsReuseTokensAndParser()
     {
         var cache = new ParserPipelineCache();

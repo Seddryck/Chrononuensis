@@ -5,7 +5,7 @@ using Chrononuensis.Parsers;
 
 namespace Chrononuensis;
 
-public partial record struct {{ struct_name }}
+public {{if is_period}}readonly {{end}}partial {{if is_period}}struct{{else}}record struct{{end}} {{ struct_name }}
 (
     {{- for part in parts }}
     {{ if parts.size == 1 }}{{ parts[0].type }} Value{{ else }}{{ part.type }} {{ part.name }}{{ end }}
@@ -15,19 +15,21 @@ public partial record struct {{ struct_name }}
     : IParsable<{{ struct_name }}>, IComparable<{{ struct_name }}>, IComparable, IEquatable<{{ struct_name }}>
 {
     {{- for part in parts }}
-    {{- if part.min && (part.max || part.max_f) }}
     {{- if parts.size ==1 && part.name == struct_name }}{{name = "Value"}}{{ else }}{{ name = part.name }}{{ end }}
-    public {{ part.type }} {{ name }} { get; init; }
+    {{- if part.min && (part.max || part.max_f) }}
+    public {{ part.type }} {{ name }} { get; }
         = ({{ name }} >= {{ part.min }} && {{ name }} <= {{ part.max ?? part.max_f }})
             ? {{ name }}
             : throw new ArgumentOutOfRangeException(nameof({{ name }}), $"
                 {{- if part.max_f }}When {{parts[0].name | string.downcase }} is { {{parts[0].name}} }, {{ end -}}
                 {{- name }} must be between {{ part.min }} and { {{ part.max ?? part.max_f }} }.");
     {{- else if part.modulo }}
-    public {{ part.type }} Value { get; init; }
+    public {{ part.type }} Value { get; }
         = (Value % {{ part.modulo }} == 0)
             ? Value
             : throw new ArgumentOutOfRangeException(nameof({{ part.name }}), $"Invalid {{ struct_name | string.downcase }}: The value must be a multiple of {{ part.modulo }}.");
+    {{- else if is_period }}
+    public {{ part.type }} {{ name }} { get; } = {{ name }};
     {{- end }}
     {{- end }}
 
@@ -99,6 +101,24 @@ public partial record struct {{ struct_name }}
             {{ struct_name }} y => CompareTo(y),
             _ => throw new ArgumentException("Object must be of type {{ struct_name }}", nameof(obj))
         };
+
+    {{- if is_period }}
+    public bool Equals({{ struct_name }} other) => Equals((IPeriod)other);
+
+    public override bool Equals(object? obj) => obj is IPeriod other && Equals(other);
+
+    public override int GetHashCode() => HashCode.Combine(StartDate, EndDateExclusive);
+
+    public void Deconstruct({{ for part in parts }}out {{ part.type }} {{ part.name | string.downcase }}{{ if !for.last }}, {{ end }}{{ end }})
+    {
+        {{- for part in parts }}
+        {{ part.name | string.downcase }} = {{ if parts.size == 1 }}Value{{ else }}{{ part.name }}{{ end }};
+        {{- end }}
+    }
+
+    public static bool operator ==({{ struct_name }} left, {{ struct_name }} right) => left.Equals(right);
+    public static bool operator !=({{ struct_name }} left, {{ struct_name }} right) => !left.Equals(right);
+    {{- end }}
 
     public static bool operator <({{ struct_name }} left, {{ struct_name }} right) => left.CompareTo(right) < 0;
     public static bool operator >({{ struct_name }} left, {{ struct_name }} right) => left.CompareTo(right) > 0;

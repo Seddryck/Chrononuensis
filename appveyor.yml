@@ -48,6 +48,7 @@ before_build:
     }
 
 build_script:
+  - dotnet --version
   - dotnet build Chrononuensis.sln -p:version="%GitVersion_SemVer%" -c Release /p:ContinuousIntegrationBuild=true --nologo 
 
 test_script:

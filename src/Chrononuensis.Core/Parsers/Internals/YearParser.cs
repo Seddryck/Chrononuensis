@@ -9,14 +9,19 @@ using Pidgin;
 namespace Chrononuensis.Parsers.Internals;
 internal class YearParser
 {
-    private static Func<int, int> _normalizeYear = (int year) => year < 40 ? year + 2000 : year + 1900;
-    
-    public static void NormalizeYear(Func<int, int> normalizeYear) => _normalizeYear = normalizeYear;
-    public static Parser<char, int> DigitOn2 { get; } = Primitives.TwoDigitParser(_normalizeYear);
+    private static int NormalizeYear(int year) => year < 40 ? year + 2000 : year + 1900;
+
+    public static Parser<char, int> DigitOn2 { get; } = CreateDigitOn2(NormalizeYear);
     public static Parser<char, int> DigitOn4 { get; } = Primitives.FourDigitParser();
     public static Parser<char, int> RomanNumeral { get; }
         = Primitives.RomanNumber;
     public static Parser<char, int> RomanNumeralShort { get; }
-        = Primitives.RomanNumeral(0,99, _normalizeYear);
+        = CreateRomanNumeralShort(NormalizeYear);
+
+    public static Parser<char, int> CreateDigitOn2(Func<int, int> normalizeYear)
+        => Primitives.TwoDigitParser(normalizeYear);
+
+    public static Parser<char, int> CreateRomanNumeralShort(Func<int, int> normalizeYear)
+        => Primitives.RomanNumeral(0, 99, normalizeYear);
 }
 

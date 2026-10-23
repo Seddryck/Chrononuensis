@@ -4,10 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Chrononuensis.Extensions;
 
 namespace Chrononuensis.Testing;
 public class YearSemesterTests
 {
+    [TestCase("2025-H1", 0, "2025-H1")]
+    [TestCase("2025-H1", 1, "2025-H2")]
+    [TestCase("2025-H1", 2, "2026-H1")]
+    [TestCase("2025-H1", 4, "2027-H1")]
+    [TestCase("2025-H1", -1, "2024-H2")]
+    [TestCase("2025-H1", -3, "2023-H2")]
+    public void AddSemester_CyclicValue_Expected(string input, int value, string expected)
+        => Assert.That(YearSemester.Parse(input, null).AddSemester(value),
+            Is.EqualTo(YearSemester.Parse(expected, null)));
+
     [Test]
     public void Parse_InputDefaultFormat_Equal()
         => Assert.That(YearSemester.Parse("2021-S1", "yyyy-'S'S"), Is.EqualTo(new YearSemester(2021,1)));

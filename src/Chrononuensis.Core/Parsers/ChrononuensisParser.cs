@@ -37,7 +37,7 @@ public abstract class ChrononuensisParser : IParser
 
     public object[] ParseInternal(string input, string format, IFormatProvider? provider, Type[] types)
     {
-        var pipeline = Pipelines.Get(format);
+        var pipeline = Pipelines.Get(format, provider);
         var result = pipeline.Parser.Parse(input);
         ThrowsIfNotSuccess(result);
         return CreateResults(result, pipeline.Tokens, types);
@@ -45,7 +45,7 @@ public abstract class ChrononuensisParser : IParser
 
     public object[] ParseInternal(ReadOnlySpan<char> input, string format, IFormatProvider? provider, Type[] types)
     {
-        var pipeline = Pipelines.Get(format);
+        var pipeline = Pipelines.Get(format, provider);
         var result = pipeline.Parser.Parse(input);
         ThrowsIfNotSuccess(result);
         return CreateResults(result, pipeline.Tokens, types);
@@ -53,7 +53,7 @@ public abstract class ChrononuensisParser : IParser
 
     public bool TryParseInternal(string input, string format, IFormatProvider? provider, Type[] types, out object[]? results)
     {
-        var pipeline = Pipelines.Get(format);
+        var pipeline = Pipelines.Get(format, provider);
         var result = pipeline.Parser.Parse(input);
         results = result.Success ? CreateResults(result, pipeline.Tokens, types) : null;
         return result.Success;
@@ -61,7 +61,7 @@ public abstract class ChrononuensisParser : IParser
 
     public bool TryParseInternal(ReadOnlySpan<char> input, string format, IFormatProvider? provider, Type[] types, out object[]? results)
     {
-        var pipeline = Pipelines.Get(format);
+        var pipeline = Pipelines.Get(format, provider);
         var result = pipeline.Parser.Parse(input);
         results = result.Success ? CreateResults(result, pipeline.Tokens, types) : null;
         return result.Success;

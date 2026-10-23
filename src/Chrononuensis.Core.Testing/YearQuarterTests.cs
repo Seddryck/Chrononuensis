@@ -4,10 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Chrononuensis.Extensions;
 
 namespace Chrononuensis.Testing;
 public class YearQuarterTests
 {
+    [TestCase("2025-Q1", 0, "2025-Q1")]
+    [TestCase("2025-Q1", 3, "2025-Q4")]
+    [TestCase("2025-Q1", 4, "2026-Q1")]
+    [TestCase("2025-Q1", 8, "2027-Q1")]
+    [TestCase("2025-Q1", -1, "2024-Q4")]
+    [TestCase("2025-Q1", -5, "2023-Q4")]
+    public void AddQuarter_CyclicValue_Expected(string input, int value, string expected)
+        => Assert.That(YearQuarter.Parse(input, null).AddQuarter(value),
+            Is.EqualTo(YearQuarter.Parse(expected, null)));
+
     [Test]
     public void Parse_InputDefaultFormat_Equal()
         => Assert.That(YearQuarter.Parse("2021-Q1", "yyyy-Qq"), Is.EqualTo(new YearQuarter(2021,1)));

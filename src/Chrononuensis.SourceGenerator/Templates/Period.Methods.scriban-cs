@@ -4,35 +4,35 @@ using System.Globalization;
 
 namespace Chrononuensis;
 
-public partial record struct {{struct_name}} : IPeriod
+public readonly partial struct {{struct_name}} : IPeriod
 {
     /// <summary>
     /// Determines if this period fully contains another period.
     /// </summary>
     public bool Contains(IPeriod other) => 
-        FirstDate <= other.FirstDate && LastDate >= other.LastDate;
+        StartDate <= other.StartDate && EndDateExclusive >= other.EndDateExclusive;
 
     /// <summary>
     /// Determines if this period overlaps with another period.
     /// </summary>
     public bool Overlaps(IPeriod other) => 
-        FirstDate <= other.LastDate && LastDate >= other.FirstDate;
+        StartDate < other.EndDateExclusive && EndDateExclusive > other.StartDate;
 
     /// <summary>
     /// Determines if this period meets another period (i.e., is adjacent without overlap).
     /// </summary>
     public bool Meets(IPeriod other) => 
-        LastDate.AddDays(1) == other.FirstDate || other.LastDate.AddDays(1) == FirstDate;
+        EndDateExclusive == other.StartDate || other.EndDateExclusive == StartDate;
 
     /// <summary>
     /// Determines if this period is strictly before another.
     /// </summary>
-    public bool Precedes(IPeriod other) => LastDate < other.FirstDate;
+    public bool Precedes(IPeriod other) => EndDateExclusive <= other.StartDate;
 
     /// <summary>
     /// Determines if this period is strictly after another.
     /// </summary>
-    public bool Succeeds(IPeriod other) => FirstDate > other.LastDate;
+    public bool Succeeds(IPeriod other) => StartDate >= other.EndDateExclusive;
 
     /// <summary>
     /// Returns the intersection of two periods if they overlap.
@@ -40,8 +40,8 @@ public partial record struct {{struct_name}} : IPeriod
     public IPeriod? Intersect(IPeriod other) =>
         Overlaps(other) 
             ? new CustomPeriod(
-                new[] { FirstDate, other.FirstDate }.Max(),
-                new[] { LastDate, other.LastDate }.Min())
+                new[] { StartDate, other.StartDate }.Max(),
+                new[] { EndDateExclusive, other.EndDateExclusive }.Min())
             : null;
 
     /// <summary>
@@ -49,14 +49,14 @@ public partial record struct {{struct_name}} : IPeriod
     /// </summary>
     public IPeriod Span(IPeriod other) =>
         new CustomPeriod(
-            new[] { FirstDate, other.FirstDate }.Min(),
-            new[] { LastDate, other.LastDate }.Max());
+            new[] { StartDate, other.StartDate }.Min(),
+            new[] { EndDateExclusive, other.EndDateExclusive }.Max());
 
     /// <summary>
     /// Determines the gap (number of days) between two non-overlapping periods.
     /// </summary>
     public int Gap(IPeriod other) =>
         Overlaps(other) || Meets(other) ? 0 :
-        other.FirstDate > LastDate ? other.FirstDate.DayNumber - LastDate.DayNumber - 1 :
-        FirstDate.DayNumber - other.LastDate.DayNumber - 1;
+        other.StartDate > StartDate ? other.StartDate.DayNumber - EndDateExclusive.DayNumber :
+        StartDate.DayNumber - other.EndDateExclusive.DayNumber;
 }

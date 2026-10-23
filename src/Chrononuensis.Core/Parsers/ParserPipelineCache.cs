@@ -17,8 +17,13 @@ internal sealed class ParserPipelineCache
 
     internal sealed record Pipeline(Format Tokens, Parser<char, object[]> Parser);
 
-    internal Pipeline Get(string format)
+    internal Pipeline Get(string format, IFormatProvider? provider = null)
     {
+        // Explicit providers may contain mutable culture data or custom normalization
+        // delegates. Build them per operation instead of retaining caller state.
+        if (provider is not null)
+            return Create(format, provider);
+
         var key = (format, CultureInfo.CurrentUICulture.Name);
         if (format is not null && format.Length > MaximumFormatLength)
             return Create(format);
@@ -39,10 +44,10 @@ internal sealed class ParserPipelineCache
         }
     }
 
-    private static Pipeline Create(string format)
+    private static Pipeline Create(string format, IFormatProvider? provider = null)
     {
         var tokens = new Lexer().Tokenize(format);
-        var factory = new ParserFactory();
-        return new(tokens, Primitives.CombineParsers(tokens.Select(factory.Create).ToArray()));
+        var factory = new ParserFactory(provider);
+        return new(tokens, Primitives.CombineParsers(tokens.Select(factory.Create).ToArray()).Before(Parser<char>.End));
     }
 }

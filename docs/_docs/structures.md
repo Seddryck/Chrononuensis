@@ -8,7 +8,9 @@ Chrononuensis provides a set of **predefined structures** for parsing and repres
 - A **default format** used for parsing.
 - A list of **components** extracted from the input.
 
-## List of all supported structures (and parsers)
+## Generated structures and parsers
+
+Each structure in this list has a public parser with the same name followed by `Parser`. With the exception of `MonthDay`, these structures implement [`IPeriod`](period.md). `MonthDay` is parsable but does not represent a continuous time span because it does not include a year.
 
 {% for struct in site.data.structs %}
 ## {{ struct.name }}
@@ -36,3 +38,7 @@ Chrononuensis provides a set of **predefined structures** for parsing and repres
   </tbody>
 </table>
 {% endfor %}
+
+## Hand-written period structure
+
+`CustomPeriod` implements [`IPeriod`](period.md) for an arbitrary inclusive range between two `DateOnly` values. It does not have a matching parser or a default format.

@@ -11,7 +11,7 @@ By default, a character displayed in the format is interpreted as a format speci
 
 If a character is part of the format specifiers but needs to be treated as a literal, enclose it in either single `'` or double quotes `"`. For example, in `'year:'yyyy`, the  `y` in *year* is interpreted as a literal since it is enclosed in quotes. If your format includes a single quote character, enclose the entire string in double quotes, and vice versa, to avoid ambiguity.
 
-For complex format specifiers, such as [Roman numerals](docs/roman-numeral), enclose the format specifiers in curly braces and separate different parts using colons (`:`).
+For complex format specifiers, such as [Roman numerals](roman-numeral.md), enclose the format specifiers in curly braces and separate different parts using colons (`:`).
 
 ### **Examples:**
 
@@ -66,7 +66,7 @@ Console.WriteLine($"Year: {year}, Month: {month}");
 Parsing a Day of Year Format
 
 ```csharp
-var parser = new YearDatParser();
+var parser = new YearDayParser();
 (int year, int dayOfYear) = parser.Parse("2025-256", "yyyy-jjj");
 
 Console.WriteLine($"Year: {year}, Day of Year: {dayOfYear}");
