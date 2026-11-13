@@ -67,13 +67,10 @@ var yearMonth = new YearMonth(2025, 7);
 
 #### Parsing from a string
 
-Instead of manually creating a struct, you can parse a formatted string to obtain a struct.
-
-If you have a formatted string “2025-08” and want to convert it into a YearMonth struct, use the Parse method:
+The static `YearMonth.Parse` method reads the year and month from a formatted string and constructs a `YearMonth`.
 
 ```csharp
-// Parse a period Year-Month for August 2025
-var other = YearMonth.Parse("2025-08", "yyyy-MM");
+YearMonth other = YearMonth.Parse("2025-08", "yyyy-MM");
 ```
 
 In this example,
@@ -81,18 +78,17 @@ In this example,
 - `2025-08` is the input string.
 - `yyyy-MM` is the format that defines how the input should be interpreted.
 
-The parser extracts year and month from the string and returns a YearMonth struct.
+### Low-level parsers
 
-### Use the parsers
+For most uses, call `Parse` on the struct you want, such as `YearMonth.Parse`. Parser classes are low-level APIs intended mainly for extensibility and for cases where you need the individual components, such as constructing your own type.
 
-Parsers in Chrononuensis are flexible tools that extract structured information from input strings. Their role is not to instantiate predefined structs or classes, but rather to return extracted components (as integers) so that you can use them to create your own structures.
-
-Instead of returning a predefined struct, a parser simply extracts and returns individual components.
-For example, given an input string like "2025-08":
+`YearMonthParser.Parse` returns an `(int Year, int Month)` tuple.
 
 ```csharp
+using Chrononuensis.Parsers;
+
 var parser = new YearMonthParser();
-(int year, int month) = parser.Parse("2025-08", "yyyy-MM");
+(int year, int month) = parser.Parse("2025-08", "yyyy-MM", provider: null);
 ```
 
 [More info](https://seddryck.github.io/Chrononuensis/docs/quick-start/)
