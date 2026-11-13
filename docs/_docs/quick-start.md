@@ -60,9 +60,11 @@ namespace MyApp
 }
 ```
 
-## Use the parsers
+## Low-level parsers
 
-Call `YearMonthParser.Parse` directly to get the `(int Year, int Month)` tuple. You can use those values to construct your own type. Pass a format provider to control culture-sensitive parsing.
+For most uses, call `Parse` on the struct you want, such as `YearMonth.Parse`. Parser classes are low-level APIs intended mainly for extensibility and for cases where you need the individual components, such as constructing your own type.
+
+`YearMonthParser.Parse` returns an `(int Year, int Month)` tuple. Pass a format provider to control culture-sensitive parsing.
 
 ```csharp
 using Chrononuensis.Parsers;

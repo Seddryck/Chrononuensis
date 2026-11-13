@@ -78,9 +78,11 @@ In this example,
 - `2025-08` is the input string.
 - `yyyy-MM` is the format that defines how the input should be interpreted.
 
-### Use the parsers
+### Low-level parsers
 
-Call `YearMonthParser.Parse` directly to get the `(int Year, int Month)` tuple. You can use those values to construct your own type.
+For most uses, call `Parse` on the struct you want, such as `YearMonth.Parse`. Parser classes are low-level APIs intended mainly for extensibility and for cases where you need the individual components, such as constructing your own type.
+
+`YearMonthParser.Parse` returns an `(int Year, int Month)` tuple.
 
 ```csharp
 using Chrononuensis.Parsers;
