@@ -1,83 +1,88 @@
-# Check whether GitVersion is installed
-$gitVersion = Get-Command gitversion -ErrorAction SilentlyContinue
+$ErrorActionPreference = "Stop"
 
-if ($gitVersion) {
-    Write-Host "GitVersion is already installed."
+$requiredVersion = [Version]"6.8.2"
+$dotnetToolsPath = Join-Path $env:USERPROFILE ".dotnet\tools"
+$gitVersionExe = Join-Path $dotnetToolsPath "dotnet-gitversion.exe"
+
+function Get-GitVersionVersion {
+    param(
+        [Parameter(Mandatory)]
+        [string] $Command
+    )
+
+    try {
+        $versionOutput = (& $Command /version 2>&1 | Out-String).Trim()
+
+        if ($LASTEXITCODE -ne 0) {
+            return $null
+        }
+
+        $versionMatch = [regex]::Match($versionOutput, "^(\d+\.\d+\.\d+)(?:\+\S+)?$")
+
+        if (-not $versionMatch.Success) {
+            return $null
+        }
+
+        return [Version]$versionMatch.Groups[1].Value
+    }
+    catch {
+        return $null
+    }
+}
+
+$gitVersion = Get-Command $gitVersionExe -ErrorAction SilentlyContinue
+$installedVersion = if ($gitVersion) {
+    Get-GitVersionVersion -Command $gitVersion.Source
+}
+
+if ($installedVersion -eq $requiredVersion) {
+    Write-Host "GitVersion $installedVersion is already installed."
     Write-Host "Path: $($gitVersion.Source)"
     exit 0
 }
 
-Write-Host "GitVersion is not installed. Installing..."
+if ($installedVersion) {
+    Write-Host "GitVersion $installedVersion differs from the required version $requiredVersion. Reinstalling..."
+}
+elseif ($gitVersion) {
+    Write-Host "The installed GitVersion version could not be determined. Reinstalling..."
+}
+else {
+    Write-Host "GitVersion is not installed. Installing..."
+}
 
-# Check whether dotnet is available
 $dotnet = Get-Command dotnet -ErrorAction SilentlyContinue
 
 if (-not $dotnet) {
-    Write-Error ".NET SDK is not installed or not available in PATH. Install the .NET SDK first."
-    exit 1
+    throw ".NET SDK is not installed or not available in PATH. Install the .NET SDK first."
 }
 
-# Install GitVersion as a .NET global tool
-$env:DOTNET_NOLOGO = "1"
-dotnet tool install --global GitVersion.Tool
+$globalTools = dotnet tool list --global
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to install GitVersion.Tool."
-    exit 1
+    throw "Failed to list globally installed .NET tools."
 }
 
-# .NET global tools path
-$dotnetToolsPath = Join-Path $env:USERPROFILE ".dotnet\tools"
-
-# Add to User PATH if missing
-$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-
-if ($userPath -notlike "*$dotnetToolsPath*") {
-    Write-Host "Adding .NET tools folder to User PATH..."
-
-    $newUserPath = if ([string]::IsNullOrWhiteSpace($userPath)) {
-        $dotnetToolsPath
-    }
-    else {
-        "$userPath;$dotnetToolsPath"
-    }
-
-    [Environment]::SetEnvironmentVariable("Path", $newUserPath, "User")
+if ($globalTools | Select-String -Pattern "^gitversion\.tool\s" -Quiet) {
+    dotnet tool update --global GitVersion.Tool --version $requiredVersion --allow-downgrade
 }
 else {
-    Write-Host ".NET tools folder is already in User PATH."
+    dotnet tool install --global GitVersion.Tool --version $requiredVersion
 }
 
-# Update PATH for current session
-$env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
-            [Environment]::GetEnvironmentVariable("Path", "User")
-
-$dotnetToolsPath = Join-Path $env:USERPROFILE ".dotnet\tools"
-$gitVersionExe = Join-Path $dotnetToolsPath "dotnet-gitversion.exe"
-$shimPath = Join-Path $dotnetToolsPath "gitversion.cmd"
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to install GitVersion.Tool."
+}
 
 if (-not (Test-Path $gitVersionExe)) {
-    Write-Error "dotnet-gitversion.exe was not found. Install GitVersion.Tool first."
-    exit 1
+    throw "dotnet-gitversion.exe was not found after installing GitVersion.Tool."
 }
 
-@"
-@echo off
-"%USERPROFILE%\.dotnet\tools\dotnet-gitversion.exe" %*
-"@ | Set-Content -Path $shimPath -Encoding ASCII
+$installedVersion = Get-GitVersionVersion -Command $gitVersionExe
 
-Write-Host "Alias created: gitversion -> dotnet-gitversion"
-Write-Host "You can now run: gitversion /version"
-
-# Validate installation
-$gitVersion = Get-Command gitversion -ErrorAction SilentlyContinue
-
-if ($gitVersion) {
-    Write-Host "GitVersion installed successfully."
-    Write-Host "Path: $($gitVersion.Source)"
-    gitversion /version
+if ($installedVersion -ne $requiredVersion) {
+    throw "GitVersion.Tool $installedVersion was installed, but version $requiredVersion is required."
 }
-else {
-    Write-Warning "GitVersion was installed, but it is not available in the current session."
-    Write-Warning "Open a new terminal and run: gitversion /version"
-}
+
+Write-Host "GitVersion $installedVersion installed successfully."
+Write-Host "Path: $gitVersionExe"
