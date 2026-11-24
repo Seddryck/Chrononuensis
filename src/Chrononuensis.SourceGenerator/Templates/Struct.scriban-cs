@@ -12,7 +12,7 @@ public {{if is_period}}readonly {{end}}partial {{if is_period}}struct{{else}}rec
     {{- if !for.last }},{{ end }}
     {{- end }}
 )
-    : IParsable<{{ struct_name }}>, IComparable<{{ struct_name }}>, IComparable, IEquatable<{{ struct_name }}>
+    : IParsable<{{ struct_name }}>, IUtf8SpanParsable<{{ struct_name }}>, IComparable<{{ struct_name }}>, IComparable, IEquatable<{{ struct_name }}>
 {
     {{- for part in parts }}
     {{- if parts.size ==1 && part.name == struct_name }}{{name = "Value"}}{{ else }}{{ name = part.name }}{{ end }}
@@ -49,11 +49,12 @@ public {{if is_period}}readonly {{end}}partial {{if is_period}}struct{{else}}rec
         {{- end -}}
         );
     }
+{{- for span_type in ["char", "byte"] }}
 
-    public static {{ struct_name }} Parse(ReadOnlySpan<char> span, IFormatProvider? provider)
+    public static {{ struct_name }} Parse(ReadOnlySpan<{{ span_type }}> span, IFormatProvider? provider)
         => Parse(span, {{ struct_name }}Parser.DefaultPattern, provider);
 
-    public static {{ struct_name }} Parse(ReadOnlySpan<char> span, string format, IFormatProvider? provider = null)
+    public static {{ struct_name }} Parse(ReadOnlySpan<{{ span_type }}> span, string format, IFormatProvider? provider = null)
     {
         var result = Parser.Parse(span, format, provider);
         return new {{ struct_name -}}
@@ -64,6 +65,7 @@ public {{if is_period}}readonly {{end}}partial {{if is_period}}struct{{else}}rec
         {{- end -}}
         );
     }
+{{- end }}
 
     public static bool TryParse(string? s, IFormatProvider? provider, out {{ struct_name }} result)
         => TryParse(s, {{ struct_name }}Parser.DefaultPattern, provider, out result);
@@ -76,11 +78,12 @@ public {{if is_period}}readonly {{end}}partial {{if is_period}}struct{{else}}rec
                     : default;
         return success;
     }
+{{- for span_type in ["char", "byte"] }}
 
-    public static bool TryParse(ReadOnlySpan<char> span, IFormatProvider? provider, out {{ struct_name }} result)
+    public static bool TryParse(ReadOnlySpan<{{ span_type }}> span, IFormatProvider? provider, out {{ struct_name }} result)
         => TryParse(span, {{ struct_name }}Parser.DefaultPattern, provider, out result);
 
-    public static bool TryParse(ReadOnlySpan<char> span, string format, IFormatProvider? provider, out {{ struct_name }} result)
+    public static bool TryParse(ReadOnlySpan<{{ span_type }}> span, string format, IFormatProvider? provider, out {{ struct_name }} result)
     {
         var success = Parser.TryParse(span, format, provider, {{ for part in parts ~}}out var {{ part.name }}{{~ if !for.last ~}}, {{ end ~}}{{ end }});
         result = success
@@ -88,6 +91,7 @@ public {{if is_period}}readonly {{end}}partial {{if is_period}}struct{{else}}rec
                     : default;
         return success;
     }
+{{- end }}
 
     public int CompareTo({{ struct_name }} other)
         {{ if parts.size == 1 }} => Value.CompareTo(other.Value);
