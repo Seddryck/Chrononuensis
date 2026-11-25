@@ -13,12 +13,18 @@ internal static partial class Program
     private const int Iterations = 100_000;
     private static object? sink;
 
-    private static void Main()
+    private static void Main(string[] args)
     {
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
         CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
         Console.WriteLine($"{System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}; {System.Runtime.InteropServices.RuntimeInformation.OSDescription}; {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}");
-        Console.WriteLine($"Release build; {Iterations:N0} operations/sample; 9 alternating samples; medians; current-thread managed allocations");
+        Console.WriteLine($"Release build; {Iterations:N0} operations/sample; 9 samples; medians; current-thread managed allocations");
+        if (args is ["--span-parsing"])
+        {
+            RunSpanParsing();
+            return;
+        }
+
         var cached = new YearMonthParser();
         var lexer = new Lexer();
         var factory = new ParserFactory();

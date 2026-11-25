@@ -21,6 +21,89 @@ public class ParserPipelineCacheTests
     }
 
     [Test]
+    public void ProvidersShareTokenizedFormatsButBuildSeparatePipelines()
+    {
+        var cache = new ParserPipelineCache();
+        var format = "yy-MMMM";
+        var french = cache.Get(format, CultureInfo.GetCultureInfo("fr-FR"));
+        var english = cache.Get(new string(format.AsSpan()), CultureInfo.GetCultureInfo("en-US"));
+        var implicitProvider = cache.Get(format);
+
+        Assert.That(english.Tokens, Is.SameAs(french.Tokens));
+        Assert.That(implicitProvider.Tokens, Is.SameAs(french.Tokens));
+        Assert.That(english.Parser, Is.Not.SameAs(french.Parser));
+        Assert.That(cache.Get(format, CultureInfo.GetCultureInfo("fr-FR")).Parser, Is.Not.SameAs(french.Parser));
+    }
+
+    [Test]
+    public void ExplicitProviderTokenRetentionIsBoundedAndSkipsOversizedFormats()
+    {
+        var cache = new ParserPipelineCache();
+        var provider = CultureInfo.InvariantCulture;
+        var first = cache.Get("yyyy-MM", provider);
+        for (var i = 0; i < ParserPipelineCache.Capacity; i++)
+            cache.Get($"yyyy-MM '{i}'", provider);
+
+        Assert.That(cache.Get("yyyy-MM", provider).Tokens, Is.Not.SameAs(first.Tokens));
+
+        var literal = new string('x', ParserPipelineCache.MaximumFormatLength);
+        var format = $"yyyy-MM '{literal}'";
+        var large = cache.Get(format, provider);
+        Assert.That(cache.Get(format, provider).Tokens, Is.Not.SameAs(large.Tokens));
+        Assert.That(new YearMonthParser().Parse($"2025-06 {literal}".AsSpan(), format, provider), Is.EqualTo((2025, 6)));
+    }
+
+    [Test]
+    public void RepeatedFormatsObserveChangesToAnExplicitProvider()
+    {
+        const string format = "yy-MMMM";
+        var culture = (CultureInfo)CultureInfo.GetCultureInfo("en-US").Clone();
+        var firstYear = 2000;
+        var provider = new PeriodParsingOptions(culture, yearNormalizer: year => firstYear + year);
+        var parser = new YearMonthParser();
+
+        Assert.That(parser.Parse("25-January", format, provider), Is.EqualTo((2025, 1)));
+
+        var monthNames = culture.DateTimeFormat.MonthNames;
+        monthNames[0] = "FirstMonth";
+        culture.DateTimeFormat.MonthNames = monthNames;
+        firstYear = 2100;
+
+        Assert.That(parser.TryParse("25-January", format, provider, out var year, out var month), Is.False);
+        Assert.That((year, month), Is.EqualTo(((int?)null, (int?)null)));
+        Assert.Throws<FormatException>(() => parser.Parse("25-January".AsSpan(), format, provider));
+        Assert.That(parser.TryParse("25-FirstMonth".AsSpan(), format, provider, out year, out month), Is.True);
+        Assert.That((year, month), Is.EqualTo((2125, 1)));
+    }
+
+    [Test]
+    public void ConcurrentExplicitProvidersShareTokensAndKeepParsingIndependent()
+    {
+        const string format = "yy-MMMM 'concurrent'";
+        var cache = new ParserPipelineCache();
+        var pipelines = new ParserPipelineCache.Pipeline[100];
+        var parser = new YearMonthParser();
+        var french = new PeriodParsingOptions(CultureInfo.GetCultureInfo("fr-FR"), yearNormalizer: year => 2100 + year);
+        var english = new PeriodParsingOptions(CultureInfo.GetCultureInfo("en-US"), yearNormalizer: year => 2000 + year);
+        Parallel.For(0, pipelines.Length, i =>
+        {
+            var useFrench = i % 2 == 0;
+            var provider = useFrench ? french : english;
+            var input = useFrench ? "25-janvier concurrent" : "25-January concurrent";
+            var expected = useFrench ? (2125, 1) : (2025, 1);
+
+            pipelines[i] = cache.Get(format, provider);
+            Assert.That(parser.Parse(input, format, provider), Is.EqualTo(expected));
+            Assert.That(parser.Parse(input.AsSpan(), format, provider), Is.EqualTo(expected));
+            Assert.That(parser.TryParse(input, format, provider, out var year, out var month), Is.True);
+            Assert.That((year, month), Is.EqualTo(expected));
+            Assert.That(parser.TryParse(input.AsSpan(), format, provider, out year, out month), Is.True);
+            Assert.That((year, month), Is.EqualTo(expected));
+        });
+        Assert.That(pipelines.All(p => ReferenceEquals(p.Tokens, pipelines[0].Tokens)), Is.True);
+    }
+
+    [Test]
     public void CachedAndExplicitProviderPipelinesRejectTrailingInput()
     {
         var parser = new YearMonthParser();
