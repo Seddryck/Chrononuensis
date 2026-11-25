@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,15 @@ public class ParserFactoryTests
         var factory = new ParserFactory();
         var parser = factory.Create(AbbreviationMonthToken.Instance);
         Assert.That(parser, Is.Not.Null);
+    }
+
+    [Test]
+    public void Create_ProviderIndependentTokenReusesParserAcrossFactories()
+    {
+        var french = new ParserFactory(CultureInfo.GetCultureInfo("fr-FR"));
+        var english = new ParserFactory(CultureInfo.GetCultureInfo("en-US"));
+
+        Assert.That(french.Create(PaddedDigitMonthToken.Instance), Is.SameAs(english.Create(PaddedDigitMonthToken.Instance)));
     }
 
     private class UnknownToken: FormatToken

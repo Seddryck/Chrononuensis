@@ -1,33 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chrononuensis.Formats;
-using Tokens = Chrononuensis.Formats.Tokens;
-using Pidgin;
+using System.Collections.Frozen;
 using Chrononuensis.Formats.Tokens;
 using Chrononuensis.Parsers.Internals;
+using Pidgin;
+using Tokens = Chrononuensis.Formats.Tokens;
 
 namespace Chrononuensis.Parsers;
 internal partial class ParserFactory
 {
+    private static readonly FrozenDictionary<FormatToken, Parser<char, object>> Mappings = CreateMappings();
     private readonly PeriodParsingOptions _options;
 
-    public Dictionary<FormatToken, Parser<char, object>> _dict { get; set; } = [];
-
-    partial void Initialize();
+    private static partial FrozenDictionary<FormatToken, Parser<char, object>> CreateMappings();
 
     public ParserFactory(IFormatProvider? provider = null)
-    {
-        _options = PeriodParsingOptions.From(provider);
-        Initialize();
-    }
-
-    protected void AddMapping(FormatToken token, Parser<char, object> parser)
-    {
-        _dict.TryAdd(token, parser);
-    }
+        => _options = PeriodParsingOptions.From(provider);
 
     public Parser<char, object> Create(FormatToken token)
     {
@@ -55,7 +41,7 @@ internal partial class ParserFactory
         if (token is MutuallyExclusiveToken exclusive)
             return Primitives.StringParsers(exclusive.Values.Select(x => ((LiteralToken)x).Value).ToArray()).Cast<object>();
 
-        if (!_dict.TryGetValue(token, out var parser))
+        if (!Mappings.TryGetValue(token, out var parser))
             throw new ArgumentOutOfRangeException($"Token {token} not found in the dictionary");
         return parser;
     }

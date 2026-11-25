@@ -5,48 +5,66 @@ using Pidgin;
 
 namespace Chrononuensis.Parsers;
 
-// Shared across parser instances. FIFO eviction bounds retained formats; oversized
-// formats are parsed normally without retaining their potentially large pipelines.
+// Bound tokenized formats and implicit pipelines independently. Explicit pipelines
+// can capture caller state and are built outside the lock for each operation.
 internal sealed class ParserPipelineCache
 {
     internal const int Capacity = 256;
     internal const int MaximumFormatLength = 1024;
     private readonly object gate = new();
-    private readonly Dictionary<(string Format, string UICulture), Pipeline> entries = new();
-    private readonly Queue<(string Format, string UICulture)> insertionOrder = new();
+    private readonly Dictionary<string, Format> tokenizedFormats = new(StringComparer.Ordinal);
+    private readonly Queue<string> formatInsertionOrder = new();
+    private readonly Dictionary<(string Format, string UICulture), Pipeline> pipelines = new();
+    private readonly Queue<(string Format, string UICulture)> pipelineInsertionOrder = new();
 
     internal sealed record Pipeline(Format Tokens, Parser<char, object[]> Parser);
 
     internal Pipeline Get(string format, IFormatProvider? provider = null)
     {
-        // Explicit providers may contain mutable culture data or custom normalization
-        // delegates. Build them per operation instead of retaining caller state.
+        if (format is null || format.Length > MaximumFormatLength)
+            return Create(new Lexer().Tokenize(format!), provider);
+
         if (provider is not null)
-            return Create(format, provider);
+        {
+            Format tokens;
+            lock (gate)
+                tokens = GetOrTokenize(format);
 
-        var key = (format, CultureInfo.CurrentUICulture.Name);
-        if (format is not null && format.Length > MaximumFormatLength)
-            return Create(format);
+            return Create(tokens, provider);
+        }
 
-        // Serialize misses as well as eviction so concurrent callers build a retained
-        // pipeline only once. Parsing itself always happens outside this lock.
+        var culture = CultureInfo.CurrentUICulture;
+        var key = (format, culture.Name);
         lock (gate)
         {
-            if (entries.TryGetValue(key!, out var pipeline))
+            if (pipelines.TryGetValue(key, out var pipeline))
                 return pipeline;
 
-            pipeline = Create(format!);
-            if (entries.Count == Capacity)
-                entries.Remove(insertionOrder.Dequeue());
-            entries.Add(key!, pipeline);
-            insertionOrder.Enqueue(key!);
+            pipeline = Create(GetOrTokenize(format), culture);
+            if (pipelines.Count == Capacity)
+                pipelines.Remove(pipelineInsertionOrder.Dequeue());
+            pipelines.Add(key, pipeline);
+            pipelineInsertionOrder.Enqueue(key);
             return pipeline;
         }
     }
 
-    private static Pipeline Create(string format, IFormatProvider? provider = null)
+    // Call under the cache lock so concurrent misses tokenize a retained format once.
+    private Format GetOrTokenize(string format)
     {
-        var tokens = new Lexer().Tokenize(format);
+        if (tokenizedFormats.TryGetValue(format, out var tokens))
+            return tokens;
+
+        tokens = new Lexer().Tokenize(format);
+        if (tokenizedFormats.Count == Capacity)
+            tokenizedFormats.Remove(formatInsertionOrder.Dequeue());
+        tokenizedFormats.Add(format, tokens);
+        formatInsertionOrder.Enqueue(format);
+        return tokens;
+    }
+
+    private static Pipeline Create(Format tokens, IFormatProvider? provider)
+    {
         var factory = new ParserFactory(provider);
         return new(tokens, Primitives.CombineParsers(tokens.Select(factory.Create).ToArray()).Before(Parser<char>.End));
     }

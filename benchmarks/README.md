@@ -32,10 +32,39 @@ pipeline caching. The final harness also runs against optimized numeric primitiv
 The shared cache retains at most 256 entries with FIFO eviction and skips retention
 for formats longer than 1024 characters. Keys contain the ordinal format string
 and current UI culture name: localized tokens use `CurrentUICulture`; month names
-are invariant and the provider argument currently does not affect construction.
+were invariant when this version of the benchmark was measured.
 Failures are not cached. Cache access/construction is synchronized; Pidgin parsing
 runs outside the lock with per-call results. Dynamic result types are resolved
 after parsing and do not change the composed pipeline.
+
+## Explicit-provider format caching (#210)
+
+```powershell
+$env:DOTNET_TieredCompilation = '0'
+dotnet run --project benchmarks/Chrononuensis.Benchmarks -c Release -f net10.0 -- --span-parsing
+```
+
+The benchmark calls the public character-span `YearMonthParser.Parse` overload
+with a short year, a full month name, and a quoted numeric suffix. Warm calls
+repeat one format. Cold calls cycle through 1,024 preallocated format and input
+pairs, exceeding both cache capacities. Both modes use invariant culture, either
+through the current UI culture or as the explicit provider.
+
+The same harness was measured against the `70a0fc7` baseline and the updated
+implementation on Windows 10.0.26300 x64, .NET 10.0.15, Release. Each result is
+the median of nine samples of 100,000 calls after 20,000 warm-up calls.
+
+| Provider and cache state | Before ns/op | After ns/op | Before B/op | After B/op |
+|---|---:|---:|---:|---:|
+| Implicit, warm | 329.38 | 296.18 | 696 | 696 |
+| Implicit, cold | 5290.16 | 4204.07 | 13608 | 10016 |
+| Explicit, warm | 4528.24 | 2531.06 | 13608 | 7056 |
+| Explicit, cold | 4393.57 | 3754.05 | 13608 | 10016 |
+
+Tokens are cached by ordinal format string across providers. Implicit pipelines
+are cached by format and UI culture name. Each cache uses FIFO eviction after 256
+entries and bypasses retention for formats longer than 1,024 characters. Explicit
+pipeline composition resolves culture data and normalizers on each call.
 
 ## Numeric primitives (#196)
 

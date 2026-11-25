@@ -1,0 +1,46 @@
+using System.Globalization;
+using Chrononuensis.Parsers;
+
+namespace Chrononuensis.Benchmarks;
+
+internal static partial class Program
+{
+    private static void RunSpanParsing()
+    {
+        // Cycling through more formats than the cache holds keeps cold calls missing
+        // after JIT warm-up. Prepare inputs and formats outside the timed interval.
+        var cases = Enumerable.Range(0, 1024)
+            .Select(i => (Input: $"25-January {i:D4}", Format: $"yy-MMMM '{i:D4}'"))
+            .ToArray();
+        var parser = new YearMonthParser();
+
+        foreach (var provider in new[] { null, CultureInfo.InvariantCulture })
+        {
+            var providerLabel = provider is null ? "implicit" : "explicit";
+            var warm = cases[0];
+            Run($"{providerLabel}, warm", () => sink = parser.Parse(warm.Input.AsSpan(), warm.Format, provider));
+
+            var index = 0;
+            Run($"{providerLabel}, cold", () =>
+            {
+                var (input, format) = cases[index];
+                index = (index + 1) % cases.Length;
+                sink = parser.Parse(input.AsSpan(), format, provider);
+            });
+        }
+
+        static void Run(string name, Action parse)
+        {
+            for (var i = 0; i < 20_000; i++)
+                parse();
+
+            var samples = new (double Ns, double Bytes)[9];
+            for (var i = 0; i < samples.Length; i++)
+                samples[i] = Measure(parse);
+
+            var ns = samples.Select(sample => sample.Ns).Order().ElementAt(samples.Length / 2);
+            var bytes = samples.Select(sample => sample.Bytes).Order().ElementAt(samples.Length / 2);
+            Console.WriteLine($"{name}: {ns:F2} ns/op, {bytes:F2} B/op");
+        }
+    }
+}
