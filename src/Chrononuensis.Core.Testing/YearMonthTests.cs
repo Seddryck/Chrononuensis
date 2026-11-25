@@ -77,6 +77,59 @@ public class YearMonthTests
         }
     }
 
+    [Test]
+    public void Utf8_DefaultFormat_UsesStandardInterface()
+    {
+        Assert.That(YearMonth.Parse("2025-02"u8, provider: null), Is.EqualTo(new YearMonth(2025, 2)));
+        Assert.That(TryParseUtf8<YearMonth>("2025-02"u8, out var result), Is.True);
+        Assert.That(result, Is.EqualTo(new YearMonth(2025, 2)));
+    }
+
+    private static bool TryParseUtf8<T>(ReadOnlySpan<byte> input, out T result) where T : struct, IUtf8SpanParsable<T>
+        => T.TryParse(input, null, out result);
+
+    [Test]
+    public void Utf8_CustomFormat_PreservesCultureAndLiterals()
+    {
+        const string format = "yyyy' – 'MMMM";
+        var culture = CultureInfo.GetCultureInfo("fr-FR");
+        var expected = new YearMonth(2025, 2);
+
+        Assert.That(YearMonth.Parse("2025 – février"u8, format, culture), Is.EqualTo(expected));
+        Assert.That(YearMonth.TryParse("2025 – février"u8, format, culture, out var result), Is.True);
+        Assert.That(result, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void Utf8_LongInput_ParsesWithCustomFormat()
+    {
+        var literal = new string('é', 300);
+        var input = Encoding.UTF8.GetBytes("2025-02" + literal);
+        var format = $"yyyy-MM'{literal}'";
+
+        Assert.That(YearMonth.Parse(input, format), Is.EqualTo(new YearMonth(2025, 2)));
+    }
+
+    [Test]
+    public void Utf8_MalformedInput_ReturnsFailure()
+    {
+        byte[] input = [(byte)'2', 0xC3];
+
+        Assert.That(() => YearMonth.Parse(input, provider: null),
+            Throws.TypeOf<FormatException>().With.Message.EqualTo("Input is not valid UTF-8."));
+        Assert.That(YearMonth.TryParse(input, null, out var result), Is.False);
+        Assert.That(result.Year, Is.Zero);
+        Assert.That(result.Month, Is.Zero);
+    }
+
+    [Test]
+    public void Utf8_ValidBytesWithTrailingInput_ReturnsFailure()
+    {
+        Assert.That(YearMonth.TryParse("2025-02x"u8, null, out var result), Is.False);
+        Assert.That(result.Year, Is.Zero);
+        Assert.That(result.Month, Is.Zero);
+    }
+
     private static IEnumerable<YearMonth> GetData()
     {
         yield return new(2022, 1);

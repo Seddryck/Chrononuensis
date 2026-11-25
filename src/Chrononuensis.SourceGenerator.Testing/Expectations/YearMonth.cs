@@ -10,7 +10,7 @@ public partial record struct YearMonth
     int Year,
     int Month
 )
-    : IParsable<YearMonth>, IComparable<YearMonth>, IComparable, IEquatable<YearMonth>
+    : IParsable<YearMonth>, IUtf8SpanParsable<YearMonth>, IComparable<YearMonth>, IComparable, IEquatable<YearMonth>
 {
     public int Month { get; }
         = (Month >= 1 && Month <= 12)
@@ -37,6 +37,15 @@ public partial record struct YearMonth
         return new YearMonth(result.Year, result.Month);
     }
 
+    public static YearMonth Parse(ReadOnlySpan<byte> span, IFormatProvider? provider)
+        => Parse(span, YearMonthParser.DefaultPattern, provider);
+
+    public static YearMonth Parse(ReadOnlySpan<byte> span, string format, IFormatProvider? provider = null)
+    {
+        var result = Parser.Parse(span, format, provider);
+        return new YearMonth(result.Year, result.Month);
+    }
+
     public static bool TryParse(string? s, IFormatProvider? provider, out YearMonth result)
         => TryParse(s, YearMonthParser.DefaultPattern, provider, out result);
 
@@ -53,6 +62,18 @@ public partial record struct YearMonth
         => TryParse(span, YearMonthParser.DefaultPattern, provider, out result);
 
     public static bool TryParse(ReadOnlySpan<char> span, string format, IFormatProvider? provider, out YearMonth result)
+    {
+        var success = Parser.TryParse(span, format, provider, out var Year, out var Month);
+        result = success
+                    ? new YearMonth(Year!.Value, Month!.Value)
+                    : default;
+        return success;
+    }
+
+    public static bool TryParse(ReadOnlySpan<byte> span, IFormatProvider? provider, out YearMonth result)
+        => TryParse(span, YearMonthParser.DefaultPattern, provider, out result);
+
+    public static bool TryParse(ReadOnlySpan<byte> span, string format, IFormatProvider? provider, out YearMonth result)
     {
         var success = Parser.TryParse(span, format, provider, out var Year, out var Month);
         result = success

@@ -1,8 +1,9 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
-using System.Text;
+using System.Text.Unicode;
 using System.Threading.Tasks;
 using Chrononuensis.Formats;
 using Chrononuensis.Parsers.Internals;
@@ -65,5 +66,47 @@ public abstract class ChrononuensisParser : IParser
         var result = pipeline.Parser.Parse(input);
         results = result.Success ? CreateResults(result, pipeline.Tokens, types) : null;
         return result.Success;
+    }
+
+    protected object[] ParseInternal(ReadOnlySpan<byte> input, string format, IFormatProvider? provider, Type[] types)
+        => ParseUtf8(input, format, provider, types, throwOnFailure: true)!;
+
+    protected bool TryParseInternal(ReadOnlySpan<byte> input, string format, IFormatProvider? provider, Type[] types, out object[]? results)
+    {
+        results = ParseUtf8(input, format, provider, types, throwOnFailure: false);
+        return results is not null;
+    }
+
+    private object[]? ParseUtf8(ReadOnlySpan<byte> input, string format, IFormatProvider? provider, Type[] types, bool throwOnFailure)
+    {
+        const int StackBufferSize = 256;
+        char[]? rented = null;
+        Span<char> buffer = input.Length <= StackBufferSize
+            ? stackalloc char[input.Length]
+            : (rented = ArrayPool<char>.Shared.Rent(input.Length));
+
+        try
+        {
+            var status = Utf8.ToUtf16(input, buffer, out _, out var charsWritten, replaceInvalidSequences: false);
+            if (status != OperationStatus.Done)
+            {
+                if (throwOnFailure)
+                    throw new FormatException("Input is not valid UTF-8.");
+
+                return null;
+            }
+
+            ReadOnlySpan<char> decoded = buffer[..charsWritten];
+            if (throwOnFailure)
+                return ParseInternal(decoded, format, provider, types);
+
+            TryParseInternal(decoded, format, provider, types, out var results);
+            return results;
+        }
+        finally
+        {
+            if (rented is not null)
+                ArrayPool<char>.Shared.Return(rented);
+        }
     }
 }
