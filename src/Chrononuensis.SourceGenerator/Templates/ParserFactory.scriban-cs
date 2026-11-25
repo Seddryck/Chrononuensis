@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using Tokens = Chrononuensis.Formats.Tokens;
 using Chrononuensis.Formats.Tokens;
 using Chrononuensis.Parsers.Internals;
-using Pidgin;
 
 namespace Chrononuensis.Parsers;
 
 internal partial class ParserFactory
 {
-    private static partial FrozenDictionary<FormatToken, Parser<char, object>> CreateMappings()
+    private static partial FrozenDictionary<FormatToken, Mapping> CreateMappings()
     {
-        var mappings = new Dictionary<FormatToken, Parser<char, object>>();
+        var mappings = new Dictionary<FormatToken, Mapping>();
         {{~ for token in tokens ~}}
         {{~ for member in token.members ~}}
-        mappings.TryAdd(Tokens.{{ token.group }}.{{ member.name }}{{ token.group }}Token.Instance, Parsers.Internals.{{ token.group }}Parser.{{ member.name }}.Cast<object>());
+        mappings.TryAdd(Tokens.{{ token.group }}.{{ member.name }}{{ token.group }}Token.Instance, new Mapping(Parsers.Internals.{{ token.group }}Parser.{{ member.name }}));
         {{~ end ~}}
         {{~ if !for.last ~}}
 

@@ -3,66 +3,41 @@
 using Chrononuensis.Formats.Tokens;
 
 namespace Chrononuensis.Parsers;
+{{- capture result_type -}}
+{{ if parts.size == 1 }}int{{ else }}({{ for part in parts }}int {{ part.name }}{{ if !for.last }}, {{ end }}{{ end }}){{ end }}
+{{- end }}
 
 public class {{ struct_name }}Parser : ChrononuensisParser
 {
+    private static readonly TypedPeriodParser<{{ result_type }}> Parser = new([
+    {{~ for part in parts ~}}
+        new(typeof(I{{ part.name }}Token), static (result, value) =>
+            {{- if parts.size == 1 }} value
+            {{- else }} ({{ for item in parts }}{{ if item.name == part.name }}value{{ else }}result.{{ item.name }}{{ end }}{{ if !for.last }}, {{ end }}{{ end }})
+            {{- end }}),
+    {{~ end ~}}
+    ]);
+
     public static string DefaultPattern { get; } = "{{ default }}";
+{{- for input_type in ["string", "ReadOnlySpan<char>", "ReadOnlySpan<byte>"] }}
 
-    public
-    {{- if parts.size == 1 }} int
-    {{- else }} ({{ for part in parts }}int {{ part.name }}{{ if !for.last }}, {{ end }}{{ end }})
-    {{- end }} Parse(string input, string format, IFormatProvider? provider)
-    {
-        var results = ParseInternal(input, format, provider, [
-        {{- for part in parts ~}}typeof(I{{ part.name }}Token){{~ if !for.last ~}}, {{ end ~}}{{ end -}}
-        ]);
-        return ({{~ for part in parts ~}}(int)results[{{ for.index }}]{{~ if !for.last ~}}, {{ end ~}}{{ end ~}});
-    }
-{{- for span_type in ["char", "byte"] }}
-
-    public
-    {{- if parts.size == 1 }} int
-    {{- else }} ({{ for part in parts }}int {{ part.name }}{{ if !for.last }}, {{ end }}{{ end }})
-    {{- end }} Parse(ReadOnlySpan<{{ span_type }}> input, string format, IFormatProvider? provider)
-    {
-        var results = ParseInternal(input, format, provider, [
-        {{- for part in parts ~}}typeof(I{{ part.name }}Token){{~ if !for.last ~}}, {{ end ~}}{{ end -}}
-        ]);
-        return ({{~ for part in parts ~}}(int)results[{{ for.index }}]{{~ if !for.last ~}}, {{ end ~}}{{ end ~}});
-    }
+    public {{ result_type }} Parse({{ input_type }} input, string format, IFormatProvider? provider)
+        => Parser.Parse(input, format, provider);
 {{- end }}
+{{- for input_type in ["string?", "ReadOnlySpan<char>", "ReadOnlySpan<byte>"] }}
 
-    public bool TryParse(string? input, string format, IFormatProvider? provider,
+    public bool TryParse({{ input_type }} input, string format, IFormatProvider? provider,
     {{- for part in parts }} out int? {{ part.name }}{{~ if !for.last ~}},{{ end ~}}{{ end -}}
     )
     {
-        object[]? results = null;
-        var result = !string.IsNullOrEmpty(input)
-                        && TryParseInternal(input, format, provider, [
-                            {{- for part in parts ~}}typeof(I{{ part.name }}Token){{~ if !for.last ~}}, {{ end ~}}{{ end -}}
-                            ], out results);
+        {{ result_type }} value = default;
+        var success = {{ if input_type == "string?" }}!string.IsNullOrEmpty(input){{ else }}!input.IsEmpty{{ end }}
+            && Parser.TryParse(input, format, provider, out value);
 
         {{~ for part in parts ~}}
-        {{ part.name }} = result ? (int)results![{{ for.index }}] : null;
+        {{ part.name }} = success ? value{{ if parts.size > 1 }}.{{ part.name }}{{ end }} : null;
         {{~ end ~}}
-        return result;
-    }
-{{- for span_type in ["char", "byte"] }}
-
-    public bool TryParse(ReadOnlySpan<{{ span_type }}> input, string format, IFormatProvider? provider,
-    {{- for part in parts }} out int? {{ part.name }}{{~ if !for.last ~}},{{ end ~}}{{ end -}}
-    )
-    {
-        object[]? results = null;
-        var result = input.Length > 0
-                        && TryParseInternal(input, format, provider, [
-                            {{- for part in parts ~}}typeof(I{{ part.name }}Token){{~ if !for.last ~}}, {{ end ~}}{{ end -}}
-                            ], out results);
-
-        {{~ for part in parts ~}}
-        {{ part.name }} = result ? (int)results![{{ for.index }}] : null;
-        {{~ end ~}}
-        return result;
+        return success;
     }
 {{- end }}
 }

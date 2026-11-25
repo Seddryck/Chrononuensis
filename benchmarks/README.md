@@ -66,6 +66,31 @@ are cached by format and UI culture name. Each cache uses FIFO eviction after 25
 entries and bypasses retention for formats longer than 1,024 characters. Explicit
 pipeline composition resolves culture data and normalizers on each call.
 
+## Typed results (#211)
+
+```powershell
+$env:DOTNET_TieredCompilation = '0'
+dotnet run --project benchmarks/Chrononuensis.Benchmarks -c Release -f net10.0 -- --typed-parsing
+```
+
+These cases repeat successful character-span calls through the public period API
+using a warm pipeline and implicit invariant culture. The harness consumes the
+returned components in an integer sink. It uses the same warm-up and sample
+counts as the explicit-provider benchmark above.
+
+The same harness was measured against baseline `89bca91` and the typed
+implementation on Windows 10.0.26300 x64, .NET 10.0.15, Release.
+
+| Case | Before ns/op | After ns/op | Before B/op | After B/op |
+|---|---:|---:|---:|---:|
+| `YearMonth.Parse` with `yyyy-MM` | 286.77 | 151.16 | 568 | 40 |
+| `YearMonth.TryParse` with `yyyy-MM` | 289.39 | 151.34 | 568 | 40 |
+| `Year.Parse` with `yyyy` | 177.62 | 94.89 | 424 | 32 |
+
+The generated path passes numbers from `Parser<char, int>` into an integer or
+tuple result. Numeric boxing and intermediate result collections are gone from
+that path. The measurements include the remaining Pidgin parsing overhead.
+
 ## Numeric primitives (#196)
 
 The numeric baselines are exact copies of the original methods from `50c82ad`, in

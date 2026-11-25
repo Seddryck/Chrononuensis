@@ -8,7 +8,10 @@ using Pidgin;
 namespace Chrononuensis.Parsers;
 internal class FormatExceptionFactory
 {
-    public FormatException Create(Result<char, object[]> result)
+    internal static FormatException MissingToken(Type type)
+        => new($"Token '{type.Name[1..^5].ToLower()}' not found in the format");
+
+    public FormatException Create<T>(Result<char, T> result)
     {
         var error = result.Error
                         ?? throw new ArgumentNullException(nameof(result.Error), "Error object cannot be null.");
