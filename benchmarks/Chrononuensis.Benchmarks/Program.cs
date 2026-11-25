@@ -25,6 +25,12 @@ internal static partial class Program
             return;
         }
 
+        if (args is ["--typed-parsing"])
+        {
+            RunTypedParsing();
+            return;
+        }
+
         var cached = new YearMonthParser();
         var lexer = new Lexer();
         var factory = new ParserFactory();

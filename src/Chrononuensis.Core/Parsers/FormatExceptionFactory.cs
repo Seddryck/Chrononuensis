@@ -1,52 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Pidgin;
+﻿using Pidgin;
 
 namespace Chrononuensis.Parsers;
 internal class FormatExceptionFactory
 {
-    public FormatException Create(Result<char, object[]> result)
+    internal static FormatException MissingToken(Type type)
+        => new($"Token '{type.Name[1..^5].ToLower()}' not found in the format");
+
+    public FormatException Create<T>(Result<char, T> result)
     {
         var error = result.Error
-                        ?? throw new ArgumentNullException(nameof(result.Error), "Error object cannot be null.");
-
+            ?? throw new ArgumentNullException(nameof(result.Error), "Error object cannot be null.");
         var position = error.ErrorPos.Col;
 
-        if (error.Unexpected.HasValue && error.Expected.Any())
-        {
-            var unexpected = error.Unexpected.HasValue && error.EOF
-                                ? "end-of-file"
-                                : error.Unexpected.HasValue && error.Unexpected.Value.ToString() == ""
-                                    ? $"'{error.Unexpected.Value}'"
-                                    : $"'{error.Unexpected.Value}'";
+        if (!error.Unexpected.HasValue)
+            return new FormatException($"Parsing error at character {position}: {error.Message}.");
 
-            var expected = error.Expected.FirstOrDefault().IsEof
-                                    ? "end-of-file"
-                                    : error.Expected.FirstOrDefault().Label is null
-                                        ? $"'{error.Expected.FirstOrDefault().Tokens[0]}'"
-                                        : error.Expected.FirstOrDefault().Label;
-            
+        var unexpected = error.EOF ? "end-of-file" : $"'{error.Unexpected.Value}'";
+        if (!error.Expected.Any())
+            return new FormatException($"Parsing error at character {position}: Unexpected {unexpected}.");
 
-            var message = $"Parsing error at character {position}: Expected {expected} but found {unexpected}.";
-            return new FormatException(message);
-        }
-        else if (error.Unexpected.HasValue)
-        {
-            var unexpected = error.Unexpected.HasValue && error.EOF
-                                ? "end-of-file"
-                                : error.Unexpected.HasValue && error.Unexpected.Value.ToString() == ""
-                                    ? $"'{error.Unexpected.Value}'"
-                                    : $"'{error.Unexpected.Value}'";
-            var message = $"Parsing error at character {position}: Unexpected {unexpected}.";
-            return new FormatException(message);
-        }
-        else
-        {
-            var message = $"Parsing error at character {position}: {error.Message}.";
-            return new FormatException(message);
-        }
+        var expectation = error.Expected.First();
+        var expected = expectation.IsEof ? "end-of-file" : expectation.Label ?? $"'{expectation.Tokens[0]}'";
+        return new FormatException($"Parsing error at character {position}: Expected {expected} but found {unexpected}.");
     }
 }

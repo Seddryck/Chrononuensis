@@ -11,18 +11,23 @@ internal sealed class ParserPipelineCache
 {
     internal const int Capacity = 256;
     internal const int MaximumFormatLength = 1024;
+    internal static readonly ParserPipelineCache Shared = new();
     private readonly object gate = new();
     private readonly Dictionary<string, Format> tokenizedFormats = new(StringComparer.Ordinal);
     private readonly Queue<string> formatInsertionOrder = new();
-    private readonly Dictionary<(string Format, string UICulture), Pipeline> pipelines = new();
-    private readonly Queue<(string Format, string UICulture)> pipelineInsertionOrder = new();
+    private readonly Dictionary<(string Format, string UICulture, Delegate Compose), object> pipelines = new();
+    private readonly Queue<(string Format, string UICulture, Delegate Compose)> pipelineInsertionOrder = new();
 
     internal sealed record Pipeline(Format Tokens, Parser<char, object[]> Parser);
 
     internal Pipeline Get(string format, IFormatProvider? provider = null)
+        => Get(format, provider, Create);
+
+    internal TPipeline Get<TPipeline>(string format, IFormatProvider? provider, Func<Format, IFormatProvider?, TPipeline> compose)
+        where TPipeline : class
     {
         if (format is null || format.Length > MaximumFormatLength)
-            return Create(new Lexer().Tokenize(format!), provider);
+            return compose(new Lexer().Tokenize(format!), provider);
 
         if (provider is not null)
         {
@@ -30,22 +35,22 @@ internal sealed class ParserPipelineCache
             lock (gate)
                 tokens = GetOrTokenize(format);
 
-            return Create(tokens, provider);
+            return compose(tokens, provider);
         }
 
         var culture = CultureInfo.CurrentUICulture;
-        var key = (format, culture.Name);
+        var key = (format, culture.Name, (Delegate)compose);
         lock (gate)
         {
             if (pipelines.TryGetValue(key, out var pipeline))
-                return pipeline;
+                return (TPipeline)pipeline;
 
-            pipeline = Create(GetOrTokenize(format), culture);
+            var created = compose(GetOrTokenize(format), culture);
             if (pipelines.Count == Capacity)
                 pipelines.Remove(pipelineInsertionOrder.Dequeue());
-            pipelines.Add(key, pipeline);
+            pipelines.Add(key, created);
             pipelineInsertionOrder.Enqueue(key);
-            return pipeline;
+            return created;
         }
     }
 

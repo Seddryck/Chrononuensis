@@ -1,18 +1,10 @@
-using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Text.Unicode;
-using System.Threading.Tasks;
 using Chrononuensis.Formats;
-using Chrononuensis.Parsers.Internals;
 using Pidgin;
 
 namespace Chrononuensis.Parsers;
 public abstract class ChrononuensisParser : IParser
 {
-    private static readonly ParserPipelineCache Pipelines = new();
+    private static readonly ParserPipelineCache Pipelines = ParserPipelineCache.Shared;
 
     private void ThrowsIfNotSuccess(Result<char, object[]> result)
     {
@@ -30,7 +22,7 @@ public abstract class ChrononuensisParser : IParser
         {
             var index = tokens.GetIndex(type);
             if (index == -1)
-                throw new FormatException($"Token '{type.Name[1..^5].ToLower()}' not found in the format");
+                throw FormatExceptionFactory.MissingToken(type);
             results.Add(result.Value[index]);
         }
         return [.. results];
@@ -78,35 +70,13 @@ public abstract class ChrononuensisParser : IParser
     }
 
     private object[]? ParseUtf8(ReadOnlySpan<byte> input, string format, IFormatProvider? provider, Type[] types, bool throwOnFailure)
-    {
-        const int StackBufferSize = 256;
-        char[]? rented = null;
-        Span<char> buffer = input.Length <= StackBufferSize
-            ? stackalloc char[input.Length]
-            : (rented = ArrayPool<char>.Shared.Rent(input.Length));
-
-        try
-        {
-            var status = Utf8.ToUtf16(input, buffer, out _, out var charsWritten, replaceInvalidSequences: false);
-            if (status != OperationStatus.Done)
+        => Utf8PeriodInput.Parse(input, (Parser: this, format, provider, types, throwOnFailure), throwOnFailure,
+            static (decoded, state) =>
             {
-                if (throwOnFailure)
-                    throw new FormatException("Input is not valid UTF-8.");
+                if (state.throwOnFailure)
+                    return state.Parser.ParseInternal(decoded, state.format, state.provider, state.types);
 
-                return null;
-            }
-
-            ReadOnlySpan<char> decoded = buffer[..charsWritten];
-            if (throwOnFailure)
-                return ParseInternal(decoded, format, provider, types);
-
-            TryParseInternal(decoded, format, provider, types, out var results);
-            return results;
-        }
-        finally
-        {
-            if (rented is not null)
-                ArrayPool<char>.Shared.Return(rented);
-        }
-    }
+                state.Parser.TryParseInternal(decoded, state.format, state.provider, state.types, out var results);
+                return results;
+            });
 }
